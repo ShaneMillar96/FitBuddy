@@ -52,4 +52,11 @@ erDiagram
     WORKOUTS ||--o{ PARTICIPATIONS : contains
     WORKOUTS ||--o{ COMMENTS : has
     USERS ||--o{ COMMENTS : writes
+    WORKOUTS ||--o{ EXERCISES : includes
+    EXERCISES ||--o{ EQUIPMENT : requires
+    EQUIPMENT ||--o{ GYMS : available_at
+    USERS ||--o{ LIKES : gives
+    COMMENTS ||--o{ LIKES : receives
+    USERS ||--o{ LEADERBOARDS : appears_in
+    LEADERBOARDS ||--o{ PARTICIPATIONS : ranks
 ```
