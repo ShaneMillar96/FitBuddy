@@ -1,11 +1,168 @@
 {
   "version": 3,
   "targets": {
-    "net9.0": {}
+    "net9.0": {
+      "Amazon.Lambda.Annotations/1.6.2": {
+        "type": "package",
+        "dependencies": {
+          "Amazon.Lambda.Core": "2.5.0"
+        },
+        "compile": {
+          "lib/net8.0/Amazon.Lambda.Annotations.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Amazon.Lambda.Annotations.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Amazon.Lambda.Core/2.5.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Amazon.Lambda.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Amazon.Lambda.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.1": {
+        "type": "package",
+        "compile": {
+          "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/net8.0/_._": {}
+        }
+      },
+      "FitBuddy.Dal/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "compile": {
+          "bin/placeholder/FitBuddy.Dal.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/FitBuddy.Dal.dll": {}
+        }
+      },
+      "FitBuddy.Infrastructure/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v9.0",
+        "dependencies": {
+          "Amazon.Lambda.Annotations": "1.6.2",
+          "FitBuddy.Dal": "1.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.1"
+        },
+        "compile": {
+          "bin/placeholder/FitBuddy.Infrastructure.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/FitBuddy.Infrastructure.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Amazon.Lambda.Annotations/1.6.2": {
+      "sha512": "sFayMugKXtXD5QNaqbMVt95QgUXG6sCA5mqiurhCra8NAsLeyAZZCrOO4K6N2AJPPZfiwIGOKwQmKfkqU1mXcA==",
+      "type": "package",
+      "path": "amazon.lambda.annotations/1.6.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "THIRD_PARTY_LICENSES",
+        "amazon.lambda.annotations.1.6.2.nupkg.sha512",
+        "amazon.lambda.annotations.nuspec",
+        "analyzers/dotnet/cs/Amazon.Lambda.Annotations.SourceGenerator.dll",
+        "analyzers/dotnet/cs/Amazon.Lambda.Annotations.dll",
+        "analyzers/dotnet/cs/Newtonsoft.Json.dll",
+        "analyzers/dotnet/cs/YamlDotNet.dll",
+        "docs/README.md",
+        "images/icon.png",
+        "lib/net6.0/Amazon.Lambda.Annotations.dll",
+        "lib/net6.0/Amazon.Lambda.Annotations.xml",
+        "lib/net8.0/Amazon.Lambda.Annotations.dll",
+        "lib/net8.0/Amazon.Lambda.Annotations.xml",
+        "lib/netstandard2.0/Amazon.Lambda.Annotations.dll",
+        "lib/netstandard2.0/Amazon.Lambda.Annotations.xml"
+      ]
+    },
+    "Amazon.Lambda.Core/2.5.0": {
+      "sha512": "JrDdnjUPFcZ74VDjVc2kMucyUpjHnN77Al9Owc17DYYFYAVav46fLRl1BlJj0UPhJxTakoB/h1PhU/6J005Qrw==",
+      "type": "package",
+      "path": "amazon.lambda.core/2.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "amazon.lambda.core.2.5.0.nupkg.sha512",
+        "amazon.lambda.core.nuspec",
+        "lib/net6.0/Amazon.Lambda.Core.dll",
+        "lib/net6.0/Amazon.Lambda.Core.xml",
+        "lib/net8.0/Amazon.Lambda.Core.dll",
+        "lib/net8.0/Amazon.Lambda.Core.xml",
+        "lib/netstandard2.0/Amazon.Lambda.Core.dll",
+        "lib/netstandard2.0/Amazon.Lambda.Core.xml"
+      ]
+    },
+    "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.1": {
+      "sha512": "Tr74eP0oQ3AyC24ch17N8PuEkrPbD0JqIfENCYqmgKYNOmL8wQKzLJu3ObxTUDrjnn4rHoR1qKa37/eQyHmCDA==",
+      "type": "package",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/9.0.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "PACKAGE.md",
+        "THIRD-PARTY-NOTICES.TXT",
+        "buildTransitive/net461/Microsoft.Extensions.DependencyInjection.Abstractions.targets",
+        "buildTransitive/net462/_._",
+        "buildTransitive/net8.0/_._",
+        "buildTransitive/netcoreapp2.0/Microsoft.Extensions.DependencyInjection.Abstractions.targets",
+        "lib/net462/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/net462/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/net9.0/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "lib/netstandard2.1/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/netstandard2.1/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "microsoft.extensions.dependencyinjection.abstractions.9.0.1.nupkg.sha512",
+        "microsoft.extensions.dependencyinjection.abstractions.nuspec",
+        "useSharedDesignerContext.txt"
+      ]
+    },
+    "FitBuddy.Dal/1.0.0": {
+      "type": "project",
+      "path": "../FitBuddy.Dal/FitBuddy.Dal.csproj",
+      "msbuildProject": "../FitBuddy.Dal/FitBuddy.Dal.csproj"
+    },
+    "FitBuddy.Infrastructure/1.0.0": {
+      "type": "project",
+      "path": "../FitBuddy.Infrastructure/FitBuddy.Infrastructure.csproj",
+      "msbuildProject": "../FitBuddy.Infrastructure/FitBuddy.Infrastructure.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net9.0": []
+    "net9.0": [
+      "FitBuddy.Dal >= 1.0.0",
+      "FitBuddy.Infrastructure >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "/Users/shane.millar/.nuget/packages/": {}
@@ -13,11 +170,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/FitBuddy.Services/FitBuddy.Services.csproj",
+      "projectUniqueName": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/src/FitBuddy.Services/FitBuddy.Services.csproj",
       "projectName": "FitBuddy.Services",
-      "projectPath": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/FitBuddy.Services/FitBuddy.Services.csproj",
+      "projectPath": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/src/FitBuddy.Services/FitBuddy.Services.csproj",
       "packagesPath": "/Users/shane.millar/.nuget/packages/",
-      "outputPath": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/FitBuddy.Services/obj/",
+      "outputPath": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/src/FitBuddy.Services/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/shane.millar/.nuget/NuGet/NuGet.Config"
@@ -31,7 +188,14 @@
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/src/FitBuddy.Dal/FitBuddy.Dal.csproj": {
+              "projectPath": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/src/FitBuddy.Dal/FitBuddy.Dal.csproj"
+            },
+            "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/src/FitBuddy.Infrastructure/FitBuddy.Infrastructure.csproj": {
+              "projectPath": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/src/FitBuddy.Infrastructure/FitBuddy.Infrastructure.csproj"
+            }
+          }
         }
       },
       "warningProperties": {

@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/FitBuddy.Dal/FitBuddy.Dal.csproj",
+      "projectUniqueName": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/src/FitBuddy.Dal/FitBuddy.Dal.csproj",
       "projectName": "FitBuddy.Dal",
-      "projectPath": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/FitBuddy.Dal/FitBuddy.Dal.csproj",
+      "projectPath": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/src/FitBuddy.Dal/FitBuddy.Dal.csproj",
       "packagesPath": "/Users/shane.millar/.nuget/packages/",
-      "outputPath": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/FitBuddy.Dal/obj/",
+      "outputPath": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/src/FitBuddy.Dal/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/shane.millar/.nuget/NuGet/NuGet.Config"
