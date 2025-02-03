@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "Fn9XWU4mb4o=",
+  "success": true,
+  "projectFilePath": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/server/src/FitBuddy.Api/FitBuddy.Api.csproj",
+  "expectedPackageFiles": [
+    "/Users/shane.millar/.nuget/packages/amazon.lambda.annotations/1.6.2/amazon.lambda.annotations.1.6.2.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/amazon.lambda.core/2.5.0/amazon.lambda.core.2.5.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/microsoft.aspnetcore.openapi/9.0.1/microsoft.aspnetcore.openapi.9.0.1.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/9.0.1/microsoft.extensions.dependencyinjection.abstractions.9.0.1.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}
