@@ -50,6 +50,7 @@ erDiagram
     GYMS ||--o{ USERS : has
     GYMS ||--o{ WORKOUTS : offers
     WORKOUTS ||--o{ PARTICIPATIONS : contains
+    WORKOUTS ||--o{ WORKOUT_TYPES : has
     WORKOUTS ||--o{ COMMENTS : has
     USERS ||--o{ COMMENTS : writes
     WORKOUTS ||--o{ EXERCISES : includes
@@ -60,3 +61,36 @@ erDiagram
     USERS ||--o{ LEADERBOARDS : appears_in
     LEADERBOARDS ||--o{ PARTICIPATIONS : ranks
 ```
+
+### USERS:
+Represents the individuals using the FitBuddy system, such as gym members or administrators. Each user has a unique role and credentials to access the platform.
+
+### AFFILIATES: 
+Represents gym affiliates registered within the FitBuddy platform. Each affiliate manages its own set of workouts, equipment, and users.
+
+### WORKOUTS:
+Represents specific workout sessions created by users or affiliates. Each workout belongs to a workout type and may include multiple exercises.
+
+### WORKOUT_TYPES:
+Represents the type or category of a workout, such as "For Time," "AMRAP," or "Max Weight." Determines how scores are recorded and evaluated.
+
+### EXERCISES:
+Represents individual exercises that are part of a workout. Each exercise is associated with specific equipment and instructions.
+
+### PARTICIPATIONS:
+Tracks users' participation in workouts, including their results and the date/time of their involvement.
+
+### LEADERBOARDS:
+Represents rankings for a specific workout based on user scores. Tracks score types, values, and positions for users.
+
+### COMMENTS:
+Represents user-generated comments on workouts, enabling interaction and feedback within the community.
+
+### LIKES:
+Tracks "likes" given by users to workouts, fostering engagement and popularity metrics.
+
+### EQUIPMENT:
+Represents gym equipment available at affiliates, such as barbells, treadmills, or kettlebells. Equipment is linked to specific workouts and exercises.
+
+### WORKOUT_EQUIPMENT:
+Links workouts to the equipment required for their exercises, ensuring users are aware of what they need to participate.
