@@ -47,79 +47,54 @@ FitBuddy aims to solve this problem by creating a platform where gym and CrossFi
 ```mermaid
 %%{init: {'theme':'default'}}%%
 erDiagram
-    USERS ||--o{ WORKOUTS : creates
-    USERS ||--o{ PARTICIPATIONS : logs
-    GYMS ||--o{ USERS : has
-    GYMS ||--o{ WORKOUTS : offers
-    WORKOUTS ||--o{ PARTICIPATIONS : contains
-    WORKOUTS ||--o{ WORKOUT_TYPES : has
-    WORKOUTS ||--o{ COMMENTS : has
+    Users ||--o{ Workouts : creates
+    Affiliates ||--o{ Users : has
+    Affiliates ||--o{ Workouts : offers
+    Workouts ||--o{ Comments : has
     USERS ||--o{ COMMENTS : writes
-    WORKOUTS ||--o{ EXERCISES : includes
-    EXERCISES ||--o{ EQUIPMENT : requires
-    EQUIPMENT ||--o{ GYMS : available_at
-    USERS ||--o{ LIKES : gives
-    COMMENTS ||--o{ LIKES : receives
-    USERS ||--o{ LEADERBOARDS : appears_in
-    LEADERBOARDS ||--o{ PARTICIPATIONS : ranks
+    Workouts ||--o{ Exercises : includes
+    Exercises ||--o{ Equipment : requires
+    Equipment ||--o{ Affiliates : available_at
+    Users ||--o{ Comments : gives
+    Users ||--o{ Leaderboards : appears_in
 ```
 
-### USERS:
+### Users:
 Represents the individuals using the FitBuddy system, such as gym members or administrators. Each user has a unique role and credentials to access the platform.
 
-### AFFILIATES: 
+### Affiliates: 
 Represents gym affiliates registered within the FitBuddy platform. Each affiliate manages its own set of workouts, equipment, and users.
 
-### WORKOUTS:
+### Workouts:
 Represents specific workout sessions created by users or affiliates. Each workout belongs to a workout type and may include multiple exercises.
 
-### WORKOUT_TYPES:
-Represents the type or category of a workout, such as "For Time," "AMRAP," or "Max Weight." Determines how scores are recorded and evaluated.
-
-### EXERCISES:
+### Exercises:
 Represents individual exercises that are part of a workout. Each exercise is associated with specific equipment and instructions.
 
-### PARTICIPATIONS:
-Tracks users' participation in workouts, including their results and the date/time of their involvement.
-
-### LEADERBOARDS:
+### Leaderboards:
 Represents rankings for a specific workout based on user scores. Tracks score types, values, and positions for users.
 
-### COMMENTS:
+### Comments:
 Represents user-generated comments on workouts, enabling interaction and feedback within the community.
 
-### LIKES:
-Tracks "likes" given by users to workouts, fostering engagement and popularity metrics.
-
-### EQUIPMENT:
+### Equipment:
 Represents gym equipment available at affiliates, such as barbells, treadmills, or kettlebells. Equipment is linked to specific workouts and exercises.
-
-### WORKOUT_EQUIPMENT:
-Links workouts to the equipment required for their exercises, ensuring users are aware of what they need to participate.
 
 ## Affiliate Management
 
 ```mermaid
 %%{init: {'theme':'forest'}}%%
 erDiagram
-    AFFILIATES ||--o{ USERS : employs
-    AFFILIATES ||--o{ AFFILIATE_STATUSES : status
-    USERS ||--o{ USER_ROLES : assigned_to
-    ROLES ||--o{ USER_ROLES : defines
+    Affiliates ||--o{ Users : employs
+    Users ||--o{ Roles : assigned_to
 ```
 
-### AFFILIATES:
+### Affiliates:
 Represents the affiliate gyms.  Includes essential information like name, database details, email, phone number, and status.
 
-### AFFILIATE_STATUSES:
-Represents the statuses of affiliates (e.g., Active, Inactive, Pending).
-
-### USERS:
+### Users:
 Represents the users tied to specific affiliates.  Includes personal details, email, password hash, and role information
 
-### ROLES:
+### Roles:
 Defines the roles (e.g., Admin, Manager, Member)
-
-### USER_ROLES:
-Links users to roles, supporting a many-to-many relationship between users and roles.
 
