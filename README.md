@@ -100,7 +100,7 @@ Links workouts to the equipment required for their exercises, ensuring users are
 ## Affiliate Management
 
 ```mermaid
-%%{init: {'theme':'default'}}%%
+%%{init: {'theme':'forest'}}%%
 erDiagram
     AFFILIATES ||--o{ USERS : employs
     AFFILIATES ||--o{ AFFILIATE_STATUSES : status
