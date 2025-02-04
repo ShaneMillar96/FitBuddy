@@ -171,7 +171,6 @@ yarn-debug.log*
 yarn-error.log*
 
 # JetBrains
-/.idea/
 .idea/
 .idea/.idea.FitBuddy/.idea
 
