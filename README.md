@@ -42,6 +42,8 @@ FitBuddy aims to solve this problem by creating a platform where gym and CrossFi
 - Live workout streaming.
 
 ## Domain Model Diagram
+## Application
+
 ```mermaid
 %%{init: {'theme':'default'}}%%
 erDiagram
@@ -94,3 +96,30 @@ Represents gym equipment available at affiliates, such as barbells, treadmills, 
 
 ### WORKOUT_EQUIPMENT:
 Links workouts to the equipment required for their exercises, ensuring users are aware of what they need to participate.
+
+## Affiliate Management
+
+```mermaid
+%%{init: {'theme':'default'}}%%
+erDiagram
+    AFFILIATES ||--o{ USERS : employs
+    AFFILIATES ||--o{ AFFILIATE_STATUSES : status
+    USERS ||--o{ USER_ROLES : assigned_to
+    ROLES ||--o{ USER_ROLES : defines
+```
+
+### AFFILIATES:
+Represents the affiliate gyms.  Includes essential information like name, database details, email, phone number, and status.
+
+### AFFILIATE_STATUSES:
+Represents the statuses of affiliates (e.g., Active, Inactive, Pending).
+
+### USERS:
+Represents the users tied to specific affiliates.  Includes personal details, email, password hash, and role information
+
+### ROLES:
+Defines the roles (e.g., Admin, Manager, Member)
+
+### USER_ROLES:
+Links users to roles, supporting a many-to-many relationship between users and roles.
+
