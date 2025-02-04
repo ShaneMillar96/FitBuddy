@@ -173,6 +173,7 @@ yarn-error.log*
 # JetBrains
 /.idea/
 .idea/
+.idea/.idea.FitBuddy/.idea
 
 .npm
 
