@@ -41,7 +41,7 @@ FitBuddy aims to solve this problem by creating a platform where gym and CrossFi
 
 - Live workout streaming.
 
-## Domain Model Diagram
+# Domain Model diagram
 ## Application
 
 ```mermaid
