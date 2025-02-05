@@ -3,61 +3,51 @@
 ```mermaid
 
 erDiagram
-    USERS {
+    MEMBERS {
         id int PK
-        name string
-        email string 
-        password_hash string
-        role string
-    }
-
-    AFFILIATES {
-        id int PK
-        name string
-        address string
-        phone_number string
+        username string
         email string
+        created_date datetime
+        modified_date datetime
     }
 
     WORKOUTS {
         id int PK
         name string
         description text
-        type_id int FK
+        workout_type_id int FK
         created_by int FK
         affiliate_id int FK
-        created_at datetime
+        created_date datetime
+        modified_date datetime
     }
 
-    PARTICIPATIONS {
+    WORKOUT_TYPES {
         id int PK
-        user_id int FK
-        workout_id int FK
-        results text
-        participated_at datetime
-    }  
-
-    LEADERBOARDS {
+        name string
+    }
+    
+    WORKOUT_RESULTS {
         id int PK
+        member_id int FK
         workout_id int FK
-        user_id int FK
-        score_value string
-        position int
+        result text
+        created_date datetime
+        modified_date datetime
     }
 
     COMMENTS {
         id int PK
-        user_id int FK
+        member_id int FK
         workout_id int FK
-        content text
-        created_at datetime
+        comment text
+        created_date datetime
+        modified_date datetime
     }
     
-    USERS ||--o{ PARTICIPATIONS : id_to_user_id
-    USERS ||--o{ COMMENTS : id_to_user_id
-    USERS ||--o{ LEADERBOARDS : id_to_user_id
-    WORKOUTS ||--o{ PARTICIPATIONS : id_to_workout_id
+    MEMBERS ||--o{ WORKOUT_RESULTS : id_to_user_id
+    MEMBERS ||--o{ COMMENTS : id_to_user_id
+    WORKOUTS ||--o{ WORKOUT_RESULTS : id_to_workout_id
     WORKOUTS ||--o{ COMMENTS : id_to_workout_id
-    WORKOUTS ||--o{ LEADERBOARDS : id_to_workout_id
-    AFFILIATES ||--o{ WORKOUTS : id_to_affiliate_id
+    WORKOUTS ||--o{ WORKOUT_TYPES : id_to_type_id
 ```

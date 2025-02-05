@@ -6,11 +6,15 @@ erDiagram
     AFFILIATES {
         id int PK
         name string
-        database_name string
-        created_at datetime
-        status_id int FK
-        email string
+        address_line_1 string
+        address_line_2 string
+        city string
+        country string
+        postal_code string
         phone_number string
+        email string
+        created_date datetime
+        modified_date datetime
     }
 
     AFFILIATE_STATUSES {

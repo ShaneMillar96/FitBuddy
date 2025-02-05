@@ -1,0 +1,51 @@
+CREATE TABLE MEMBERS (
+    id INT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_date TIMESTAMP,
+);
+
+CREATE TABLE WORKOUT_TYPES (
+    id INT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE WORKOUTS (
+    id INT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT,
+    workout_type_id INT NOT NULL,
+    created_by INT,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_date TIMESTAMP,
+    FOREIGN KEY (workout_type_id) REFERENCES WORKOUT_TYPES(id),
+    FOREIGN KEY (affiliate_id) REFERENCES AFFILIATES(id),
+    FOREIGN KEY (created_by) REFERENCES MEMBERS(id)
+);
+
+CREATE TABLE WORKOUT_RESULTS (
+    id INT PRIMARY KEY,
+    workout_id INT NOT NULL,
+    member_id INT NOT NULL,
+    result TEXT,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_date TIMESTAMP,
+    FOREIGN KEY (workout_id) REFERENCES WORKOUTS(id),
+    FOREIGN KEY (member_id) REFERENCES MEMBERS(id)
+);
+
+CREATE TABLE COMMENTS (
+    id INT PRIMARY KEY,
+    workout_id INT NOT NULL,
+    member_id INT NOT NULL,
+    comment TEXT,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_date TIMESTAMP,
+    FOREIGN KEY (workout_id) REFERENCES WORKOUTS(id),
+    FOREIGN KEY (member_id) REFERENCES MEMBERS(id)
+)
+
+
+
+
