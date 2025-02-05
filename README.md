@@ -54,17 +54,17 @@ erDiagram
     Members ||--o{ Leaderboards : appears_in
 ```
 
-### Users:
-Represents the individuals using the FitBuddy system, such as gym members or administrators. Each user has a unique role and credentials to access the platform.
+### Members:
+Represents the gym members using the FitBuddy system. Each user has a username and password to access the platform.
 
 ### Affiliates: 
-Represents gym affiliates registered within the FitBuddy platform. Each affiliate manages its own set of workouts, equipment, and users.
+Represents gym affiliates registered within the FitBuddy platform. Each affiliate manages its own set of workouts, equipment, and members.
 
 ### Workouts:
-Represents specific workout sessions created by users or affiliates. Each workout belongs to a workout type and may include multiple exercises.
+Represents specific workout sessions created by members. Each workout belongs to a workout type and results.
 
 ### Leaderboards:
-Represents rankings for a specific workout based on user scores. Tracks score types, values, and positions for users.
+Represents rankings for a specific workout based on member results. Tracks score types, values, and positions for members.
 
 ### Comments:
 Represents user-generated comments on workouts, enabling interaction and feedback within the community.
