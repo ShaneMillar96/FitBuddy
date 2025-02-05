@@ -82,8 +82,8 @@ erDiagram
 Represents the affiliate gyms.  Includes essential information like name, database details, email, phone number, and status.
 
 ### Users:
-Represents the users tied to specific affiliates.  Includes personal details, email, password hash, and role information
+Represents the Affiliate owners tied to specific affiliates.  Includes personal details, email, password hash, and role information
 
 ### Roles:
-Defines the roles (e.g., Admin, Manager, Member)
+Defines the roles (e.g., Admin, Coach)
 
