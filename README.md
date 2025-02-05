@@ -9,35 +9,33 @@ FitBuddy aims to solve this problem by creating a platform where gym and CrossFi
 ## Priorities
 
 ### Must have
-- A gym owner must be able to create an affiliate gym.
+- A Admin must be able to create an affiliate gym.
 
-- A user must be able to register and join an affiliate gym.
+- A member must be able to register and join an affiliate gym.
 
-- A user must be able to create and share workouts.
+- A member must be able to create and share workouts.
 
-- A user must be able to view workouts posted by other members.
+- A member must be able to view workouts posted by other members.
 
-- A user must be able to participate in workouts.
+- A member must be able to participate in workouts.
 
 ### Should have
 
-- Users should be able to like and comment on workouts.
+- Members should be able to comment on workouts.
 
-- Users should be able to log their results when participating in workouts.
+- Members should be able to log their results when participating in workouts.
 
 - A leaderboard system should be available to rank participants based on their logged results.
 
-- Users should be able to filter workouts based on available equipment.
-
 ### Could have
-- Users could have a personal dashboard displaying their workout history.
+- Members could have a personal dashboard displaying their workout history.
 
 - Workouts could include video demonstrations for exercises.
 
 - A workout rating system could be implemented.
 
 ### Will not have
-- Direct messaging between users.
+- Direct messaging between members.
 
 - Live workout streaming.
 
@@ -47,13 +45,13 @@ FitBuddy aims to solve this problem by creating a platform where gym and CrossFi
 ```mermaid
 %%{init: {'theme':'default'}}%%
 erDiagram
-    Users ||--o{ Workouts : creates
-    Affiliates ||--o{ Users : has
+    Members ||--o{ Workouts : creates
+    Affiliates ||--o{ Members : has
     Affiliates ||--o{ Workouts : offers
     Workouts ||--o{ Comments : has
-    USERS ||--o{ COMMENTS : writes
-    Users ||--o{ Comments : gives
-    Users ||--o{ Leaderboards : appears_in
+    Members ||--o{ Comments : writes
+    Members ||--o{ Comments : gives
+    Members ||--o{ Leaderboards : appears_in
 ```
 
 ### Users:
