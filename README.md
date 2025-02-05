@@ -52,9 +52,6 @@ erDiagram
     Affiliates ||--o{ Workouts : offers
     Workouts ||--o{ Comments : has
     USERS ||--o{ COMMENTS : writes
-    Workouts ||--o{ Exercises : includes
-    Exercises ||--o{ Equipment : requires
-    Equipment ||--o{ Affiliates : available_at
     Users ||--o{ Comments : gives
     Users ||--o{ Leaderboards : appears_in
 ```
@@ -68,17 +65,11 @@ Represents gym affiliates registered within the FitBuddy platform. Each affiliat
 ### Workouts:
 Represents specific workout sessions created by users or affiliates. Each workout belongs to a workout type and may include multiple exercises.
 
-### Exercises:
-Represents individual exercises that are part of a workout. Each exercise is associated with specific equipment and instructions.
-
 ### Leaderboards:
 Represents rankings for a specific workout based on user scores. Tracks score types, values, and positions for users.
 
 ### Comments:
 Represents user-generated comments on workouts, enabling interaction and feedback within the community.
-
-### Equipment:
-Represents gym equipment available at affiliates, such as barbells, treadmills, or kettlebells. Equipment is linked to specific workouts and exercises.
 
 ## Affiliate Management
 
