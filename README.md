@@ -47,13 +47,13 @@ FitBuddy aims to solve this problem by creating a platform where gym and CrossFi
 ```mermaid
 %%{init: {'theme':'default'}}%%
 erDiagram
-    Users ||--o{ Workouts : creates
-    Affiliates ||--o{ Users : has
+    Members ||--o{ Workouts : creates
+    Affiliates ||--o{ Members : has
     Affiliates ||--o{ Workouts : offers
     Workouts ||--o{ Comments : has
-    USERS ||--o{ COMMENTS : writes
-    Users ||--o{ Comments : gives
-    Users ||--o{ Leaderboards : appears_in
+    Members ||--o{ Comments : writes
+    Members ||--o{ Comments : gives
+    Members ||--o{ Leaderboards : appears_in
 ```
 
 ### Users:
