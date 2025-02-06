@@ -52,8 +52,10 @@ public class MembersController : FitBuddyBaseController
     }
     
     [HttpDelete("{id}")]
-    public ActionResult DeleteMember(int id)
+    public async Task<ActionResult> DeleteMember(int id)
     {
-        return NoContent();
+        var deleted = await _service.DeleteMember(id);
+        if (deleted) return NoContent();
+        return NotFound($"Member with id {id} not found");
     }
 }

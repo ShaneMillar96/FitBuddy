@@ -68,13 +68,15 @@ public class MemberService : IMemberService
         return true;
     }
 
-    public async Task<string> DeleteMember(int id)
+    public async Task<bool> DeleteMember(int id)
     {
-        // Implementation here
-        return await Task.FromResult("Member deleted");
+        var currentMember = _context
+            .Get<Member>()
+            .FirstOrDefault(new MemberByIdSpec(id));
+        
+        if (currentMember == null) return false;
+        _context.Delete(currentMember);
+        await _context.SaveChangesAsync();
+        return true;
     }
-
-
-
-
 }

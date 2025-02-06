@@ -9,5 +9,5 @@ public interface IMemberService
     Task<MemberDto?> RetrieveMember(int memberId); 
     Task<int> CreateMember(CreateMemberDto member);
     Task<bool> UpdateMember(int memberId, UpdateMemberDto member);
-    Task<string> DeleteMember(int memberId);
+    Task<bool> DeleteMember(int memberId);
 }
