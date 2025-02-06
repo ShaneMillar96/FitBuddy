@@ -54,6 +54,19 @@ public class MemberService : IMemberService
 
         return newMember.Id;
     }
+    
+    public async Task<bool> UpdateMember(int id, UpdateMemberDto member)
+    {
+        var currentMember = _context
+            .Get<Member>()
+            .FirstOrDefault(new MemberByIdSpec(id));
+
+        if (currentMember == null) return false;
+        
+        _mapper.Map(member, currentMember);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 
     public async Task<string> DeleteMember(int id)
     {
@@ -63,9 +76,5 @@ public class MemberService : IMemberService
 
 
 
-    public async Task<string> UpdateMember(int id, string member)
-    {
-        // Implementation here
-        return await Task.FromResult("Member updated");
-    }
+
 }

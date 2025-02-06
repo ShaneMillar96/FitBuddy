@@ -24,6 +24,7 @@ public class MemberProfile : Profile
     private void ConfigureViewModelToDto()
     {
         CreateMap<CreateMemberRequestModel, CreateMemberDto>();
+        CreateMap<UpdateMemberRequestModel, UpdateMemberDto>();
     }
     
     private void ConfigurePaginateMapping()

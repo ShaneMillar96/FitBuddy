@@ -40,14 +40,15 @@ public class MembersController : FitBuddyBaseController
     public async Task<ActionResult> CreateMember([FromBody] CreateMemberRequestModel member)
     {
         var memberId = await _service.CreateMember(_mapper.Map<CreateMemberDto>(member));
-
         return Created("Member created", memberId);
     }
     
     [HttpPut("{id}")]
-    public ActionResult UpdateMember(int id, [FromBody] string member)
+    public async Task<ActionResult> UpdateMember(int id, [FromBody] UpdateMemberRequestModel member)
     {
-        return Ok(member);
+        var updated = await _service.UpdateMember(id, _mapper.Map<UpdateMemberDto>(member));
+        if (updated) return Ok();
+        return NotFound($"Member with id {id} not found");
     }
     
     [HttpDelete("{id}")]

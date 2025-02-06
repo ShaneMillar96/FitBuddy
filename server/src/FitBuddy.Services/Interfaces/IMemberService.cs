@@ -8,6 +8,6 @@ public interface IMemberService
     Task<PaginatedDto<MemberDto>> RetrieveMembers(PaginationDto pagination);
     Task<MemberDto?> RetrieveMember(int memberId); 
     Task<int> CreateMember(CreateMemberDto member);
-    Task<string> UpdateMember(int memberId, string member);
+    Task<bool> UpdateMember(int memberId, UpdateMemberDto member);
     Task<string> DeleteMember(int memberId);
 }
