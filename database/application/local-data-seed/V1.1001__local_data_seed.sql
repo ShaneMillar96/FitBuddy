@@ -10,8 +10,12 @@ INSERT INTO MEMBERS (id, username, email) VALUES
     (9, 'eve_green', 'eve.green@email.com'),
     (10, 'frank_blue', 'frank.blue@email.com');
 
+ALTER SEQUENCE members_id_seq RESTART WITH 11;
+
 INSERT INTO WORKOUTS (id, name, description, workout_type_id, created_by) VALUES
     (1, 'MELT', '20-15-10-5, C2B, Push Press (42.5kg/30kg), Burpee', 3, 1);
+
+ALTER SEQUENCE workouts_id_seq RESTART WITH 2;
 
 INSERT INTO WORKOUT_RESULTS (id, workout_id, member_id, result) VALUES
     (1, 1, 1, '10:00'),
@@ -25,6 +29,8 @@ INSERT INTO WORKOUT_RESULTS (id, workout_id, member_id, result) VALUES
     (9, 1, 9, '11:00'),
     (10, 1, 10, '12:00');
 
+ALTER SEQUENCE workout_results_id_seq RESTART WITH 11;
+
 INSERT INTO COMMENTS (id, workout_id, member_id, comment) VALUES
     (1, 1, 1, 'Great workout!'),
     (2, 1, 2, 'I really struggled with the C2B'),
@@ -36,3 +42,5 @@ INSERT INTO COMMENTS (id, workout_id, member_id, comment) VALUES
     (8, 1, 8, 'Enjoyed it'),
     (9, 1, 9, 'Good workout'),
     (10, 1, 10, 'Challenging but fun');
+
+ALTER SEQUENCE comments_id_seq RESTART WITH 11;

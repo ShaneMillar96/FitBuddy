@@ -1,4 +1,5 @@
 using AutoMapper;
+using FitBuddy.Api.RequestModels.Members;
 using FitBuddy.Api.ViewModels.Members;
 using FitBuddy.Api.ViewModels.Pagination;
 using FitBuddy.Services.Dtos.Members;
@@ -22,6 +23,7 @@ public class MemberProfile : Profile
 
     private void ConfigureViewModelToDto()
     {
+        CreateMap<CreateMemberRequestModel, CreateMemberDto>();
     }
     
     private void ConfigurePaginateMapping()

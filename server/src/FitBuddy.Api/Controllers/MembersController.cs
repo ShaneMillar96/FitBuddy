@@ -4,7 +4,9 @@ using FitBuddy.Services.Dtos.Pagination;
 using FitBuddy.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using FitBuddy.Api.RequestModels.Members;
 using FitBuddy.Api.ViewModels.Members;
+using FitBuddy.Services.Dtos.Members;
 
 namespace FitBuddy.Api.Controllers;
 
@@ -24,21 +26,22 @@ public class MembersController : FitBuddyBaseController
     public async Task<ActionResult> GetMembers([FromQuery] PaginationDto pagination)
     {
         var members = await _service.RetrieveMembers(pagination);
-        var viewModel = _mapper.Map<PaginatedViewModel<MemberViewModel>>(members);
-
-        return OkOrNoContent(viewModel);
+        return OkOrNoContent(_mapper.Map<PaginatedViewModel<MemberViewModel>>(members));
     }
     
     [HttpGet("{id}")]
-    public ActionResult GetMember(int id)
+    public async Task<ActionResult> GetMember(int id)
     {
-        return OkOrNoContent(new { Member = "Alice" });
+        var member = await _service.RetrieveMember(id);
+        return OkOrNoContent(_mapper.Map<MemberViewModel>(member));
     }
     
     [HttpPost]
-    public ActionResult CreateMember([FromBody] string member)
+    public async Task<ActionResult> CreateMember([FromBody] CreateMemberRequestModel member)
     {
-        return Created("Member created", member);
+        var memberId = await _service.CreateMember(_mapper.Map<CreateMemberDto>(member));
+
+        return Created("Member created", memberId);
     }
     
     [HttpPut("{id}")]

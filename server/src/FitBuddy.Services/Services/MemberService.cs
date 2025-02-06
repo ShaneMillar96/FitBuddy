@@ -6,6 +6,8 @@ using FitBuddy.Services.Dtos.Members;
 using FitBuddy.Services.Dtos.Pagination;
 using FitBuddy.Services.Interfaces;
 using FitBuddy.Dal.Extensions;
+using Microsoft.EntityFrameworkCore;
+
 
 using Unosquare.EntityFramework.Specification.Common.Extensions;
 
@@ -37,10 +39,20 @@ public class MemberService : IMemberService
         return await _paginationService.CreatePaginatedResponseAsync(members, pageSize, pageNumber);
     }
     
-    public async Task<string> CreateMember(string member)
+    public async Task<MemberDto?> RetrieveMember(int id) =>
+        await _mapper.ProjectTo<MemberDto>(_context
+                .Get<Member>()
+                .Where(new MemberByIdSpec(id)))
+            .SingleOrDefaultAsync();
+  
+    
+    public async Task<int> CreateMember(CreateMemberDto member)
     {
-        // Implementation here
-        return await Task.FromResult("Member created");
+        var newMember = _mapper.Map<Member>(member); 
+        await _context.AddAsync(newMember);
+        await _context.SaveChangesAsync();
+
+        return newMember.Id;
     }
 
     public async Task<string> DeleteMember(int id)
@@ -49,11 +61,7 @@ public class MemberService : IMemberService
         return await Task.FromResult("Member deleted");
     }
 
-    public async Task<string> RetrieveMember(int id)
-    {
-        // Implementation here
-        return await Task.FromResult("Member retrieved");
-    }
+
 
     public async Task<string> UpdateMember(int id, string member)
     {

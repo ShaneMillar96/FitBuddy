@@ -30,9 +30,9 @@ public abstract class BaseContext : DbContext
         Set<T>().AddRange(items);
     }
 
-    public void AddAsync<T>(params T[] items) where T : class
+    public async Task<T> AddAsync<T>(T item) where T : class
     {
-        Set<T>().AddRangeAsync(items);
+        return (await Set<T>().AddAsync(item)).Entity;
     }
 
     public void Delete<T>(params T[] items) where T : class

@@ -19,7 +19,7 @@ public class MemberProfile : Profile
 
     private void ConfigureDtoToDomain()
     {
+        CreateMap<CreateMemberDto, Member>()
+            .ForMember(d => d.CreatedDate, o => o.MapFrom(x => DateTime.UtcNow));
     }
-
-   
 }
