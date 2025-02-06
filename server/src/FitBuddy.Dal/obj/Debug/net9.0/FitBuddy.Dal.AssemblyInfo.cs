@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FitBuddy.Dal")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a39d4e80392ecf7eb24f0c16495bdc56879600f2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f98b92299ef66389f7614496e2eb65cf9894ffb6")]
 [assembly: System.Reflection.AssemblyProductAttribute("FitBuddy.Dal")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FitBuddy.Dal")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
