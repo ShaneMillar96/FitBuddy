@@ -12,6 +12,6 @@ public static class EnvironmentVariables
 
 #else
     public static string DbConnectionString => DbConnectionStringKey.GetValue(
-        "Server=localhost;Port=5432;Database=coreiq-saas-dev;User Id=fitbuddy-dev;Password=password1;SearchPath=master;");
+        "Server=localhost;Port=5432;Database=fitbuddy-dev;User Id=fitbud;Password=password1;SearchPath=public;");
 #endif
 }
