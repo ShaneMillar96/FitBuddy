@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FitBuddy.Services")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+023b88eaa7885d7c39a78bb2774758e96e20cceb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9a4ffbc48307c3b100969fbd670aeff6b4a19aaf")]
 [assembly: System.Reflection.AssemblyProductAttribute("FitBuddy.Services")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FitBuddy.Services")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

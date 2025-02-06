@@ -1,5 +1,10 @@
 using FitBuddy.Api.Controllers.Base;
+using FitBuddy.Api.ViewModels.Pagination;
+using FitBuddy.Services.Dtos.Pagination;
+using FitBuddy.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using FitBuddy.Api.ViewModels.Members;
 
 namespace FitBuddy.Api.Controllers;
 
@@ -7,10 +12,21 @@ namespace FitBuddy.Api.Controllers;
 [Route("members")]
 public class MembersController : FitBuddyBaseController
 {
-    [HttpGet]
-    public ActionResult GetMembers()
+    private readonly IMapper _mapper;
+    private readonly IMemberService _service;
+    
+    public MembersController(IMapper mapper, IMemberService service)
     {
-        return OkOrNoContent(new { Members = new[] { "Alice", "Bob", "Charlie" } });
+        (_mapper, _service) = (mapper, service);
+    }
+    
+    [HttpGet]
+    public async Task<ActionResult> GetMembers([FromQuery] PaginationDto pagination)
+    {
+        var members = await _service.RetrieveMembers(pagination);
+        var viewModel = _mapper.Map<PaginatedViewModel<MemberViewModel>>(members);
+
+        return OkOrNoContent(viewModel);
     }
     
     [HttpGet("{id}")]

@@ -6,11 +6,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\" />
-    <Folder Include="Interfaces\" />
     <Folder Include="Loggers\" />
-    <Folder Include="Pagination\" />
     <Folder Include="Profiles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="9.103.7" />
   </ItemGroup>
 
   <PropertyGroup>

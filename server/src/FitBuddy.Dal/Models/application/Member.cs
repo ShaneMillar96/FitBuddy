@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace FitBuddy.Dal.Models.application;
 
 [Table("members")]
-[Index("Email", Name = "members_email_key", IsUnique = true)]
-[Index("Username", Name = "members_username_key", IsUnique = true)]
+[Microsoft.EntityFrameworkCore.Index("Email", Name = "members_email_key", IsUnique = true)]
+[Microsoft.EntityFrameworkCore.Index("Username", Name = "members_username_key", IsUnique = true)]
 public partial class Member
 {
     [Key]

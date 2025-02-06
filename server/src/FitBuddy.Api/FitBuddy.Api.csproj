@@ -4,26 +4,21 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Annotations" Version="1.6.2" />
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FitBuddy.Services\FitBuddy.Services.csproj" />
     <ProjectReference Include="..\FitBuddy.Infrastructure\FitBuddy.Infrastructure.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Properties\launchSettings.json" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <Folder Include="Profiles\" />
     <Folder Include="ViewModels\" />
   </ItemGroup>
-
 </Project>

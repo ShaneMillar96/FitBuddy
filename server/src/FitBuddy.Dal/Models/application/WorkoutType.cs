@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace FitBuddy.Dal.Models.application;
 
 [Table("workout_types")]
-[Index("Name", Name = "workout_types_name_key", IsUnique = true)]
+[Microsoft.EntityFrameworkCore.Index("Name", Name = "workout_types_name_key", IsUnique = true)]
 public partial class WorkoutType
 {
     [Key]

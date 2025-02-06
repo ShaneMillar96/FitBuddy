@@ -1,11 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "tbCtRKtadCM=",
+  "dgSpecHash": "G31f2rJNd2Q=",
   "success": true,
   "projectFilePath": "/Users/shane.millar/Desktop/Projects/FitBuddy/FitBuddy/server/src/FitBuddy.Services/FitBuddy.Services.csproj",
   "expectedPackageFiles": [
     "/Users/shane.millar/.nuget/packages/amazon.lambda.annotations/1.6.2/amazon.lambda.annotations.1.6.2.nupkg.sha512",
     "/Users/shane.millar/.nuget/packages/amazon.lambda.core/2.5.0/amazon.lambda.core.2.5.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/automapper/13.0.1/automapper.13.0.1.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/entityframework/6.5.1/entityframework.6.5.1.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/microsoft.csharp/4.7.0/microsoft.csharp.4.7.0.nupkg.sha512",
     "/Users/shane.millar/.nuget/packages/microsoft.entityframeworkcore/9.0.1/microsoft.entityframeworkcore.9.0.1.nupkg.sha512",
     "/Users/shane.millar/.nuget/packages/microsoft.entityframeworkcore.abstractions/9.0.1/microsoft.entityframeworkcore.abstractions.9.0.1.nupkg.sha512",
     "/Users/shane.millar/.nuget/packages/microsoft.entityframeworkcore.analyzers/9.0.1/microsoft.entityframeworkcore.analyzers.9.0.1.nupkg.sha512",
@@ -19,8 +22,26 @@
     "/Users/shane.millar/.nuget/packages/microsoft.extensions.logging.abstractions/9.0.1/microsoft.extensions.logging.abstractions.9.0.1.nupkg.sha512",
     "/Users/shane.millar/.nuget/packages/microsoft.extensions.options/9.0.1/microsoft.extensions.options.9.0.1.nupkg.sha512",
     "/Users/shane.millar/.nuget/packages/microsoft.extensions.primitives/9.0.1/microsoft.extensions.primitives.9.0.1.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/microsoft.netcore.platforms/3.1.0/microsoft.netcore.platforms.3.1.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/microsoft.win32.registry/4.7.0/microsoft.win32.registry.4.7.0.nupkg.sha512",
     "/Users/shane.millar/.nuget/packages/npgsql/9.0.2/npgsql.9.0.2.nupkg.sha512",
-    "/Users/shane.millar/.nuget/packages/npgsql.entityframeworkcore.postgresql/9.0.3/npgsql.entityframeworkcore.postgresql.9.0.3.nupkg.sha512"
+    "/Users/shane.millar/.nuget/packages/npgsql.entityframeworkcore.postgresql/9.0.3/npgsql.entityframeworkcore.postgresql.9.0.3.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/runtime.native.system.data.sqlclient.sni/4.7.0/runtime.native.system.data.sqlclient.sni.4.7.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/runtime.win-arm64.runtime.native.system.data.sqlclient.sni/4.4.0/runtime.win-arm64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/runtime.win-x64.runtime.native.system.data.sqlclient.sni/4.4.0/runtime.win-x64.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/runtime.win-x86.runtime.native.system.data.sqlclient.sni/4.4.0/runtime.win-x86.runtime.native.system.data.sqlclient.sni.4.4.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/system.codedom/6.0.0/system.codedom.6.0.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/system.componentmodel.annotations/5.0.0/system.componentmodel.annotations.5.0.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/system.configuration.configurationmanager/9.0.0/system.configuration.configurationmanager.9.0.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/system.data.sqlclient/4.8.6/system.data.sqlclient.4.8.6.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/system.diagnostics.eventlog/9.0.0/system.diagnostics.eventlog.9.0.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/system.security.accesscontrol/4.7.0/system.security.accesscontrol.4.7.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/system.security.cryptography.protecteddata/9.0.0/system.security.cryptography.protecteddata.9.0.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/system.security.principal.windows/4.7.0/system.security.principal.windows.4.7.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/unosquare.entityframework.specification/2.2.0/unosquare.entityframework.specification.2.2.0.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/z.entityframework.extensions.efcore/9.103.7/z.entityframework.extensions.efcore.9.103.7.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/z.entityframework.plus.efcore/9.103.7/z.entityframework.plus.efcore.9.103.7.nupkg.sha512",
+    "/Users/shane.millar/.nuget/packages/z.expressions.eval/6.2.5/z.expressions.eval.6.2.5.nupkg.sha512"
   ],
   "logs": []
 }
