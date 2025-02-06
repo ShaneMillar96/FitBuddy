@@ -2,18 +2,18 @@ using System.Linq.Expressions;
 using FitBuddy.Dal.Models.application;
 using Unosquare.EntityFramework.Specification.Common.Primitive;
 
-namespace FitBuddy.Dal.Specifications.Members;
+namespace FitBuddy.Dal.Specifications.Workouts;
 
-public class MemberByIdSpec : Specification<Member>
+public class WorkoutByIdSpec : Specification<Workout>
 {
     private readonly int _id;
 
-    public MemberByIdSpec(int id)
+    public WorkoutByIdSpec(int id)
     {
         _id = id;
     }
 
-    public override Expression<Func<Member, bool>> BuildExpression()
+    public override Expression<Func<Workout, bool>> BuildExpression()
     {
         return x => x.Id == _id;
     }

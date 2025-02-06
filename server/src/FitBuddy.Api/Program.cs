@@ -15,6 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IConnectionManager, ConnectionManager>();
 builder.Services.AddScoped<IFitBudContext, FitBudContext>();
 builder.Services.AddScoped<IMemberService, MemberService>();
+builder.Services.AddScoped<IWorkoutService, WorkoutService>();
 builder.Services.AddScoped<IPaginationService, PaginationService>();
 
 

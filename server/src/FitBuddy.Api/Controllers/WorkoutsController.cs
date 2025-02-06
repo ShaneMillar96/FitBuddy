@@ -1,4 +1,9 @@
+using AutoMapper;
 using FitBuddy.Api.Controllers.Base;
+using FitBuddy.Api.ViewModels.Pagination;
+using FitBuddy.Api.ViewModels.Workouts;
+using FitBuddy.Services.Dtos.Pagination;
+using FitBuddy.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitBuddy.Api.Controllers;
@@ -7,10 +12,19 @@ namespace FitBuddy.Api.Controllers;
 [Route("workouts")]
 public class WorkoutsController : FitBuddyBaseController
 {
-    [HttpGet]
-    public ActionResult GetWorkouts()
+    private readonly IMapper _mapper;
+    private readonly IWorkoutService _service;
+    
+    public WorkoutsController(IMapper mapper, IWorkoutService service)
     {
-        return OkOrNoContent(new { Workouts = new[] { "Legs", "Arms", "Back" } });
+        (_mapper, _service) = (mapper, service);
+    }
+    
+    [HttpGet]
+    public async Task<ActionResult> GetWorkouts([FromQuery] PaginationDto pagination)
+    {
+        var workouts = await _service.RetrieveWorkouts(pagination);
+        return OkOrNoContent(_mapper.Map<PaginatedViewModel<WorkoutViewModel>>(workouts));
     }
     
     [HttpGet("{id}")]
@@ -37,7 +51,7 @@ public class WorkoutsController : FitBuddyBaseController
         return NoContent();
     }
     
-    [HttpGet]
+    [HttpGet ("types")]
     public ActionResult GetWorkoutTypes()
     {
         return OkOrNoContent(new { WorkoutTypes = new[] { "EMOM", "AMRAP", "TABATA" } });

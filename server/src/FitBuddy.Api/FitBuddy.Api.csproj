@@ -16,8 +16,4 @@
     <ProjectReference Include="..\FitBuddy.Services\FitBuddy.Services.csproj" />
     <ProjectReference Include="..\FitBuddy.Infrastructure\FitBuddy.Infrastructure.csproj" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
 </Project>

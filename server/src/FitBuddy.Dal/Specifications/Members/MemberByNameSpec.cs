@@ -4,7 +4,7 @@ using Unosquare.EntityFramework.Specification.Common.Primitive;
 
 namespace FitBuddy.Dal.Specifications.Members;
 
-public class MemberByNameSpec: Specification<Member>
+public class MemberByNameSpec : Specification<Member>
 {
     private readonly string? _username;
 
