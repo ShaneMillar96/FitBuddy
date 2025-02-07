@@ -1,4 +1,5 @@
 using AutoMapper;
+using FitBuddy.Api.RequestModels.Workouts;
 using FitBuddy.Api.ViewModels.Pagination;
 using FitBuddy.Api.ViewModels.Workouts;
 using FitBuddy.Services.Dtos.Pagination;
@@ -23,7 +24,7 @@ public class WorkoutProfile : Profile
     
     private void ConfigureViewModelToDto()
     {
-        // CreateMap<CreateWorkoutRequestModel, CreateWorkoutDto>();
+         CreateMap<CreateWorkoutRequestModel, CreateWorkoutDto>();
         // CreateMap<UpdateWorkoutRequestModel, UpdateWorkoutDto>();
     }
     

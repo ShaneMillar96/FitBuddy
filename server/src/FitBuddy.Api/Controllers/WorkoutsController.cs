@@ -1,8 +1,10 @@
 using AutoMapper;
 using FitBuddy.Api.Controllers.Base;
+using FitBuddy.Api.RequestModels.Workouts;
 using FitBuddy.Api.ViewModels.Pagination;
 using FitBuddy.Api.ViewModels.Workouts;
 using FitBuddy.Services.Dtos.Pagination;
+using FitBuddy.Services.Dtos.Workouts;
 using FitBuddy.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,15 +30,20 @@ public class WorkoutsController : FitBuddyBaseController
     }
     
     [HttpGet("{id}")]
-    public ActionResult GetWorkout(int id)
+    public async Task<ActionResult> GetWorkout(int id)
     {
-        return OkOrNoContent(new { Workout = "Legs" });
+        var workout = await _service.RetrieveWorkout(id);
+        return OkOrNoContent(_mapper.Map<WorkoutViewModel>(workout));
     }
     
     [HttpPost]
-    public ActionResult CreateWorkout([FromBody] string workout)
+    public async Task<ActionResult> CreateWorkout([FromBody] CreateWorkoutRequestModel workout)
     {
-        return Created("Workout created", workout);
+        var badRequest = await Validate(workout);
+        if (badRequest != null) return badRequest;
+        
+        var workoutId = await _service.CreateWorkout(_mapper.Map<CreateWorkoutDto>(workout));
+        return Created("Workout created", workoutId);
     }
     
     [HttpPut("{id}")]

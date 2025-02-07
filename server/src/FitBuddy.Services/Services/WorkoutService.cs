@@ -39,4 +39,19 @@ public class WorkoutService : IWorkoutService
         return await _paginationService.CreatePaginatedResponseAsync(workouts, pageSize, pageNumber);
     }
     
+    public async Task<WorkoutDto?> RetrieveWorkout(int id) =>
+        await _mapper.ProjectTo<WorkoutDto>(_context
+                .Get<Workout>()
+                .Where(new WorkoutByIdSpec(id)))
+            .SingleOrDefaultAsync();
+    
+    public async Task<int> CreateWorkout(CreateWorkoutDto workout)
+    {
+        var newWorkout = _mapper.Map<Workout>(workout); 
+        await _context.AddAsync(newWorkout);
+        await _context.SaveChangesAsync();
+
+        return newWorkout.Id;
+    }
+    
 }
