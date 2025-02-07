@@ -78,4 +78,17 @@ public class WorkoutsController : FitBuddyBaseController
         var workoutResults = await _service.RetrieveWorkoutResults(pagination, id);
         return OkOrNoContent(_mapper.Map<PaginatedViewModel<WorkoutResultViewModel>>(workoutResults));
     }
+    
+    [HttpPost("{id}/results")]
+    public async Task<ActionResult> CreateWorkoutResult(int id, [FromBody] CreateWorkoutResultRequestModel result)
+    {
+        var resultExists = await _service.ResultExists(id, 1); //ToDO: Get member id from token
+        if (resultExists)
+        {
+            return Conflict("Result already logged for this workout by the member.");
+        }
+        
+        var resultId = await _service.CreateWorkoutResult(_mapper.Map<CreateWorkoutResultDto>(result));
+        return Created("Result added for workout", resultId);
+    }
 }

@@ -37,5 +37,10 @@ public class WorkoutProfile : Profile
             .ForMember(d => d.ModifiedDate,
                 o => o.MapFrom(x => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)))
             .ForMember(d => d.WorkoutTypeId, o => o.MapFrom(x => x.TypeId));
+        
+        CreateMap<CreateWorkoutResultDto, WorkoutResult>()
+            .ForMember(d => d.MemberId, o => o.MapFrom(x => 1)); //ToDo - get member id from token
+
+
     }
 }

@@ -99,4 +99,20 @@ public class WorkoutService : IWorkoutService
 
         return await _paginationService.CreatePaginatedResponseAsync(workoutResults, pageSize, pageNumber);
     }
+    
+    public async Task<int> CreateWorkoutResult(CreateWorkoutResultDto result)
+    {
+        var newResult = _mapper.Map<WorkoutResult>(result); 
+        
+        await _context.AddAsync(newResult);
+        await _context.SaveChangesAsync();
+
+        return newResult.Id;
+    }
+    
+    public async Task<bool> ResultExists(int workoutId, int memberId)
+    {
+        return await _context.Get<WorkoutResult>()
+            .AnyAsync(r => r.WorkoutId == workoutId && r.MemberId == memberId);
+    }
 }
