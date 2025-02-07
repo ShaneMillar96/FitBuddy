@@ -28,5 +28,10 @@ public class WorkoutProfile : Profile
             .ForMember(d => d.CreatedBy, o => o.MapFrom(x => 1))
             .ForMember(d => d.CreatedDate,
                 o => o.MapFrom(x => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)));
+
+        CreateMap<UpdateWorkoutDto, Workout>()
+            .ForMember(d => d.ModifiedDate,
+                o => o.MapFrom(x => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)))
+            .ForMember(d => d.WorkoutTypeId, o => o.MapFrom(x => x.TypeId));
     }
 }

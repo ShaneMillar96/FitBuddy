@@ -47,9 +47,14 @@ public class WorkoutsController : FitBuddyBaseController
     }
     
     [HttpPut("{id}")]
-    public ActionResult UpdateWorkout(int id, [FromBody] string workout)
+    public async Task<ActionResult> UpdateWorkout(int id, [FromBody] UpdateWorkoutRequestModel workout)
     {
-        return Ok(workout);
+        var badRequest = await Validate(workout);
+        if (badRequest != null) return badRequest;
+        
+        var updated = await _service.UpdateWorkout(id, _mapper.Map<UpdateWorkoutDto>(workout));
+        if (updated) return Ok();
+        return NotFound($"Workout with id {id} not found");
     }
     
     [HttpDelete("{id}")]

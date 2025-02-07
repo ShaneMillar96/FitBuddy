@@ -54,4 +54,18 @@ public class WorkoutService : IWorkoutService
         return newWorkout.Id;
     }
     
+    public async Task<bool> UpdateWorkout(int id, UpdateWorkoutDto workout)
+    {
+        var currentWorkout = _context
+            .Get<Workout>()
+            .FirstOrDefault(new WorkoutByIdSpec(id));
+
+        if (currentWorkout == null) return false;
+        
+        _mapper.Map(workout, currentWorkout);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+    
+    
 }

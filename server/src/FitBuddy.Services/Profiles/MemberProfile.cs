@@ -27,6 +27,5 @@ public class MemberProfile : Profile
                 o => o.MapFrom(x => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)))
             .ForMember(d => d.Email, o => o.Condition(src => src.Email != null))
             .ForMember(d => d.Username, o => o.Condition(src => src.Username != null));
-            ;
     }
 }

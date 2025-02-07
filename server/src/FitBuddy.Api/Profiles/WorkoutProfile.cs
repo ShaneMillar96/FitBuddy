@@ -25,7 +25,7 @@ public class WorkoutProfile : Profile
     private void ConfigureViewModelToDto()
     {
          CreateMap<CreateWorkoutRequestModel, CreateWorkoutDto>();
-        // CreateMap<UpdateWorkoutRequestModel, UpdateWorkoutDto>();
+         CreateMap<UpdateWorkoutRequestModel, UpdateWorkoutDto>();
     }
     
     private void ConfigurePaginateMapping()

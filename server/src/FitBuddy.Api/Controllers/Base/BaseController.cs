@@ -40,6 +40,7 @@ public class FitBuddyBaseController : ControllerBase
     {
         var validator = model.RetrieveValidator();
         var result = await validator.ValidateAsync(model);
+        if (!result.IsValid)
         {
             var validationErrors = result.Errors.Select(x => new
             {
