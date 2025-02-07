@@ -20,6 +20,7 @@ public class WorkoutProfile : Profile
     {
         CreateMap<WorkoutDto, WorkoutViewModel>();
         CreateMap<WorkoutTypeDto, WorkoutTypeViewModel>();
+        CreateMap<WorkoutResultDto, WorkoutResultViewModel>();
     }
     
     private void ConfigureViewModelToDto()
@@ -31,5 +32,6 @@ public class WorkoutProfile : Profile
     private void ConfigurePaginateMapping()
     {
          CreateMap<PaginatedDto<WorkoutDto>, PaginatedViewModel<WorkoutViewModel>>();
+         CreateMap<PaginatedDto<WorkoutResultDto>, PaginatedViewModel<WorkoutResultViewModel>>();
     }
 }

@@ -67,5 +67,36 @@ public class WorkoutService : IWorkoutService
         return true;
     }
     
+    public async Task<bool> DeleteWorkout(int id)
+    {
+        var workout = _context
+            .Get<Workout>()
+            .FirstOrDefault(new WorkoutByIdSpec(id));
+
+        if (workout == null) return false;
+        
+        _context.Delete(workout);
+        await _context.SaveChangesAsync();
+        return true;
+    }
     
+    public Task<List<WorkoutTypeDto>> RetrieveWorkoutTypes() =>
+        _mapper.ProjectTo<WorkoutTypeDto>(_context.Get<WorkoutType>()).ToListAsync();
+    
+    public async Task<PaginatedDto<WorkoutResultDto>> RetrieveWorkoutResults(PaginationDto pagination, int id)
+    {
+        var (pageSize, pageNumber, searchQuery, sortBy, ascending) = pagination;
+        
+        var query = _context
+            .Get<WorkoutResult>()
+            .Include(x => x.Workout)
+            .Include(x => x.Member)
+            .Where(new WorkoutResultByWorkoutIdSpec(id));
+
+        var workoutResults = _mapper
+            .ProjectTo<WorkoutResultDto>(query)
+            .OrderBy(x => x.Result);
+
+        return await _paginationService.CreatePaginatedResponseAsync(workoutResults, pageSize, pageNumber);
+    }
 }

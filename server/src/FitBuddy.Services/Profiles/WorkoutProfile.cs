@@ -19,6 +19,10 @@ public class WorkoutProfile : Profile
             .ForMember(d => d.Type, o => o.MapFrom(x => x.WorkoutType));
         
         CreateMap<WorkoutType, WorkoutTypeDto>();
+        
+        CreateMap<WorkoutResult, WorkoutResultDto>()
+            .ForMember(d => d.Member, o => o.MapFrom(x => x.Member));
+
     }
 
     private void ConfigureDtoToDomain()

@@ -9,7 +9,7 @@ public interface IWorkoutService
     Task<WorkoutDto?> RetrieveWorkout(int workoutId);
      Task<int> CreateWorkout(CreateWorkoutDto workout);
      Task<bool> UpdateWorkout(int workoutId, UpdateWorkoutDto workout);
-    // Task<string> DeleteWorkout(int workoutId);
-    // Task<string[]> RetrieveWorkoutTypes();
-    // Task<string[]> RetrieveWorkoutResults(int workoutId);
+     Task<bool> DeleteWorkout(int workoutId);
+     Task<List<WorkoutTypeDto>> RetrieveWorkoutTypes();
+     Task<PaginatedDto<WorkoutResultDto>> RetrieveWorkoutResults(PaginationDto pagination, int workoutId);
 }

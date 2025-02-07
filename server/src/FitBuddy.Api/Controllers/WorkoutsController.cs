@@ -58,20 +58,24 @@ public class WorkoutsController : FitBuddyBaseController
     }
     
     [HttpDelete("{id}")]
-    public ActionResult DeleteWorkout(int id)
+    public async Task<ActionResult> DeleteWorkout(int id)
     {
-        return NoContent();
+        var deleted = await _service.DeleteWorkout(id);
+        if (deleted) return NoContent();
+        return NotFound($"Workout with id {id} not found");
     }
     
     [HttpGet ("types")]
-    public ActionResult GetWorkoutTypes()
+    public async Task<ActionResult> GetWorkoutTypes()
     {
-        return OkOrNoContent(new { WorkoutTypes = new[] { "EMOM", "AMRAP", "TABATA" } });
+        var workoutTypes = await _service.RetrieveWorkoutTypes();
+        return OkOrNoContent(_mapper.Map<List<WorkoutTypeViewModel>>(workoutTypes));
     }
     
     [HttpGet("{id}/results")]
-    public ActionResult GetWorkoutResults(int id)
+    public async Task<ActionResult> GetWorkoutResults([FromQuery] PaginationDto pagination, int id)
     {
-        return OkOrNoContent(new { Results = new[] { "10 reps", "20 reps", "30 reps" } });
+        var workoutResults = await _service.RetrieveWorkoutResults(pagination, id);
+        return OkOrNoContent(_mapper.Map<PaginatedViewModel<WorkoutResultViewModel>>(workoutResults));
     }
 }
