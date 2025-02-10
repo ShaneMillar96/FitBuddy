@@ -1,7 +1,9 @@
 using AutoMapper;
 using FitBuddy.Api.Controllers.Base;
+using FitBuddy.Api.RequestModels.Comments;
 using FitBuddy.Api.ViewModels.Comments;
 using FitBuddy.Api.ViewModels.Pagination;
+using FitBuddy.Services.Dtos.Comments;
 using FitBuddy.Services.Dtos.Pagination;
 using FitBuddy.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -28,14 +30,17 @@ public class CommentsController : FitBuddyBaseController
     }
     
     [HttpGet("{id}")]
-    public ActionResult GetComment(int id)
+    public async  Task<ActionResult> GetComment(int id)
     {
-        return OkOrNoContent(new { Comment = "Great job!" });
+        var comment = await _service.RetrieveComment(id);
+        return OkOrNoContent(_mapper.Map<CommentViewModel>(comment));
     }
     
     [HttpPost]
-    public ActionResult CreateComment([FromBody] string comment)
+    public async Task<ActionResult> CreateComment([FromBody] CreateCommentRequestModel comment)
     {
+        var commentId = await _service.CreateComment(_mapper.Map<CreateCommentDto>(comment));
+
         return Created("Comment created", comment);
     }
     

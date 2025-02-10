@@ -39,4 +39,20 @@ public class CommentService : ICommentService
 
         return await _paginationService.CreatePaginatedResponseAsync(comments, pageSize, pageNumber);
     }
+    
+    public async Task<CommentDto?> RetrieveComment(int id) =>
+        await _mapper.ProjectTo<CommentDto>(_context
+                .Get<Comment>()
+                .Where(new CommentByIdSpec(id)))
+            .SingleOrDefaultAsync();
+
+    public async Task<int> CreateComment(CreateCommentDto comment)
+    {
+        var newComment = _mapper.Map<Comment>(comment); 
+        
+        await _context.AddAsync(newComment);
+        await _context.SaveChangesAsync();
+
+        return newComment.Id;
+    }
 }
