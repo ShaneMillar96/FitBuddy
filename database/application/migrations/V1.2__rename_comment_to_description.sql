@@ -1,0 +1,2 @@
+ALTER TABLE COMMENTS
+    RENAME COLUMN comment TO description;

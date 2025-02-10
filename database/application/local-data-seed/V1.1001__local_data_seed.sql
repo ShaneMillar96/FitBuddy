@@ -31,7 +31,7 @@ INSERT INTO WORKOUT_RESULTS (id, workout_id, member_id, result) VALUES
 
 ALTER SEQUENCE workout_results_id_seq RESTART WITH 11;
 
-INSERT INTO COMMENTS (id, workout_id, member_id, comment) VALUES
+INSERT INTO COMMENTS (id, workout_id, member_id, description) VALUES
     (1, 1, 1, 'Great workout!'),
     (2, 1, 2, 'I really struggled with the C2B'),
     (3, 1, 3, 'Felt amazing!'),

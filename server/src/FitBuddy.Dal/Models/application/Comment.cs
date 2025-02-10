@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace FitBuddy.Dal.Models.application;
 
@@ -19,8 +16,8 @@ public partial class Comment
     [Column("member_id")]
     public int MemberId { get; set; }
 
-    [Column("comment")]
-    public string? Comment1 { get; set; }
+    [Column("description")]
+    public string? Description { get; set; }
 
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime? CreatedDate { get; set; }
