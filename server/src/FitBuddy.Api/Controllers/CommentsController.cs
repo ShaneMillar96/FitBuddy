@@ -1,4 +1,9 @@
+using AutoMapper;
 using FitBuddy.Api.Controllers.Base;
+using FitBuddy.Api.ViewModels.Comments;
+using FitBuddy.Api.ViewModels.Pagination;
+using FitBuddy.Services.Dtos.Pagination;
+using FitBuddy.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitBuddy.Api.Controllers;
@@ -7,10 +12,19 @@ namespace FitBuddy.Api.Controllers;
 [Route("comments")]
 public class CommentsController : FitBuddyBaseController
 {
-    [HttpGet]
-    public ActionResult GetComments()
+    private readonly IMapper _mapper;
+    private readonly ICommentService _service;
+    
+    public CommentsController(IMapper mapper, ICommentService service)
     {
-        return OkOrNoContent(new { Comments = new[] { "Great job!", "Keep it up!", "You're doing great!" } });
+        (_mapper, _service) = (mapper, service);
+    }
+    
+    [HttpGet]
+    public async Task<ActionResult> GetComments([FromQuery] PaginationDto pagination, [FromQuery] int? workoutId)
+    {
+        var comments = await _service.RetrieveComments(pagination, workoutId);
+        return OkOrNoContent(_mapper.Map<PaginatedViewModel<CommentViewModel>>(comments));
     }
     
     [HttpGet("{id}")]
