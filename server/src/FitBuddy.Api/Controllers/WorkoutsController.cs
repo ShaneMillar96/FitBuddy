@@ -80,9 +80,9 @@ public class WorkoutsController : FitBuddyBaseController
     }
     
     [HttpPost("{id}/results")]
-    public async Task<ActionResult> CreateWorkoutResult(int id, [FromBody] CreateWorkoutResultRequestModel result)
+    public async Task<ActionResult> CreateWorkoutResult([FromBody] CreateWorkoutResultRequestModel result)
     {
-        var resultExists = await _service.ResultExists(id, 1); //ToDO: Get member id from token
+        var resultExists = await _service.ResultExists(result.WorkoutId, 1); //ToDO: Get member id from token
         if (resultExists)
         {
             return Conflict("Result already logged for this workout by the member.");
@@ -90,5 +90,13 @@ public class WorkoutsController : FitBuddyBaseController
         
         var resultId = await _service.CreateWorkoutResult(_mapper.Map<CreateWorkoutResultDto>(result));
         return Created("Result added for workout", resultId);
+    }
+    
+    [HttpPut("results/{id}")]
+    public async Task<ActionResult> UpdateWorkoutResult(int id, [FromBody] UpdateWorkoutResultRequestModel result)
+    {
+        var updated = await _service.UpdateWorkoutResult(id, _mapper.Map<UpdateWorkoutResultDto>(result));
+        if (updated) return Ok();
+        return NotFound($"Workout result with id {id} not found");
     }
 }

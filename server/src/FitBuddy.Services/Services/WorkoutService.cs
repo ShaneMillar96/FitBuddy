@@ -115,4 +115,17 @@ public class WorkoutService : IWorkoutService
         return await _context.Get<WorkoutResult>()
             .AnyAsync(r => r.WorkoutId == workoutId && r.MemberId == memberId);
     }
+    
+    public async Task<bool> UpdateWorkoutResult(int id, UpdateWorkoutResultDto result)
+    {
+        var currentResult = _context
+            .Get<WorkoutResult>()
+            .FirstOrDefault(new WorkoutResultByIdSpec(id));
+
+        if (currentResult == null) return false;
+
+        _mapper.Map(result, currentResult);
+        await _context.SaveChangesAsync();
+        return true;
+    }
 }
