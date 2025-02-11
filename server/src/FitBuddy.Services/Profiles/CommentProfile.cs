@@ -24,6 +24,9 @@ public class CommentProfile : Profile
             .ForMember(d => d.Description, o => o.MapFrom(x => x.Comment))
             .ForMember(d => d.CreatedDate,
                 o => o.MapFrom(x => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)));
-        CreateMap<UpdateCommentDto, Comment>();
+        CreateMap<UpdateCommentDto, Comment>()
+            .ForMember(d => d.Description, o => o.MapFrom(x => x.Comment))
+            .ForMember(d => d.ModifiedDate,
+                o => o.MapFrom(x => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)));;
     }
 }

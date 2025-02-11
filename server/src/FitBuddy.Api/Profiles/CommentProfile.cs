@@ -24,6 +24,8 @@ public class CommentProfile : Profile
     private void ConfigureViewModelToDto()
     {
         CreateMap<CreateCommentRequestModel, CreateCommentDto>();
+        CreateMap<UpdateCommentRequestModel, UpdateCommentDto>();
+
     }
     
     private void ConfigurePaginateMapping()

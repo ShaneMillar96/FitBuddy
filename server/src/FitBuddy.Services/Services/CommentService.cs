@@ -35,7 +35,7 @@ public class CommentService : ICommentService
 
         var comments = _mapper
             .ProjectTo<CommentDto>(query)
-            .OrderBy(x => x.CreatedDate);
+            .OrderByDescending(x => x.CreatedDate);
 
         return await _paginationService.CreatePaginatedResponseAsync(comments, pageSize, pageNumber);
     }
@@ -54,5 +54,31 @@ public class CommentService : ICommentService
         await _context.SaveChangesAsync();
 
         return newComment.Id;
+    }
+    
+    public async Task<bool> UpdateComment(int id, UpdateCommentDto comment)
+    {
+        var currentComment = _context
+            .Get<Comment>()
+            .FirstOrDefault(new CommentByIdSpec(id));
+
+        if (currentComment == null) return false;
+
+        _mapper.Map(comment, currentComment);
+        await _context.SaveChangesAsync();
+        return true;
+    }
+    
+    public async Task<bool> DeleteComment(int id)
+    {
+        var comment = _context
+            .Get<Comment>()
+            .FirstOrDefault(new CommentByIdSpec(id));
+
+        if (comment == null) return false;
+        
+        _context.Delete(comment);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

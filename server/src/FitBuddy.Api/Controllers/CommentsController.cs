@@ -40,19 +40,22 @@ public class CommentsController : FitBuddyBaseController
     public async Task<ActionResult> CreateComment([FromBody] CreateCommentRequestModel comment)
     {
         var commentId = await _service.CreateComment(_mapper.Map<CreateCommentDto>(comment));
-
-        return Created("Comment created", comment);
+        return Created("Comment created", commentId);
     }
     
     [HttpPut("{id}")]
-    public ActionResult UpdateComment(int id, [FromBody] string comment)
+    public async  Task<ActionResult> UpdateComment(int id, [FromBody] UpdateCommentRequestModel comment)
     {
-        return Ok(comment);
+        var updated = await _service.UpdateComment(id, _mapper.Map<UpdateCommentDto>(comment));
+        if (updated) return Ok();
+        return NotFound($"Comment with id {id} not found");
     }
     
     [HttpDelete("{id}")]
-    public ActionResult DeleteComment(int id)
+    public async Task<ActionResult> DeleteComment(int id)
     {
-        return NoContent();
+        var deleted = await _service.DeleteComment(id);
+        if (deleted) return NoContent();
+        return NotFound($"Comment with id {id} not found");
     }
 }

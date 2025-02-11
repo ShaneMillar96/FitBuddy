@@ -8,6 +8,6 @@ public interface ICommentService
     Task<PaginatedDto<CommentDto>> RetrieveComments(PaginationDto pagination, int? workoutId);
      Task<CommentDto?> RetrieveComment(int commentId);
      Task<int> CreateComment(CreateCommentDto comment);
-    // Task<string> UpdateComment(int commentId, string comment);
-    // Task<string> DeleteComment(int commentId);
+     Task<bool> UpdateComment(int id, UpdateCommentDto comment);
+     Task<bool> DeleteComment(int commentId);
 }
