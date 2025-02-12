@@ -6,7 +6,7 @@ public static class PaginateExtensions
 {
     public static async Task<(T[] Items, int TotalCount)> PaginateAsync<T>(this IQueryable<T> query, int pageSize, int pageNumber)
     {
-        pageSize = pageSize > 0 ? pageSize : 20; 
+        pageSize = pageSize > 0 ? pageSize : 10; 
         pageNumber = pageNumber > 0 ? pageNumber : 1;
         
         var futureCount = query.DeferredCount().FutureValue();
