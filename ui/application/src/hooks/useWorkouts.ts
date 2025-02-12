@@ -1,22 +1,27 @@
-import { useEffect, useState } from "react";
-import { Workout } from "../interfaces/workout";
-import { ApiResponse } from "../interfaces/api";
+import { useQuery } from "@tanstack/react-query";
+import { getWorkouts } from "@/interfaces/workout";
+import { QueryKeys } from "@/constants/query-keys";
 
-const useWorkouts = () => {
-    const [workouts, setWorkouts] = useState<Workout[]>([]);
+interface UseWorkoutsProps {
+    pageSize?: number;
+    pageNumber?: number;
+    sortBy?: string;
+    sortDirection?: string;
+    search?: string;
+}
 
-    useEffect(() => {
-        fetch("/api/workouts") // Replace with actual API endpoint
-            .then((res) => res.json())
-            .then((data: ApiResponse<Workout[]>) => {
-                if (data.success) {
-                    setWorkouts(data.data);
-                }
-            })
-            .catch((error) => console.error("Error fetching workouts", error));
-    }, []);
-
-    return workouts;
+export const useWorkouts = ({
+                                pageSize = 10,
+                                pageNumber = 1,
+                                sortBy = "",
+                                sortDirection = "asc",
+                                search = ""
+                            }: UseWorkoutsProps) => {
+    return useQuery({
+        queryKey: [QueryKeys.WORKOUTS, pageSize, pageNumber, sortBy, sortDirection, search],
+        queryFn: () => getWorkouts({ pageSize, pageNumber, sortBy, sortDirection, search }),
+        keepPreviousData: true,
+        refetchOnWindowFocus: true,
+        staleTime: 30000, 
+    });
 };
-
-export default useWorkouts;

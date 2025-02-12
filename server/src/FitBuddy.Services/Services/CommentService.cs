@@ -4,7 +4,6 @@ using FitBuddy.Dal.Models.application;
 using FitBuddy.Dal.Specifications.Comments;
 using FitBuddy.Services.Dtos.Comments;
 using FitBuddy.Services.Dtos.Pagination;
-using FitBuddy.Services.Dtos.Workouts;
 using FitBuddy.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Unosquare.EntityFramework.Specification.Common.Extensions;
