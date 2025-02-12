@@ -9,4 +9,6 @@ public class WorkoutResultViewModel
     public string Result { get; set; }
     
     public MemberViewModel Member { get; set; }
+    
+    public DateTime CreatedDate { get; set; }
 }

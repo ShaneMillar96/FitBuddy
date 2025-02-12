@@ -9,4 +9,6 @@ public class WorkoutResultDto
     public string Result { get; set; }
     
     public MemberDto Member { get; set; }
+    
+    public DateTime CreatedDate { get; set; }
 }

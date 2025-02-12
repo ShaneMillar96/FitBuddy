@@ -9,4 +9,6 @@ public class CommentViewModel
     public string Description { get; set; }
     
     public MemberViewModel Member { get; set; }
+    
+    public DateTime CreatedDate { get; set; }
 }
