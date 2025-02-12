@@ -1,5 +1,4 @@
 import axiosInstance from "@shared/integration/instance";
-
 import { APIRoutes } from "@/constants/api-routes";
 
 export interface Workout {
