@@ -13,16 +13,29 @@ interface WorkoutComment {
     createdDate: string;
 }
 
-export const useWorkoutComments = (workoutId: string, page: number, pageSize: number = 10) => {
+export const useWorkoutComments = (
+    workoutId: string,
+    pageNumber: number,
+    pageSize: number = 10,
+    sortBy: string = "createdDate",
+    ascending: boolean = false,
+    searchQuery: string = ""
+) => {
     return useQuery({
-        queryKey: [QueryKeys.WORKOUT_COMMENTS, workoutId, page], 
+        queryKey: [QueryKeys.WORKOUT_COMMENTS, workoutId, pageNumber, sortBy, ascending, searchQuery], // ✅ Include all pagination params
         queryFn: async () => {
             const { data } = await axiosInstance.get(APIRoutes.COMMENTS, {
-                params: { workoutId, page, pageSize }, 
+                params: {
+                    PageSize: pageSize,
+                    PageNumber: pageNumber,
+                    SortBy: sortBy,
+                    Ascending: ascending,
+                    SearchQuery: searchQuery
+                }, // ✅ Matches `PaginationDto`
             });
-            return data; 
+            return data; // API should return `{ data: WorkoutComment[], totalCount: number }`
         },
-        enabled: !!workoutId, 
-        keepPreviousData: true, 
+        enabled: !!workoutId, // ✅ Prevents query from running if workoutId is undefined
+        keepPreviousData: true, // ✅ Keeps previous data while fetching new pages
     });
 };

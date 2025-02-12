@@ -4,6 +4,8 @@ import { useWorkoutDetails } from "@/hooks/useWorkoutDetails";
 import { useWorkoutResults } from "@/hooks/useWorkoutResults";
 import { useWorkoutComments } from "@/hooks/useWorkoutComments";
 import Tabs from "@/components/layout/Tabs";
+import { usePostComment } from "@/hooks/usePostComment";
+
 
 const WorkoutDetails = () => {
     const { id } = useParams();
@@ -14,6 +16,22 @@ const WorkoutDetails = () => {
     const { data: comments, isLoading: commentsLoading, error: commentsError } = useWorkoutComments(id!, commentPage, 10);
     const isNextDisabled = comments?.data.length < 10 || (commentPage * 10) >= (comments?.totalCount || 0);
 
+    const [commentText, setCommentText] = useState("");
+    const postCommentMutation = usePostComment();
+
+    const handlePostComment = () => {
+        if (!commentText.trim()) return; 
+
+        postCommentMutation.mutate(
+            { workoutId: id!, comment: commentText },
+            {
+                onSuccess: () => {
+                    setCommentText(""); 
+                },
+            }
+        );
+    };
+    
     if (isLoading) return <p className="text-gray-400 text-center">Loading workout details...</p>;
     if (error) return <p className="text-red-500 text-center">Failed to load workout details.</p>;
     if (!workout) return <p className="text-gray-500 text-center">Workout not found.</p>;
@@ -55,7 +73,6 @@ const WorkoutDetails = () => {
         <p className="text-gray-400 text-center">No results available.</p>
     );
 
-    // ✅ Comments Tab Content (With Pagination)
     const commentsContent = commentsLoading ? (
         <p className="text-gray-400 text-center">Loading comments...</p>
     ) : commentsError ? (
@@ -67,12 +84,34 @@ const WorkoutDetails = () => {
                 {comments.data.map((comment) => (
                     <div key={comment.id} className="p-4 bg-gray-900 border border-gray-700 rounded-lg">
                         <p className="text-gray-300">{comment.description}</p>
-                        <p className="text-sm text-gray-500 mt-2">— {comment.member.username}, {new Date(comment.createdDate).toLocaleDateString()}</p>
+                        <p className="text-sm text-gray-500 mt-2">
+                            — {comment.member.username}, {new Date(comment.createdDate).toLocaleDateString()}
+                        </p>
                     </div>
                 ))}
             </div>
 
-            {/* Pagination Controls */}
+            <div className="mt-6 flex items-center gap-4">
+                <input
+                    type="text"
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    placeholder="Write a comment..."
+                    className="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
+                />
+                <button
+                    onClick={handlePostComment}
+                    disabled={postCommentMutation.isLoading}
+                    className={`px-4 py-2 rounded-lg transition ${
+                        postCommentMutation.isLoading
+                            ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                            : "bg-blue-400 text-white hover:bg-gray-800"
+                    }`}
+                >
+                    {postCommentMutation.isLoading ? "Posting..." : "Post"}
+                </button>
+            </div>
+
             <div className="flex justify-between items-center mt-4">
                 <button
                     disabled={commentPage === 1}
