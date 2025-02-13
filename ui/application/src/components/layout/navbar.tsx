@@ -1,14 +1,12 @@
 import Logo from "@/assets/logo.png";
-import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
-    const [isOpen, setIsOpen] = useState(false);
-
     return (
-        <nav className="navbar bg-blue-600 text-white p-4 shadow-md">
-            <Link to="/">
-                <img src={Logo} alt="FitBuddy" className="max-h-16 w-auto"/>
+        <nav className="navbar bg-gray-950 text-white py-4 px-6 flex justify-between items-center border-b border-gray-800">
+            <Link to="/" className="flex items-center space-x-3">
+                <img src={Logo} alt="FitBuddy Logo" className="h-10 w-10" />
+                <span className="text-white text-2xl font-bold">FitBuddy</span>
             </Link>
             <div className="flex space-x-6">
                 <Link to="/create-workout" className="text-white hover:text-gray-400">

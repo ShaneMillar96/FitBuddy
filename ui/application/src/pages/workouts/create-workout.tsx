@@ -32,7 +32,7 @@ const CreateWorkout = () => {
             {
                 onSuccess: () => {
                     toast.success("Workout created successfully!");
-                    setTimeout(() => navigate("/"), 2000); // Redirect after 2 seconds
+                    setTimeout(() => navigate("/"), 2000);
                 },
                 onError: () => {
                     toast.error("Failed to create workout. Please try again.");
