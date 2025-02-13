@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useWorkoutTypes } from "@/hooks/useWorkoutTypes";
 import { useCreateWorkout } from "@/hooks/useCreateWorkout";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const CreateWorkout = () => {
     const navigate = useNavigate();
@@ -14,15 +15,15 @@ const CreateWorkout = () => {
 
     const handleSubmit = () => {
         if (!name.trim() || name.length < 3 || name.length > 25) {
-            alert("Name should be between 3 and 25 characters long.");
+            toast.error("Name should be between 3 and 25 characters long.");
             return;
         }
         if (!description.trim() || description.length < 10) {
-            alert("Description should be at least 10 characters long.");
+            toast.error("Description should be at least 10 characters long.");
             return;
         }
         if (!typeId) {
-            alert("Please select a workout type.");
+            toast.error("Please select a workout type.");
             return;
         }
 
@@ -30,11 +31,11 @@ const CreateWorkout = () => {
             { name, description, typeId },
             {
                 onSuccess: () => {
-                    alert("Workout created successfully!");
-                    navigate("/");
+                    toast.success("Workout created successfully!");
+                    setTimeout(() => navigate("/"), 2000); // Redirect after 2 seconds
                 },
                 onError: () => {
-                    alert("Failed to create workout. Please try again.");
+                    toast.error("Failed to create workout. Please try again.");
                 },
             }
         );
@@ -43,6 +44,7 @@ const CreateWorkout = () => {
     return (
         <div className="container mx-auto p-6 bg-black text-gray-300 border border-gray-700 rounded-lg shadow-lg">
             <h1 className="text-white text-4xl font-extrabold">Create Workout</h1>
+
             <div className="mt-4">
                 <label className="block text-gray-400">Workout Name</label>
                 <input
@@ -63,7 +65,6 @@ const CreateWorkout = () => {
                 />
             </div>
 
-            {/* Workout Type Dropdown */}
             <div className="mt-4">
                 <label className="block text-gray-400">Workout Type</label>
                 {typesLoading ? (
