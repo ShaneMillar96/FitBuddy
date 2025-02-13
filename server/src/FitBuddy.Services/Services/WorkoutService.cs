@@ -34,7 +34,7 @@ public class WorkoutService : IWorkoutService
 
         var workouts = _mapper
             .ProjectTo<WorkoutDto>(query)
-            .OrderBy(sortBy, ascending);
+            .OrderByDescending(x => x.CreatedDate);
 
         return await _paginationService.CreatePaginatedResponseAsync(workouts, pageSize, pageNumber);
     }

@@ -10,8 +10,6 @@ const WorkoutList = () => {
 
     return (
         <div className="container mx-auto p-6 bg-black text-gray-300 border border-gray-700 rounded-lg shadow-lg">
-            <h1 className="text-white text-5xl font-extrabold mb-4 text-center">Workouts</h1>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {data?.data.map((workout) => (
                     <div
@@ -20,7 +18,6 @@ const WorkoutList = () => {
                         className="bg-gray-900 text-white border border-gray-700 p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 cursor-pointer hover:border-white"
                     >
                         <h2 className="text-white text-xl font-semibold">{workout.name}</h2>
-                        <p className="text-gray-400 mt-2">{workout.description}</p>
 
                         <p className="text-gray-500 text-sm mt-2">
                             <strong className="text-white">Created by:</strong> {workout.createdBy.username}

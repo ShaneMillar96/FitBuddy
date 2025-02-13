@@ -30,12 +30,13 @@ export const useWorkoutComments = (
                     PageNumber: pageNumber,
                     SortBy: sortBy,
                     Ascending: ascending,
-                    SearchQuery: searchQuery
-                }, // ✅ Matches `PaginationDto`
+                    SearchQuery: searchQuery,
+                    workoutId: workoutId 
+                }, 
             });
-            return data; // API should return `{ data: WorkoutComment[], totalCount: number }`
+            return data; 
         },
-        enabled: !!workoutId, // ✅ Prevents query from running if workoutId is undefined
-        keepPreviousData: true, // ✅ Keeps previous data while fetching new pages
+        enabled: !!workoutId, 
+        keepPreviousData: true, 
     });
 };

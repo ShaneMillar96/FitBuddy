@@ -6,7 +6,6 @@ import { useWorkoutComments } from "@/hooks/useWorkoutComments";
 import Tabs from "@/components/layout/Tabs";
 import { usePostComment } from "@/hooks/usePostComment";
 
-
 const WorkoutDetails = () => {
     const { id } = useParams();
     const { data: workout, isLoading, error } = useWorkoutDetails(id!);
@@ -20,18 +19,18 @@ const WorkoutDetails = () => {
     const postCommentMutation = usePostComment();
 
     const handlePostComment = () => {
-        if (!commentText.trim()) return; 
+        if (!commentText.trim()) return;
 
         postCommentMutation.mutate(
             { workoutId: id!, comment: commentText },
             {
                 onSuccess: () => {
-                    setCommentText(""); 
+                    setCommentText("");
                 },
             }
         );
     };
-    
+
     if (isLoading) return <p className="text-gray-400 text-center">Loading workout details...</p>;
     if (error) return <p className="text-red-500 text-center">Failed to load workout details.</p>;
     if (!workout) return <p className="text-gray-500 text-center">Workout not found.</p>;
@@ -73,24 +72,29 @@ const WorkoutDetails = () => {
         <p className="text-gray-400 text-center">No results available.</p>
     );
 
-    const commentsContent = commentsLoading ? (
-        <p className="text-gray-400 text-center">Loading comments...</p>
-    ) : commentsError ? (
-        <p className="text-red-500 text-center">Failed to load comments.</p>
-    ) : comments?.data.length > 0 ? (
+    const commentsContent = (
         <div>
             {/* Comments List */}
-            <div className="space-y-4">
-                {comments.data.map((comment) => (
-                    <div key={comment.id} className="p-4 bg-gray-900 border border-gray-700 rounded-lg">
-                        <p className="text-gray-300">{comment.description}</p>
-                        <p className="text-sm text-gray-500 mt-2">
-                            — {comment.member.username}, {new Date(comment.createdDate).toLocaleDateString()}
-                        </p>
-                    </div>
-                ))}
-            </div>
+            {commentsLoading ? (
+                <p className="text-gray-400 text-center">Loading comments...</p>
+            ) : commentsError ? (
+                <p className="text-red-500 text-center">Failed to load comments.</p>
+            ) : comments?.data.length > 0 ? (
+                <div className="space-y-4">
+                    {comments.data.map((comment) => (
+                        <div key={comment.id} className="p-4 bg-gray-900 border border-gray-700 rounded-lg">
+                            <p className="text-gray-300">{comment.description}</p>
+                            <p className="text-sm text-gray-500 mt-2">
+                                — {comment.member.username}, {new Date(comment.createdDate).toLocaleDateString()}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <p className="text-gray-400 text-center">No comments yet.</p>
+            )}
 
+            {/* Always Show Comment Input Box */}
             <div className="mt-6 flex items-center gap-4">
                 <input
                     type="text"
@@ -112,6 +116,7 @@ const WorkoutDetails = () => {
                 </button>
             </div>
 
+            {/* Pagination Controls */}
             <div className="flex justify-between items-center mt-4">
                 <button
                     disabled={commentPage === 1}
@@ -134,8 +139,6 @@ const WorkoutDetails = () => {
                 </button>
             </div>
         </div>
-    ) : (
-        <p className="text-gray-400 text-center">No comments yet.</p>
     );
 
     return (
@@ -155,7 +158,7 @@ const WorkoutDetails = () => {
             <Tabs
                 tabs={[
                     { label: "Results", content: resultsContent },
-                    { label: "Comments", content: commentsContent }, 
+                    { label: "Comments", content: commentsContent },
                 ]}
             />
         </div>

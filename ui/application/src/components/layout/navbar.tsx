@@ -7,14 +7,14 @@ const Navbar = () => {
 
     return (
         <nav className="navbar bg-blue-600 text-white p-4 shadow-md">
-                <Link to="/">
-                    <img src={Logo} alt="FitBuddy" className="max-h-16 w-auto"/>
+            <Link to="/">
+                <img src={Logo} alt="FitBuddy" className="max-h-16 w-auto"/>
+            </Link>
+            <div className="flex space-x-6">
+                <Link to="/create-workout" className="text-white hover:text-gray-400">
+                    New Workout
                 </Link>
-                <div className="flex space-x-6">
-                    <a href="/" className="text-white hover:text-gray-400">Home</a>
-                    <a href="/workouts" className="text-white hover:text-gray-400">Workouts</a>
-                    <a href="/profile" className="text-white hover:text-gray-400">Profile</a>
-                </div>
+            </div>
         </nav>
     );
 };
