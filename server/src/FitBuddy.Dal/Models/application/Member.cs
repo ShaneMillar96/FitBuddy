@@ -1,25 +1,14 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace FitBuddy.Dal.Models.application;
 
 [Table("members")]
-[Microsoft.EntityFrameworkCore.Index("Email", Name = "members_email_key", IsUnique = true)]
-[Microsoft.EntityFrameworkCore.Index("Username", Name = "members_username_key", IsUnique = true)]
-public partial class Member
+public class Member : IdentityUser<int>
 {
-    [Key]
     [Column("id")]
-    public int Id { get; set; }
-
-    [Column("username")]
-    [StringLength(255)]
-    public string Username { get; set; } = null!;
-
-    [Column("email")]
-    [StringLength(255)]
-    public string Email { get; set; } = null!;
+    public override int Id { get; set; } 
 
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime? CreatedDate { get; set; }
@@ -30,9 +19,22 @@ public partial class Member
     [InverseProperty("Member")]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
+    [InverseProperty("User")]
+    public virtual ICollection<UserClaim> UserClaims { get; set; } = new List<UserClaim>();
+
+    [InverseProperty("User")]
+    public virtual ICollection<UserLogin> UserLogins { get; set; } = new List<UserLogin>();
+
+    [InverseProperty("User")]
+    public virtual ICollection<UserToken> UserTokens { get; set; } = new List<UserToken>();
+
     [InverseProperty("Member")]
     public virtual ICollection<WorkoutResult> WorkoutResults { get; set; } = new List<WorkoutResult>();
 
     [InverseProperty("CreatedByNavigation")]
     public virtual ICollection<Workout> Workouts { get; set; } = new List<Workout>();
+
+    [ForeignKey("UserId")]
+    [InverseProperty("Users")]
+    public virtual ICollection<Role> Roles { get; set; } = new List<Role>();
 }
