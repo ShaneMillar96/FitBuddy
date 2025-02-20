@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.Annotations" Version="1.6.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.1" />
   </ItemGroup>
 
   <PropertyGroup>

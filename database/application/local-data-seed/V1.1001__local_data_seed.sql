@@ -1,14 +1,14 @@
-INSERT INTO MEMBERS (id, "UserName", "Email", "EmailConfirmed", "AccessFailedCount", "ConcurrencyStamp", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled") VALUES
-    (1, 'shane_test', 'shane.test@email.com', true, 0, 'concurrency_stamp_1', false, NULL, 'SHANE.TEST@EMAIL.COM', 'SHANE_TEST', 'password_hash_1', NULL, false, 'security_stamp_1', false),
-    (2, 'mark_brown', 'mark.test@email.com', true, 0, 'concurrency_stamp_2', false, NULL, 'MARK.TEST@EMAIL.COM', 'MARK_BROWN', 'password_hash_2', NULL, false, 'security_stamp_2', false),
-    (3, 'john_doe', 'john.doe@email.com', true, 0, 'concurrency_stamp_3', false, NULL, 'JOHN.DOE@EMAIL.COM', 'JOHN_DOE', 'password_hash_3', NULL, false, 'security_stamp_3', false),
-    (4, 'jane_smith', 'jane.smith@email.com', true, 0, 'concurrency_stamp_4', false, NULL, 'JANE.SMITH@EMAIL.COM', 'JANE_SMITH', 'password_hash_4', NULL, false, 'security_stamp_4', false),
-    (5, 'alice_jones', 'alice.jones@email.com', true, 0, 'concurrency_stamp_5', false, NULL, 'ALICE.JONES@EMAIL.COM', 'ALICE_JONES', 'password_hash_5', NULL, false, 'security_stamp_5', false),
-    (6, 'bob_brown', 'bob.brown@email.com', true, 0, 'concurrency_stamp_6', false, NULL, 'BOB.BROWN@EMAIL.COM', 'BOB_BROWN', 'password_hash_6', NULL, false, 'security_stamp_6', false),
-    (7, 'charlie_black', 'charlie.black@email.com', true, 0, 'concurrency_stamp_7', false, NULL, 'CHARLIE.BLACK@EMAIL.COM', 'CHARLIE_BLACK', 'password_hash_7', NULL, false, 'security_stamp_7', false),
-    (8, 'david_white', 'david.white@email.com', true, 0, 'concurrency_stamp_8', false, NULL, 'DAVID.WHITE@EMAIL.COM', 'DAVID_WHITE', 'password_hash_8', NULL, false, 'security_stamp_8', false),
-    (9, 'eve_green', 'eve.green@email.com', true, 0, 'concurrency_stamp_9', false, NULL, 'EVE.GREEN@EMAIL.COM', 'EVE_GREEN', 'password_hash_9', NULL, false, 'security_stamp_9', false),
-    (10, 'frank_blue', 'frank.blue@email.com', true, 0, 'concurrency_stamp_10', false, NULL, 'FRANK.BLUE@EMAIL.COM', 'FRANK_BLUE', 'password_hash_10', NULL, false, 'security_stamp_10', false);
+INSERT INTO MEMBERS (id, username, email) VALUES
+    (1, 'shane_test', 'shane.test@email.com'),
+    (2, 'mark_brown', 'mark.test@email.com'),
+    (3, 'john_doe', 'john.doe@email.com'),
+    (4, 'jane_smith', 'jane.smith@email.com'),
+    (5, 'alice_jones', 'alice.jones@email.com'),
+    (6, 'bob_brown', 'bob.brown@email.com'),
+    (7, 'charlie_black', 'charlie.black@email.com'),
+    (8, 'david_white', 'david.white@email.com'),
+    (9, 'eve_green', 'eve.green@email.com'),
+    (10, 'frank_blue', 'frank.blue@email.com');
 
 ALTER SEQUENCE members_id_seq RESTART WITH 11;
 

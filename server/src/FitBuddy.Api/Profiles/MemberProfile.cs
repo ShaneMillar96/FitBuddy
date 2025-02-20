@@ -25,8 +25,6 @@ public class MemberProfile : Profile
     {
         CreateMap<CreateMemberRequestModel, CreateMemberDto>();
         CreateMap<UpdateMemberRequestModel, UpdateMemberDto>();
-        CreateMap<RegisterMemberRequestModel, RegisterMemberDto>();
-        CreateMap<LoginMemberRequestModel, LoginMemberDto>();
     }
     
     private void ConfigurePaginateMapping()
