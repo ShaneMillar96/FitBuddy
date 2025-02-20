@@ -1,9 +1,11 @@
+using FitBuddy.Dal;
 using FitBuddy.Dal.Contexts;
 using FitBuddy.Dal.Database;
 using FitBuddy.Dal.Interfaces;
 using FitBuddy.Services.Interfaces;
 using FitBuddy.Services.Pagination;
 using FitBuddy.Services.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,9 +19,13 @@ builder.Services.AddScoped<IConnectionManager, ConnectionManager>();
 builder.Services.AddScoped<IFitBudContext, FitBudContext>();
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IWorkoutService, WorkoutService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IPaginationService, PaginationService>();
 
+builder.Services.AddDbContext<FitBudContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString(EnvironmentVariables.DbConnectionString)));
+        
 // Configure CORS
 builder.Services.AddCors(options =>
 {

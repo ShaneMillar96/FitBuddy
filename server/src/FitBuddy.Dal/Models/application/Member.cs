@@ -27,6 +27,9 @@ public partial class Member
     [Column("modified_date", TypeName = "timestamp without time zone")]
     public DateTime? ModifiedDate { get; set; }
 
+    [Column("password_hash")]
+    public string PasswordHash { get; set; } = null!;
+
     [InverseProperty("Member")]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
