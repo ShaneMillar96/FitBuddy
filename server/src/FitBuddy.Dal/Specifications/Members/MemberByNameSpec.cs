@@ -13,7 +13,8 @@ public class MemberByNameSpec : Specification<Member>
     public override Expression<Func<Member, bool>> BuildExpression()
     {
         if (string.IsNullOrEmpty(_username)) return ShowAll;
-        
-        return x => x.Username.ToLower().StartsWith(_username);
+
+        return null;
+        //return x => x.Username.ToLower().StartsWith(_username);
     }
 }

@@ -25,7 +25,10 @@ public class MemberProfile : Profile
         CreateMap<UpdateMemberDto, Member>()
             .ForMember(d => d.ModifiedDate,
                 o => o.MapFrom(x => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)))
-            .ForMember(d => d.Email, o => o.Condition(src => src.Email != null))
-            .ForMember(d => d.Username, o => o.Condition(src => src.Username != null));
+            .ForMember(d => d.Email, o => o.Condition(src => src.Email != null));
+            //.ForMember(d => d.Username, o => o.Condition(src => src.Username != null));
+        
+        CreateMap<RegisterMemberDto, Member>();
+        CreateMap<LoginMemberDto, Member>();
     }
 }

@@ -1,0 +1,16 @@
+
+ALTER TABLE members
+    ADD COLUMN "AccessFailedCount" INT NOT NULL DEFAULT 0,
+    ADD COLUMN "ConcurrencyStamp" VARCHAR(255),
+    ADD COLUMN "Email" VARCHAR(255) NOT NULL,
+    ADD COLUMN "EmailConfirmed" BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN "LockoutEnabled" BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN "LockoutEnd" TIMESTAMP,
+    ADD COLUMN "NormalizedEmail" VARCHAR(255),
+    ADD COLUMN "NormalizedUserName" VARCHAR(255),
+    ADD COLUMN "PasswordHash" TEXT,
+    ADD COLUMN "PhoneNumber" VARCHAR(255),
+    ADD COLUMN "PhoneNumberConfirmed" BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN "SecurityStamp" VARCHAR(255),
+    ADD COLUMN "TwoFactorEnabled" BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN "UserName" VARCHAR(255);
