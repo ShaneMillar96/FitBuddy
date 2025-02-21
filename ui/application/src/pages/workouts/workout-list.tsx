@@ -53,7 +53,7 @@ const WorkoutList = () => {
                                     <strong className="text-white">Created by:</strong> {workout.createdBy.username}
                                 </p>
                                 <p className="text-gray-500 text-sm">
-                                    <strong className="text-white">Type:</strong> {workout.type.name}
+                                    <strong className="text-white">Type:</strong> {workout.workoutType.name}
                                 </p>
                             </div>
                         ))}

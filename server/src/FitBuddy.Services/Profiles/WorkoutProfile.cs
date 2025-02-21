@@ -16,13 +16,16 @@ public class WorkoutProfile : Profile
     {
         CreateMap<Workout, WorkoutDto>()
             .ForMember(d => d.CreatedBy, o => o.MapFrom(x => x.CreatedBy))
-            .ForMember(d => d.Type, o => o.MapFrom(x => x.WorkoutType));
+            .ForMember(d => d.ScoreType, o => o.MapFrom(x => x.ScoreType))
+            .ForMember(d => d.WorkoutType, o => o.MapFrom(x => x.WorkoutType));
         
         CreateMap<WorkoutType, WorkoutTypeDto>();
         
         CreateMap<WorkoutResult, WorkoutResultDto>()
+            .ForMember(d => d.Type, o => o.MapFrom(x => x.Workout.WorkoutType))
             .ForMember(d => d.Member, o => o.MapFrom(x => x.CreatedBy));
 
+        CreateMap<ScoreType, ScoreTypeDto>();
     }
 
     private void ConfigureDtoToDomain()

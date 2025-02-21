@@ -31,12 +31,19 @@ public partial class Workout : ICreatedByTracking
     [Column("modified_date", TypeName = "timestamp without time zone")]
     public DateTime? ModifiedDate { get; set; }
 
+    [Column("score_type_id")]
+    public int? ScoreTypeId { get; set; }
+
     [InverseProperty("Workout")]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
     [ForeignKey("CreatedById")]
     [InverseProperty("Workouts")]
     public virtual Member CreatedBy { get; set; } = null!;
+
+    [ForeignKey("ScoreTypeId")]
+    [InverseProperty("Workouts")]
+    public virtual ScoreType? ScoreType { get; set; }
 
     [InverseProperty("Workout")]
     public virtual ICollection<WorkoutResult> WorkoutResults { get; set; } = new List<WorkoutResult>();

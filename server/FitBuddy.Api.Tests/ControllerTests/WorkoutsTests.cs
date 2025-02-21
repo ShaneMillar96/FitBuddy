@@ -182,7 +182,7 @@ public class WorkoutsTests
         var resultId = 1;
 
         _mapperMock.Setup(m => m.Map<CreateWorkoutResultDto>(createWorkoutResultRequest)).Returns(createWorkoutResultDto);
-        _serviceMock.Setup(s => s.ResultExists(createWorkoutResultRequest.WorkoutId, 1)).ReturnsAsync(false);
+        _serviceMock.Setup(s => s.ResultExists(createWorkoutResultRequest.WorkoutId)).ReturnsAsync(false);
         _serviceMock.Setup(s => s.CreateWorkoutResult(createWorkoutResultDto)).ReturnsAsync(resultId);
 
         // Act

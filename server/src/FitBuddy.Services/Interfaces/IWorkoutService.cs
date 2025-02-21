@@ -13,6 +13,6 @@ public interface IWorkoutService
     Task<List<WorkoutTypeDto>> RetrieveWorkoutTypes();
     Task<PaginatedDto<WorkoutResultDto>> RetrieveWorkoutResults(PaginationDto pagination, int workoutId);
     Task<int> CreateWorkoutResult(CreateWorkoutResultDto result);
-    Task<bool> ResultExists(int workoutId, int memberId);
+    Task<bool> ResultExists(int workoutId);
     Task<bool> UpdateWorkoutResult(int id, UpdateWorkoutResultDto result);
 }

@@ -84,7 +84,7 @@ public class WorkoutsController : FitBuddyBaseController
     [HttpPost("{id}/results")]
     public async Task<ActionResult> CreateWorkoutResult([FromBody] CreateWorkoutResultRequestModel result)
     {
-        var resultExists = await _service.ResultExists(result.WorkoutId, 1); //ToDO: Get member id from token
+        var resultExists = await _service.ResultExists(result.WorkoutId); 
         if (resultExists)
         {
             return Conflict("Result already logged for this workout by the member.");

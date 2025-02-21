@@ -10,8 +10,10 @@ public class WorkoutDto
 
     public string Description { get; set; }
     
-    public WorkoutTypeDto Type { get; set; }
+    public WorkoutTypeDto WorkoutType { get; set; }
     
+    public ScoreTypeDto ScoreType { get; set; }
+
     public MemberDto CreatedBy { get;set; }
     
     public DateTime CreatedDate { get; set; }

@@ -30,6 +30,7 @@ public class WorkoutService : IWorkoutService
             .Get<Workout>()
             .Include(x => x.CreatedBy)
             .Include(x => x.WorkoutType)
+            .Include(x => x.ScoreType)
             .Where(new WorkoutBySearchSpec(searchQuery));
 
         var workouts = _mapper
@@ -83,19 +84,18 @@ public class WorkoutService : IWorkoutService
     public Task<List<WorkoutTypeDto>> RetrieveWorkoutTypes() =>
         _mapper.ProjectTo<WorkoutTypeDto>(_context.Get<WorkoutType>()).ToListAsync();
     
-    public async Task<PaginatedDto<WorkoutResultDto>> RetrieveWorkoutResults(PaginationDto pagination, int id)
+    public async Task<PaginatedDto<WorkoutResultDto>> RetrieveWorkoutResults(PaginationDto pagination, int workoutId)
     {
         var (pageSize, pageNumber, searchQuery, sortBy, ascending) = pagination;
-        
+
         var query = _context
             .Get<WorkoutResult>()
             .Include(x => x.Workout)
+            .ThenInclude(x => x.WorkoutType)
             .Include(x => x.CreatedBy)
-            .Where(new WorkoutResultByWorkoutIdSpec(id));
+            .Where(new WorkoutResultByWorkoutIdSpec(workoutId));
 
-        var workoutResults = _mapper
-            .ProjectTo<WorkoutResultDto>(query)
-            .OrderBy(x => x.Result);
+        var workoutResults = _mapper.ProjectTo<WorkoutResultDto>(query);
 
         return await _paginationService.CreatePaginatedResponseAsync(workoutResults, pageSize, pageNumber);
     }
@@ -110,10 +110,11 @@ public class WorkoutService : IWorkoutService
         return newResult.Id;
     }
     
-    public async Task<bool> ResultExists(int workoutId, int memberId)
+    public async Task<bool> ResultExists(int workoutId)
     {
+        var currentUserId = _context.GetCurrentUserId();
         return await _context.Get<WorkoutResult>()
-            .AnyAsync(r => r.WorkoutId == workoutId && r.CreatedById == memberId);
+            .AnyAsync(r => r.WorkoutId == workoutId && r.CreatedById == currentUserId);
     }
     
     public async Task<bool> UpdateWorkoutResult(int id, UpdateWorkoutResultDto result)

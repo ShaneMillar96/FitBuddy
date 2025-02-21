@@ -20,6 +20,7 @@ public class WorkoutProfile : Profile
     {
         CreateMap<WorkoutDto, WorkoutViewModel>();
         CreateMap<WorkoutTypeDto, WorkoutTypeViewModel>();
+        CreateMap<ScoreTypeDto, ScoreTypeViewModel>();
         CreateMap<WorkoutResultDto, WorkoutResultViewModel>();
     }
     

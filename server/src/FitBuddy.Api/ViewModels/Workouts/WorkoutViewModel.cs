@@ -10,7 +10,9 @@ public class WorkoutViewModel
     
     public string Description { get; set; }
     
-    public WorkoutTypeViewModel Type { get; set; }
+    public WorkoutTypeViewModel WorkoutType { get; set; }
+    
+    public ScoreTypeViewModel ScoreType { get; set; }
     
     public MemberViewModel CreatedBy { get;set; }
     

@@ -16,7 +16,7 @@ const WorkoutDetails = () => {
     return (
         <div className="container mx-auto p-6 bg-black text-gray-300 border border-gray-700 rounded-lg shadow-lg">
             <h1 className="text-white text-4xl font-extrabold">
-                {workout.name} <span className="text-gray-400 text-2xl">({workout.type.name})</span>
+                {workout.name} <span className="text-gray-400 text-2xl">({workout.workoutType.name})</span>
             </h1>
 
             <pre className="text-gray-300 text-lg mt-4 whitespace-pre-wrap leading-relaxed border-t border-gray-700 pt-4">
