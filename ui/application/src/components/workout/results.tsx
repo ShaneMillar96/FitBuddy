@@ -54,9 +54,8 @@ const Results = ({ workoutId, scoreType }: ResultsProps) => {
                                     value={resultText}
                                     onChange={(e) => setResultText(e.target.value)}
                                     placeholder="Total Reps"
-                                    className="w-32 px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                    className="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
                                 />
-                                {/*<span className="text-gray-400">Total Reps</span>*/}
                             </div>
                         )}
                     </div>
