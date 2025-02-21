@@ -28,7 +28,7 @@ public class CommentService : ICommentService
         var query = _context
             .Get<Comment>()
             .Include(x => x.Workout)
-            .Include(x => x.Member)
+            .Include(x => x.CreatedBy)
             .Where(new CommentsByWorkoutIdSpec(workoutId));
 
 

@@ -52,7 +52,7 @@ namespace FitBuddy.Dal.Contexts
 
             foreach (var entity in addedEntities)
             {
-                entity.Entity.CreatedBy = userId;
+                entity.Entity.CreatedById = userId;
             }
 
             // var modifiedEntities = ChangeTracker.Entries<IModifiedByTracking>()

@@ -22,8 +22,8 @@ public partial class Workout : ICreatedByTracking
     [Column("workout_type_id")]
     public int WorkoutTypeId { get; set; }
 
-    [Column("created_by")]
-    public int CreatedBy { get; set; }
+    [Column("created_by_id")]
+    public int CreatedById { get; set; }
 
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime? CreatedDate { get; set; }
@@ -34,9 +34,9 @@ public partial class Workout : ICreatedByTracking
     [InverseProperty("Workout")]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
-    [ForeignKey("CreatedBy")]
+    [ForeignKey("CreatedById")]
     [InverseProperty("Workouts")]
-    public virtual Member? CreatedByNavigation { get; set; }
+    public virtual Member CreatedBy { get; set; } = null!;
 
     [InverseProperty("Workout")]
     public virtual ICollection<WorkoutResult> WorkoutResults { get; set; } = new List<WorkoutResult>();

@@ -28,7 +28,7 @@ public class WorkoutService : IWorkoutService
         
         var query = _context
             .Get<Workout>()
-            .Include(x => x.CreatedByNavigation)
+            .Include(x => x.CreatedBy)
             .Include(x => x.WorkoutType)
             .Where(new WorkoutBySearchSpec(searchQuery));
 
@@ -90,7 +90,7 @@ public class WorkoutService : IWorkoutService
         var query = _context
             .Get<WorkoutResult>()
             .Include(x => x.Workout)
-            .Include(x => x.Member)
+            .Include(x => x.CreatedBy)
             .Where(new WorkoutResultByWorkoutIdSpec(id));
 
         var workoutResults = _mapper
@@ -113,7 +113,7 @@ public class WorkoutService : IWorkoutService
     public async Task<bool> ResultExists(int workoutId, int memberId)
     {
         return await _context.Get<WorkoutResult>()
-            .AnyAsync(r => r.WorkoutId == workoutId && r.MemberId == memberId);
+            .AnyAsync(r => r.WorkoutId == workoutId && r.CreatedById == memberId);
     }
     
     public async Task<bool> UpdateWorkoutResult(int id, UpdateWorkoutResultDto result)

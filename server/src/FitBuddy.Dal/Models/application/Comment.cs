@@ -14,8 +14,8 @@ public partial class Comment
     [Column("workout_id")]
     public int WorkoutId { get; set; }
 
-    [Column("created_by")]
-    public int CreatedBy { get; set; }
+    [Column("created_by_id")]
+    public int CreatedById { get; set; }
 
     [Column("description")]
     public string? Description { get; set; }
@@ -26,9 +26,9 @@ public partial class Comment
     [Column("modified_date", TypeName = "timestamp without time zone")]
     public DateTime? ModifiedDate { get; set; }
 
-    [ForeignKey("CreatedBy")]
+    [ForeignKey("CreatedById")]
     [InverseProperty("Comments")]
-    public virtual Member CreatedByNavigation { get; set; } = null!;
+    public virtual Member CreatedBy { get; set; } = null!;
 
     [ForeignKey("WorkoutId")]
     [InverseProperty("Comments")]

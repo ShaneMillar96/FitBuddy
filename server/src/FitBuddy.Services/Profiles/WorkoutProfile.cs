@@ -15,13 +15,13 @@ public class WorkoutProfile : Profile
     private void ConfigureDomainToDto()
     {
         CreateMap<Workout, WorkoutDto>()
-            .ForMember(d => d.CreatedBy, o => o.MapFrom(x => x.CreatedByNavigation))
+            .ForMember(d => d.CreatedBy, o => o.MapFrom(x => x.CreatedBy))
             .ForMember(d => d.Type, o => o.MapFrom(x => x.WorkoutType));
         
         CreateMap<WorkoutType, WorkoutTypeDto>();
         
         CreateMap<WorkoutResult, WorkoutResultDto>()
-            .ForMember(d => d.Member, o => o.MapFrom(x => x.CreatedByNavigation));
+            .ForMember(d => d.Member, o => o.MapFrom(x => x.CreatedBy));
 
     }
 

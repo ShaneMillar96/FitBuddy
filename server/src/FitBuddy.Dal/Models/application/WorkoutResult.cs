@@ -17,8 +17,8 @@ public partial class WorkoutResult : ICreatedByTracking
     [Column("workout_id")]
     public int WorkoutId { get; set; }
 
-    [Column("created_by")]
-    public int CreatedBy { get; set; }
+    [Column("created_by_id")]
+    public int CreatedById { get; set; }
 
     [Column("result")]
     public string? Result { get; set; }
@@ -29,9 +29,9 @@ public partial class WorkoutResult : ICreatedByTracking
     [Column("modified_date", TypeName = "timestamp without time zone")]
     public DateTime? ModifiedDate { get; set; }
 
-    [ForeignKey("CreatedBy")]
+    [ForeignKey("CreatedById")]
     [InverseProperty("WorkoutResults")]
-    public virtual Member CreatedByNavigation { get; set; } = null!;
+    public virtual Member CreatedBy { get; set; } = null!;
 
     [ForeignKey("WorkoutId")]
     [InverseProperty("WorkoutResults")]
