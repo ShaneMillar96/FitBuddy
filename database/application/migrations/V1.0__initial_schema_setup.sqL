@@ -16,7 +16,7 @@ CREATE TABLE WORKOUTS (
     name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
     workout_type_id INT NOT NULL,
-    created_by INT,
+    created_by INT NOT NULL,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_date TIMESTAMP,
     FOREIGN KEY (workout_type_id) REFERENCES WORKOUT_TYPES(id),
@@ -26,23 +26,23 @@ CREATE TABLE WORKOUTS (
 CREATE TABLE WORKOUT_RESULTS (
     id SERIAL CONSTRAINT workout_results_id PRIMARY KEY,
     workout_id INT NOT NULL,
-    member_id INT NOT NULL,
+    created_by INT NOT NULL,
     result TEXT,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_date TIMESTAMP,
     FOREIGN KEY (workout_id) REFERENCES WORKOUTS(id),
-    FOREIGN KEY (member_id) REFERENCES MEMBERS(id)
+    FOREIGN KEY (created_by) REFERENCES MEMBERS(id)
 );
 
 CREATE TABLE COMMENTS (
     id SERIAL CONSTRAINT comments_id PRIMARY KEY,
     workout_id INT NOT NULL,
-    member_id INT NOT NULL,
+    created_by INT NOT NULL,
     comment TEXT,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     modified_date TIMESTAMP,
     FOREIGN KEY (workout_id) REFERENCES WORKOUTS(id),
-    FOREIGN KEY (member_id) REFERENCES MEMBERS(id)
+    FOREIGN KEY (created_by) REFERENCES MEMBERS(id)
 )
 
 

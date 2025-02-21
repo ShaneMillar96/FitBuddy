@@ -30,10 +30,10 @@ public partial class Member
     [Column("password_hash")]
     public string PasswordHash { get; set; } = null!;
 
-    [InverseProperty("Member")]
+    [InverseProperty("CreatedByNavigation")]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
-    [InverseProperty("Member")]
+    [InverseProperty("CreatedByNavigation")]
     public virtual ICollection<WorkoutResult> WorkoutResults { get; set; } = new List<WorkoutResult>();
 
     [InverseProperty("CreatedByNavigation")]

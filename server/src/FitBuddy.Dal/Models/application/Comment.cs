@@ -5,8 +5,7 @@ using FitBuddy.Dal.Interfaces;
 namespace FitBuddy.Dal.Models.application;
 
 [Table("comments")]
-public partial class Comment 
-
+public partial class Comment
 {
     [Key]
     [Column("id")]
@@ -15,8 +14,8 @@ public partial class Comment
     [Column("workout_id")]
     public int WorkoutId { get; set; }
 
-    [Column("member_id")]
-    public int MemberId { get; set; }
+    [Column("created_by")]
+    public int CreatedBy { get; set; }
 
     [Column("description")]
     public string? Description { get; set; }
@@ -27,9 +26,9 @@ public partial class Comment
     [Column("modified_date", TypeName = "timestamp without time zone")]
     public DateTime? ModifiedDate { get; set; }
 
-    [ForeignKey("MemberId")]
+    [ForeignKey("CreatedBy")]
     [InverseProperty("Comments")]
-    public virtual Member Member { get; set; } = null!;
+    public virtual Member CreatedByNavigation { get; set; } = null!;
 
     [ForeignKey("WorkoutId")]
     [InverseProperty("Comments")]

@@ -23,7 +23,7 @@ public partial class Workout : ICreatedByTracking
     public int WorkoutTypeId { get; set; }
 
     [Column("created_by")]
-    public int? CreatedBy { get; set; }
+    public int CreatedBy { get; set; }
 
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime? CreatedDate { get; set; }

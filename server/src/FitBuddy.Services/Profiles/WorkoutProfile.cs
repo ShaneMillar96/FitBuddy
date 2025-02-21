@@ -21,7 +21,7 @@ public class WorkoutProfile : Profile
         CreateMap<WorkoutType, WorkoutTypeDto>();
         
         CreateMap<WorkoutResult, WorkoutResultDto>()
-            .ForMember(d => d.Member, o => o.MapFrom(x => x.Member));
+            .ForMember(d => d.Member, o => o.MapFrom(x => x.CreatedByNavigation));
 
     }
 
@@ -38,7 +38,6 @@ public class WorkoutProfile : Profile
             .ForMember(d => d.WorkoutTypeId, o => o.MapFrom(x => x.TypeId));
         
         CreateMap<CreateWorkoutResultDto, WorkoutResult>()
-            .ForMember(d => d.MemberId, o => o.MapFrom(x => 1)) //ToDo - get member id from token
             .ForMember(d => d.CreatedDate,
             o => o.MapFrom(x => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)));
         
