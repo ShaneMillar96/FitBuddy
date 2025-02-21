@@ -16,6 +16,9 @@ public class WorkoutDto
 
     public MemberDto CreatedBy { get;set; }
     
+    public int CommentsCount { get; set; }
+
+    public int ResultsLogged { get; set; }
     public DateTime CreatedDate { get; set; }
     
     public DateTime? ModifiedDate { get; set; }

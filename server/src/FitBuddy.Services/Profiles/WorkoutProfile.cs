@@ -17,6 +17,8 @@ public class WorkoutProfile : Profile
         CreateMap<Workout, WorkoutDto>()
             .ForMember(d => d.CreatedBy, o => o.MapFrom(x => x.CreatedBy))
             .ForMember(d => d.ScoreType, o => o.MapFrom(x => x.ScoreType))
+            .ForMember(d => d.ResultsLogged, o => o.MapFrom(x => x.WorkoutResults.Count))
+            .ForMember(d => d.CommentsCount, o => o.MapFrom(x => x.Comments.Count))
             .ForMember(d => d.WorkoutType, o => o.MapFrom(x => x.WorkoutType));
         
         CreateMap<WorkoutType, WorkoutTypeDto>();

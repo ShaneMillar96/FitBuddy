@@ -1,5 +1,6 @@
 import { useWorkouts } from "@/hooks/useWorkouts";
 import { useNavigate } from "react-router-dom";
+import { FaTrophy, FaCommentDots } from "react-icons/fa"; 
 
 const WorkoutList = () => {
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } = useWorkouts({ pageSize: 10 });
@@ -15,12 +16,14 @@ const WorkoutList = () => {
 
     if (error) return <p className="text-red-500 text-center">Failed to load workouts.</p>;
 
+    // Flatten all pages into a single array
     const workouts = data?.pages.flatMap((page) => page.data) || [];
 
     return (
         <div className="container mx-auto p-6 bg-black text-gray-300 border border-gray-700 rounded-lg shadow-lg">
             <h1 className="text-white text-3xl font-bold mb-4 text-center">Workouts</h1>
 
+            {/* No Workouts Message */}
             {workouts.length === 0 ? (
                 <div className="text-center text-gray-400 py-10">
                     <p className="text-lg">🚀 No workouts have been created yet.</p>
@@ -34,7 +37,9 @@ const WorkoutList = () => {
                 </div>
             ) : (
                 <>
+                    {/* Workouts Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {/* ✅ Add "New Workout +" Card */}
                         <div
                             onClick={() => navigate("/create-workout")}
                             className="bg-gray-900 text-white border border-gray-700 p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 cursor-pointer hover:border-white flex items-center justify-center"
@@ -42,11 +47,12 @@ const WorkoutList = () => {
                             <h2 className="text-white text-xl font-semibold">New Workout +</h2>
                         </div>
 
+                        {/* ✅ Render Workouts */}
                         {workouts.map((workout) => (
                             <div
                                 key={workout.id}
                                 onClick={() => navigate(`/workouts/${workout.id}`)}
-                                className="bg-gray-900 text-white border border-gray-700 p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 cursor-pointer hover:border-white"
+                                className="bg-gray-900 text-white border border-gray-700 p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 cursor-pointer hover:border-white relative"
                             >
                                 <h2 className="text-white text-xl font-semibold">{workout.name}</h2>
                                 <p className="text-gray-500 text-sm mt-2">
@@ -55,10 +61,21 @@ const WorkoutList = () => {
                                 <p className="text-gray-500 text-sm">
                                     <strong className="text-white">Type:</strong> {workout.workoutType.name}
                                 </p>
+
+                                {/* ✅ Display Results & Comments Counts */}
+                                <div className="flex justify-end items-center gap-4 mt-4 text-gray-400">
+                                    <span className="flex items-center gap-1">
+                                        <FaTrophy className="text-yellow-400" /> {workout.resultsLogged}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                        <FaCommentDots className="text-blue-400" /> {workout.commentsCount}
+                                    </span>
+                                </div>
                             </div>
                         ))}
                     </div>
 
+                    {/* Load More Button */}
                     {hasNextPage && (
                         <div className="mt-6 text-center">
                             <button

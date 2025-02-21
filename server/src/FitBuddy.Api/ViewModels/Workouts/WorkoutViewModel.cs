@@ -15,7 +15,11 @@ public class WorkoutViewModel
     public ScoreTypeViewModel ScoreType { get; set; }
     
     public MemberViewModel CreatedBy { get;set; }
-    
+
+    public int CommentsCount { get; set; }
+
+    public int ResultsLogged { get; set; }
+
     public DateTime CreatedDate { get; set; }
     
     public DateTime? ModifiedDate { get; set; }
