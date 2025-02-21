@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using FitBuddy.Dal.Interfaces;
 
 namespace FitBuddy.Dal.Models.application;
 
 [Table("workouts")]
 [Microsoft.EntityFrameworkCore.Index("Name", Name = "workouts_name_key", IsUnique = true)]
-public partial class Workout
+public partial class Workout : ICreatedByTracking
 {
     [Key]
     [Column("id")]

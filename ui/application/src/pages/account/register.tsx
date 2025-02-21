@@ -24,8 +24,8 @@ const Register = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-black text-gray-300">
-            <div className="bg-gray-900 p-8 rounded-lg shadow-lg border border-gray-700">
+        <div className="flex items-center justify-center min-h-screen text-gray-300">
+            <div className="bg-black p-8 rounded-lg shadow-lg border border-gray-700">
                 <h2 className="text-white text-3xl font-bold mb-4 text-center">Register</h2>
 
                 <input
@@ -53,7 +53,7 @@ const Register = () => {
                 <button
                     onClick={handleRegister}
                     disabled={registerMutation.isLoading}
-                    className="w-full px-4 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600"
+                    className="w-full px-4 py-2 rounded-lg bg-gray-500 text-black hover:bg-white"
                 >
                     {registerMutation.isLoading ? "Registering..." : "Register"}
                 </button>

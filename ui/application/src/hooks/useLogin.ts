@@ -14,7 +14,8 @@ export const useLogin = () => {
             const { data } = await axiosInstance.post(`${APIRoutes.ACCOUNTS}/login`, loginData);
             return data;
         },
-        onSuccess: () => {
+        onSuccess: (data) => {
+            localStorage.setItem("token", data.token); 
             toast.success("Login successful!");
         },
         onError: () => {

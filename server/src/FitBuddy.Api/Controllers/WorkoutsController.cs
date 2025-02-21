@@ -6,6 +6,7 @@ using FitBuddy.Api.ViewModels.Workouts;
 using FitBuddy.Services.Dtos.Pagination;
 using FitBuddy.Services.Dtos.Workouts;
 using FitBuddy.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitBuddy.Api.Controllers;
@@ -36,6 +37,7 @@ public class WorkoutsController : FitBuddyBaseController
         return OkOrNoContent(_mapper.Map<WorkoutViewModel>(workout));
     }
     
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult> CreateWorkout([FromBody] CreateWorkoutRequestModel workout)
     {

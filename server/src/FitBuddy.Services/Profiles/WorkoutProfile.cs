@@ -29,7 +29,6 @@ public class WorkoutProfile : Profile
     {
         CreateMap<CreateWorkoutDto, Workout>()
             .ForMember(d => d.WorkoutTypeId, o => o.MapFrom(x => x.TypeId))
-            .ForMember(d => d.CreatedBy, o => o.MapFrom(x => 1))
             .ForMember(d => d.CreatedDate,
                 o => o.MapFrom(x => DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)));
 

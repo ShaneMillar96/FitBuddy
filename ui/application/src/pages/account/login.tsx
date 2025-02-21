@@ -23,8 +23,8 @@ const Login = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-black text-gray-300">
-            <div className="bg-gray-900 p-8 rounded-lg shadow-lg border border-gray-700">
+        <div className="flex items-center justify-center min-h-screen text-gray-300">
+            <div className="bg-black p-8 rounded-lg shadow-lg border border-gray-700">
                 <h2 className="text-white text-3xl font-bold mb-4 text-center">Login</h2>
 
                 <input
@@ -45,7 +45,7 @@ const Login = () => {
                 <button
                     onClick={handleLogin}
                     disabled={loginMutation.isLoading}
-                    className="w-full px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
+                    className="w-full px-4 py-2 rounded-lg bg-gray-500 text-black hover:bg-white"
                 >
                     {loginMutation.isLoading ? "Logging in..." : "Login"}
                 </button>
