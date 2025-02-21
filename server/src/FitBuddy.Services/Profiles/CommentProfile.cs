@@ -14,7 +14,8 @@ public class CommentProfile : Profile
     
     private void ConfigureDomainToDto()
     {
-        CreateMap<Comment, CommentDto>();
+        CreateMap<Comment, CommentDto>()
+            .ForMember(d => d.Member, o => o.MapFrom(x => x.CreatedBy));
     }
     
     private void ConfigureDtoToDomain()

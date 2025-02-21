@@ -23,6 +23,7 @@ export const useWorkouts = ({
             return totalFetched < lastPage.totalCount ? allPages.length + 1 : undefined;
         },
         keepPreviousData: true,
-        staleTime: 30000,
+        staleTime: 0,
+        refetchOnWindowFocus: true, 
     });
 };

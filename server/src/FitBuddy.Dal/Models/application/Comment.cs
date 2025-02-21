@@ -5,7 +5,7 @@ using FitBuddy.Dal.Interfaces;
 namespace FitBuddy.Dal.Models.application;
 
 [Table("comments")]
-public partial class Comment
+public partial class Comment : ICreatedByTracking
 {
     [Key]
     [Column("id")]

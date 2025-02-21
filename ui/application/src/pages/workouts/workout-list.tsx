@@ -5,7 +5,14 @@ const WorkoutList = () => {
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } = useWorkouts({ pageSize: 10 });
     const navigate = useNavigate();
 
-    if (isLoading) return <p className="text-gray-400 text-center">Loading workouts...</p>;
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-black">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-opacity-50"></div>
+            </div>
+        );
+    }
+
     if (error) return <p className="text-red-500 text-center">Failed to load workouts.</p>;
 
     const workouts = data?.pages.flatMap((page) => page.data) || [];
