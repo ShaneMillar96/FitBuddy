@@ -1,4 +1,5 @@
 using AutoMapper;
+using FitBuddy.Dal.Enums;
 using FitBuddy.Dal.Extensions;
 using FitBuddy.Dal.Interfaces;
 using FitBuddy.Dal.Models.application;
@@ -48,7 +49,12 @@ public class WorkoutService : IWorkoutService
     
     public async Task<int> CreateWorkout(CreateWorkoutDto workout)
     {
-        var newWorkout = _mapper.Map<Workout>(workout); 
+        var newWorkout = _mapper.Map<Workout>(workout);
+        newWorkout.ScoreTypeId = ((WorkoutTypes)workout.TypeId) switch
+        {
+            WorkoutTypes.ForTime or WorkoutTypes.Ladder => 1,
+            _ => 2 
+        };
         await _context.AddAsync(newWorkout);
         await _context.SaveChangesAsync();
 

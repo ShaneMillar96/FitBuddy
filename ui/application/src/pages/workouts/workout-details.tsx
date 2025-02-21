@@ -15,17 +15,24 @@ const WorkoutDetails = () => {
 
     return (
         <div className="container mx-auto p-6 bg-black text-gray-300 border border-gray-700 rounded-lg shadow-lg">
-            <h1 className="text-white text-4xl font-extrabold">
-                {workout.name} <span className="text-gray-400 text-2xl">({workout.workoutType.name})</span>
-            </h1>
+            <h1 className="text-white text-4xl font-extrabold">{workout.name}</h1>
+            <p className="text-gray-400 mt-2">
+                <strong className="text-white">Type:</strong> {workout.workoutType.name}
+            </p>
+            <p className="text-gray-400 mt-2">
+                <strong className="text-white">Created by:</strong> {workout.createdBy.username}
+            </p>
+            <p className="text-gray-400 mt-2">
+                <strong className="text-white">Created on:</strong> {new Date(workout.createdDate).toLocaleDateString()}
+            </p>
 
-            <pre className="text-gray-300 text-lg mt-4 whitespace-pre-wrap leading-relaxed border-t border-gray-700 pt-4">
+            <div className="text-gray-300 mt-4 border-t border-gray-700 pt-4 whitespace-pre-line">
                 {workout.description}
-            </pre>
+            </div>
 
             <Tabs
                 tabs={[
-                    { label: "Results", content: <Results workoutId={id!} /> },
+                    { label: "Results", content: <Results workoutId={id!} scoreType={workout.scoreType.name} /> },
                     { label: "Comments", content: <Comments workoutId={id!} /> },
                 ]}
                 activeTab={activeTab}

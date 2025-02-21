@@ -4,9 +4,10 @@ import { useAddWorkoutResult } from "@/hooks/useAddWorkoutResult";
 
 interface ResultsProps {
     workoutId: string;
+    scoreType: string;
 }
 
-const Results = ({ workoutId }: ResultsProps) => {
+const Results = ({ workoutId, scoreType }: ResultsProps) => {
     const { data: results, isLoading, error } = useWorkoutResults(workoutId);
     const addResultMutation = useAddWorkoutResult();
 
@@ -35,13 +36,31 @@ const Results = ({ workoutId }: ResultsProps) => {
             {isAddingResult ? (
                 <div className="p-4 bg-gray-900 border border-gray-700 rounded-lg">
                     <h2 className="text-white text-2xl font-bold mb-4">Add Your Result</h2>
-                    <input
-                        type="text"
-                        value={resultText}
-                        onChange={(e) => setResultText(e.target.value)}
-                        placeholder="Enter your result (e.g., 10:30, 150 reps)"
-                        className="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
-                    />
+
+                    <div className="flex space-x-4 items-center">
+                        {scoreType === "Time" ? (
+                            <input
+                                type="text"
+                                value={resultText}
+                                onChange={(e) => setResultText(e.target.value)}
+                                placeholder="mm:ss"
+                                pattern="[0-5]?[0-9]:[0-5][0-9]"
+                                className="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
+                            />
+                        ) : (
+                            <div className="flex items-center space-x-2">
+                                <input
+                                    type="number"
+                                    value={resultText}
+                                    onChange={(e) => setResultText(e.target.value)}
+                                    placeholder="Total Reps"
+                                    className="w-32 px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"
+                                />
+                                {/*<span className="text-gray-400">Total Reps</span>*/}
+                            </div>
+                        )}
+                    </div>
+
                     <div className="mt-4 flex space-x-4">
                         <button
                             onClick={handleSubmitResult}
@@ -79,14 +98,17 @@ const Results = ({ workoutId }: ResultsProps) => {
                             <tr>
                                 <th className="p-2 border border-gray-700">Rank</th>
                                 <th className="p-2 border border-gray-700">User</th>
-                                <th className="p-2 border border-gray-700">Score</th>
+                                <th className="p-2 border border-gray-700">{scoreType}</th>
                                 <th className="p-2 border border-gray-700">Date</th>
                             </tr>
                             </thead>
                             <tbody>
                             {results.data
                                 .filter((res) => res.result)
-                                .sort((a, b) => a.result.localeCompare(b.result))
+                                .sort((a, b) => scoreType === "Time"
+                                    ? a.result.localeCompare(b.result) 
+                                    : Number(b.result) - Number(a.result) 
+                                )
                                 .map((result, index) => (
                                     <tr key={result.id} className="bg-gray-900 hover:bg-gray-800">
                                         <td className="p-2 border border-gray-700">{index + 1}</td>
