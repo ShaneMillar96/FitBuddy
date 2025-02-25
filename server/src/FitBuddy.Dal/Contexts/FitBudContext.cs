@@ -54,15 +54,6 @@ namespace FitBuddy.Dal.Contexts
             {
                 entity.Entity.CreatedById = userId;
             }
-
-            // var modifiedEntities = ChangeTracker.Entries<IModifiedByTracking>()
-            //     .Where(x => x.State == EntityState.Modified)
-            //     .ToArray();
-            //
-            // foreach (var entity in modifiedEntities)
-            // {
-            //     entity.Entity.ModifiedById = userId;
-            // }
         }
     }
 }

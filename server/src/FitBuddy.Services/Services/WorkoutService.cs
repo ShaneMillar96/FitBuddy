@@ -1,9 +1,11 @@
+using System.Net.Http.Headers;
+using System.Text.Json;
 using AutoMapper;
 using FitBuddy.Dal.Enums;
-using FitBuddy.Dal.Extensions;
 using FitBuddy.Dal.Interfaces;
 using FitBuddy.Dal.Models.application;
 using FitBuddy.Dal.Specifications.Workouts;
+using FitBuddy.Services.Client.ResponseModels;
 using FitBuddy.Services.Dtos.Pagination;
 using FitBuddy.Services.Dtos.Workouts;
 using FitBuddy.Services.Interfaces;
@@ -17,10 +19,12 @@ public class WorkoutService : IWorkoutService
     private readonly IFitBudContext _context;
     private readonly IPaginationService _paginationService;
     private readonly IMapper _mapper;
-    
+
     public WorkoutService(IFitBudContext context, IPaginationService paginationService, IMapper mapper)
     {
-        (_context, _paginationService, _mapper) = (context, paginationService,  mapper);
+        _context = context;
+        _paginationService = paginationService;
+        _mapper = mapper;
     }
     
     public async Task<PaginatedDto<WorkoutDto>> RetrieveWorkouts(PaginationDto pagination)
@@ -135,4 +139,6 @@ public class WorkoutService : IWorkoutService
         await _context.SaveChangesAsync();
         return true;
     }
+    
+   
 }

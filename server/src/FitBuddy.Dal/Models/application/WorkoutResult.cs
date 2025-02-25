@@ -26,6 +26,19 @@ public partial class WorkoutResult : ICreatedByTracking
     [Column("modified_date", TypeName = "timestamp without time zone")]
     public DateTime? ModifiedDate { get; set; }
 
+    [Column("duration")]
+    public int? Duration { get; set; }
+
+    [Column("avg_heart_rate")]
+    public int? AvgHeartRate { get; set; }
+
+    [Column("calories_burned")]
+    public int? CaloriesBurned { get; set; }
+
+    [Column("garmin_activity_id")]
+    [StringLength(50)]
+    public string? GarminActivityId { get; set; }
+
     [ForeignKey("CreatedById")]
     [InverseProperty("WorkoutResults")]
     public virtual Member CreatedBy { get; set; } = null!;
