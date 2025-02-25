@@ -15,6 +15,7 @@ public class MemberProfile : Profile
     private void ConfigureDomainToDto()
     {
         CreateMap<Member, MemberDto>();
+        CreateMap<WorkoutResult, BestWorkoutResultDto>();
     }
 
     private void ConfigureDtoToDomain()

@@ -8,6 +8,7 @@ import WorkoutDetails from "@/pages/workouts/workout-details";
 import CreateWorkout from "@/pages/workouts/create-workout";
 import Navbar from "./components/layout/Navbar";
 import PrivateRoute from "@/utils/private-route";
+import Dashboard from "@/pages/dashboard/Dashboard";
 const App = () => {
     return (
         <Router>
@@ -21,6 +22,7 @@ const App = () => {
                         <Route path="/workouts" element={<WorkoutList />} />
                         <Route path="/workouts/:id" element={<WorkoutDetails />} />
                         <Route path="/create-workout" element={<CreateWorkout />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
                     </Route>
                 </Routes>
                 <ToastContainer position="top-center" autoClose={3000} />

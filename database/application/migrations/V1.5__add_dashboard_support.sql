@@ -1,0 +1,3 @@
+ALTER TABLE workout_results
+    ALTER COLUMN created_date SET NOT NULL,
+ALTER COLUMN created_date SET DEFAULT CURRENT_TIMESTAMP;
