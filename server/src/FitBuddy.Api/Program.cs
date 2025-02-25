@@ -1,5 +1,4 @@
 using System.Text;
-using FitBuddy.Dal;
 using FitBuddy.Dal.Contexts;
 using FitBuddy.Dal.Database;
 using FitBuddy.Dal.Interfaces;
@@ -7,7 +6,6 @@ using FitBuddy.Services.Interfaces;
 using FitBuddy.Services.Pagination;
 using FitBuddy.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +24,7 @@ builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IWorkoutService, WorkoutService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IPaginationService, PaginationService>();
 
 // Configure CORS

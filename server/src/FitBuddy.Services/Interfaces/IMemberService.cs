@@ -10,6 +10,4 @@ public interface IMemberService
     Task<int> CreateMember(CreateMemberDto member);
     Task<bool> UpdateMember(int memberId, UpdateMemberDto member);
     Task<bool> DeleteMember(int memberId);
-    
-    Task<DashboardDto> GetMemberDashboardAsync();
 }
