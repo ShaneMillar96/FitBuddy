@@ -27,6 +27,4 @@ public class DashboardController : FitBuddyBaseController
         var dashboard = await _dashboardService.GetMemberDashboardAsync();
         return Ok(_mapper.Map<DashboardViewModel>(dashboard));
     }
-
-
 }
