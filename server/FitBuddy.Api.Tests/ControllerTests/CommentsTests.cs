@@ -3,6 +3,7 @@ using FitBuddy.Api.Controllers;
 using FitBuddy.Api.RequestModels.Comments;
 using FitBuddy.Api.ViewModels.Comments;
 using FitBuddy.Api.ViewModels.Pagination;
+using FitBuddy.Dal.Interfaces;
 using FitBuddy.Services.Dtos.Comments;
 using FitBuddy.Services.Dtos.Pagination;
 using FitBuddy.Services.Interfaces;
@@ -17,13 +18,15 @@ public class CommentsTests
 {
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<ICommentService> _serviceMock;
+    private readonly Mock<IFitBudContext> _contextMock;
     private readonly CommentsController _controller;
 
     public CommentsTests()
     {
         _mapperMock = new Mock<IMapper>();
         _serviceMock = new Mock<ICommentService>();
-        _controller = new CommentsController(_mapperMock.Object, _serviceMock.Object);
+        _contextMock = new Mock<IFitBudContext>();
+        _controller = new CommentsController(_mapperMock.Object, _serviceMock.Object, _contextMock.Object);    
     }
 
     [Fact]

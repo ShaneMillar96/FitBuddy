@@ -4,6 +4,7 @@ using FitBuddy.Api.RequestModels.Workouts;
 using FitBuddy.Api.ViewModels.Pagination;
 using FitBuddy.Api.ViewModels.Workouts;
 using FitBuddy.Dal.Enums;
+using FitBuddy.Dal.Interfaces;
 using FitBuddy.Services.Dtos.Pagination;
 using FitBuddy.Services.Dtos.Workouts;
 using FitBuddy.Services.Interfaces;
@@ -18,13 +19,15 @@ public class WorkoutsTests
 {
     private readonly Mock<IMapper> _mapperMock;
     private readonly Mock<IWorkoutService> _serviceMock;
+    private readonly Mock<IFitBudContext> _contextMock;
     private readonly WorkoutsController _controller;
 
     public WorkoutsTests()
     {
         _mapperMock = new Mock<IMapper>();
         _serviceMock = new Mock<IWorkoutService>();
-        _controller = new WorkoutsController(_mapperMock.Object, _serviceMock.Object);
+        _contextMock = new Mock<IFitBudContext>();
+        _controller = new WorkoutsController(_mapperMock.Object, _serviceMock.Object, _contextMock.Object);
     }
 
     [Fact]

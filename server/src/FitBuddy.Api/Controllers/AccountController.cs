@@ -13,7 +13,7 @@ namespace FitBuddy.Api.Controllers
 {
     [ApiController]
     [Route("account")]
-    public class AccountController : FitBuddyControllerBase
+    public class AccountController : FitBuddyBaseController
     {
         private readonly IMapper _mapper;
         private readonly IAccountService _accountService;
@@ -96,7 +96,6 @@ namespace FitBuddy.Api.Controllers
                 return BadRequest("Failed to retrieve Garmin access token.");
             }
 
-            // Store the access token for the current user
             await SaveGarminAccessTokenAsync(accessToken);
 
             return Ok(new { AccessToken = accessToken });

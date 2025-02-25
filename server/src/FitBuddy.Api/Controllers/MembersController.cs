@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using FitBuddy.Api.RequestModels.Members;
 using FitBuddy.Api.ViewModels.Members;
+using FitBuddy.Dal.Interfaces;
 using FitBuddy.Services.Dtos.Members;
 
 namespace FitBuddy.Api.Controllers;
@@ -17,7 +18,7 @@ public class MembersController : FitBuddyBaseController
     private readonly IMapper _mapper;
     private readonly IMemberService _service;
     
-    public MembersController(IMapper mapper, IMemberService service)
+    public MembersController(IMapper mapper, IMemberService service, IFitBudContext context) : base(context)
     {
         (_mapper, _service) = (mapper, service);
     }

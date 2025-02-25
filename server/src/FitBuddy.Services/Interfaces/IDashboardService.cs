@@ -4,5 +4,5 @@ namespace FitBuddy.Services.Interfaces;
 
 public interface IDashboardService
 {
-    Task<DashboardDto> GetMemberDashboardAsync();
+    Task<DashboardDto> GetMemberDashboardAsync(int memeberIdc);
 }

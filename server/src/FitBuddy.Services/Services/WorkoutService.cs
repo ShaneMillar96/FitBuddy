@@ -139,6 +139,4 @@ public class WorkoutService : IWorkoutService
         await _context.SaveChangesAsync();
         return true;
     }
-    
-   
 }

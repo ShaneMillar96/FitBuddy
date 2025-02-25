@@ -3,6 +3,7 @@ using FitBuddy.Api.Controllers.Base;
 using FitBuddy.Api.RequestModels.Workouts;
 using FitBuddy.Api.ViewModels.Pagination;
 using FitBuddy.Api.ViewModels.Workouts;
+using FitBuddy.Dal.Interfaces;
 using FitBuddy.Services.Dtos.Pagination;
 using FitBuddy.Services.Dtos.Workouts;
 using FitBuddy.Services.Interfaces;
@@ -18,7 +19,7 @@ public class WorkoutsController : FitBuddyBaseController
     private readonly IMapper _mapper;
     private readonly IWorkoutService _service;
     
-    public WorkoutsController(IMapper mapper, IWorkoutService service)
+    public WorkoutsController(IMapper mapper, IWorkoutService service, IFitBudContext context) : base(context)
     {
         (_mapper, _service) = (mapper, service);
     }

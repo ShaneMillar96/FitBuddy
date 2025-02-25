@@ -8,6 +8,7 @@ using FitBuddy.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using FitBuddy.Api.ViewModels.Pagination;
+using FitBuddy.Dal.Interfaces;
 using Xunit;
 using Assert = Xunit.Assert;
 
@@ -17,13 +18,15 @@ namespace FitBuddy.Api.Tests.ControllerTests
     {
         private readonly Mock<IMapper> _mapperMock;
         private readonly Mock<IMemberService> _serviceMock;
+        private readonly Mock<IFitBudContext> _contextMock;
         private readonly MembersController _controller;
 
         public MembersTests()
         {
             _mapperMock = new Mock<IMapper>();
             _serviceMock = new Mock<IMemberService>();
-            _controller = new MembersController(_mapperMock.Object, _serviceMock.Object);
+            _contextMock = new Mock<IFitBudContext>();
+            _controller = new MembersController(_mapperMock.Object, _serviceMock.Object, _contextMock.Object);
         }
 
         [Fact]

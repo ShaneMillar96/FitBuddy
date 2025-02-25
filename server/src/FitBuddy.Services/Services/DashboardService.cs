@@ -15,10 +15,10 @@ public class DashboardService : IDashboardService
         (_context) = (context);
     }
     
-    public async Task<DashboardDto> GetMemberDashboardAsync()
+    public async Task<DashboardDto> GetMemberDashboardAsync(int memberId)
     {
-        var today = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified).Date;        var weekStart = today.AddDays(-(int)today.DayOfWeek);
-        var memberId = _context.GetCurrentUserId();
+        var today = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified).Date;       
+        var weekStart = today.AddDays(-(int)today.DayOfWeek);
 
         var workoutResultsQuery = _context.Get<WorkoutResult>()
             .Include(wr => wr.Workout)

@@ -3,6 +3,7 @@ using FitBuddy.Api.Controllers.Base;
 using FitBuddy.Api.RequestModels.Comments;
 using FitBuddy.Api.ViewModels.Comments;
 using FitBuddy.Api.ViewModels.Pagination;
+using FitBuddy.Dal.Interfaces;
 using FitBuddy.Services.Dtos.Comments;
 using FitBuddy.Services.Dtos.Pagination;
 using FitBuddy.Services.Interfaces;
@@ -16,8 +17,9 @@ public class CommentsController : FitBuddyBaseController
 {
     private readonly IMapper _mapper;
     private readonly ICommentService _service;
+
     
-    public CommentsController(IMapper mapper, ICommentService service)
+    public CommentsController(IMapper mapper, ICommentService service, IFitBudContext context) : base(context)
     {
         (_mapper, _service) = (mapper, service);
     }

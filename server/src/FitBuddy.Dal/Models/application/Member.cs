@@ -30,6 +30,9 @@ public partial class Member
     [Column("password_hash")]
     public string PasswordHash { get; set; } = null!;
 
+    [Column("garmin_access_token")]
+    public string? GarminAccessToken { get; set; }
+
     [InverseProperty("CreatedBy")]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
