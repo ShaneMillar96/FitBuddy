@@ -1,22 +1,12 @@
 import { useState, useEffect } from "react";
 import { useWorkoutResults } from "@/hooks/useWorkoutResults";
 import { useAddWorkoutResult } from "@/hooks/useAddWorkoutResult";
-import { useGarminActivities } from "@/hooks/useGarminSync";
+import { useGarminSync, GarminActivity } from "@/hooks/useGarminSync";
 import { FaSync } from "react-icons/fa";
-import axiosInstance from "@shared/integration/instance";
 
 interface ResultsProps {
     workoutId: string;
     scoreType: string;
-}
-
-interface GarminActivity {
-    activityId: string;
-    name: string;
-    duration: number;
-    avgHeartRate: number;
-    caloriesBurned: number;
-    startTime: string;
 }
 
 const Results = ({ workoutId, scoreType }: ResultsProps) => {
@@ -24,8 +14,7 @@ const Results = ({ workoutId, scoreType }: ResultsProps) => {
     const addResultMutation = useAddWorkoutResult();
     const [isAddingResult, setIsAddingResult] = useState(false);
     const [resultText, setResultText] = useState("");
-    const [garminAccessToken, setGarminAccessToken] = useState<string | null>(null);
-    const { data: garminActivities, refetch } = useGarminActivities(garminAccessToken || "");
+    const { initiateGarminAuth, fetchGarminActivities, handleGarminCallback } = useGarminSync();
 
     const handleSubmitResult = (garminData?: GarminActivity) => {
         if (!resultText.trim() && !garminData) return;
@@ -48,20 +37,18 @@ const Results = ({ workoutId, scoreType }: ResultsProps) => {
         );
     };
 
-    const handleGarminSync = () => {
-        window.location.href = "http://localhost:5000/account/garmin-auth";
-    };
-
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get("code");
         if (code) {
-            axiosInstance.get(`/account/garmin-callback?code=${code}`).then((res) => {
-                setGarminAccessToken(res.data.accessToken);
-                refetch();
-            });
+            handleGarminCallback(code)
+                .then(() => {
+                    fetchGarminActivities.refetch(); 
+                    window.history.replaceState({}, document.title, window.location.pathname); 
+                })
+                .catch((err) => console.error("Garmin callback error:", err));
         }
-    }, []);
+    }, [handleGarminCallback, fetchGarminActivities]);
 
     if (isLoading) return <p className="text-gray-400 text-center">Loading results...</p>;
     if (error) return <p className="text-red-500 text-center">Failed to load results.</p>;
@@ -73,22 +60,23 @@ const Results = ({ workoutId, scoreType }: ResultsProps) => {
                     <h2 className="text-white text-2xl font-bold mb-4">Add Your Result</h2>
 
                     <button
-                        onClick={handleGarminSync}
+                        onClick={() => initiateGarminAuth.mutate()}
+                        disabled={initiateGarminAuth.isLoading}
                         className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center"
                     >
                         <FaSync className="mr-2" /> Sync with Garmin
                     </button>
 
-                    {garminActivities && (
+                    {fetchGarminActivities.data && (
                         <select
                             onChange={(e) => {
-                                const activity = garminActivities.find((a) => a.activityId === e.target.value);
+                                const activity = fetchGarminActivities.data.find((a) => a.activityId === e.target.value);
                                 if (activity) handleSubmitResult(activity);
                             }}
                             className="w-full px-4 py-2 mb-4 bg-gray-800 text-white border border-gray-600 rounded-lg"
                         >
                             <option value="">Select a Garmin Activity</option>
-                            {garminActivities.map((a) => (
+                            {fetchGarminActivities.data.map((a) => (
                                 <option key={a.activityId} value={a.activityId}>
                                     {a.name} ({new Date(a.startTime).toLocaleDateString()})
                                 </option>

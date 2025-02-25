@@ -13,4 +13,12 @@ public class WorkoutResultViewModel
     public WorkoutTypeViewModel Type { get; set; }
 
     public DateTime CreatedDate { get; set; }
+    
+    public int? Duration { get; set; } 
+    
+    public int? AvgHeartRate { get; set; } 
+    
+    public int? CaloriesBurned { get; set; }
+    
+    public string? GarminActivityId { get; set; }
 }
