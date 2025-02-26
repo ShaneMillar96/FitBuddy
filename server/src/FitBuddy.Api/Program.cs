@@ -27,6 +27,7 @@ builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IGarminService, GarminService>();
 builder.Services.AddScoped<IPaginationService, PaginationService>();
+builder.Services.AddScoped<IAnalysisService, AnalysisService>();
 
 builder.Services.AddHttpClient(); 
 

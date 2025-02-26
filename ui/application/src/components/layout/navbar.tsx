@@ -1,12 +1,12 @@
 import Logo from "@/assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useLogout } from "@/hooks/useLogout";
-import { FaDumbbell, FaChartLine, FaSignOutAlt } from "react-icons/fa";
+import { FaDumbbell, FaChartLine, FaSignOutAlt, FaVideo } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode"; // Changed to named import
+import { jwtDecode } from "jwt-decode";
 
 interface JwtPayload {
-    unique_name: string; // Maps to Username in your JWT
+    unique_name: string;
 }
 
 const Navbar = () => {
@@ -54,6 +54,9 @@ const Navbar = () => {
                         title="Dashboard"
                     >
                         <FaChartLine className="text-2xl" />
+                    </Link>
+                    <Link to="/analysis" className="text-white hover:text-gray-400" title="AI Coach Analysis">
+                        <FaVideo className="text-2xl" />
                     </Link>
                     <button
                         onClick={logout}

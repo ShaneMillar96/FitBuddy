@@ -36,6 +36,9 @@ public partial class Member
     [InverseProperty("CreatedBy")]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
+    [InverseProperty("Member")]
+    public virtual ICollection<ExerciseVideo> ExerciseVideos { get; set; } = new List<ExerciseVideo>();
+
     [InverseProperty("CreatedBy")]
     public virtual ICollection<WorkoutResult> WorkoutResults { get; set; } = new List<WorkoutResult>();
 
