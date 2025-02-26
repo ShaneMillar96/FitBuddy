@@ -59,13 +59,13 @@ const Results = ({ workoutId, scoreType }: ResultsProps) => {
                 <div className="p-4 bg-gray-900 border border-gray-700 rounded-lg">
                     <h2 className="text-white text-2xl font-bold mb-4">Add Your Result</h2>
 
-                    <button
-                        onClick={() => initiateGarminAuth.mutate()}
-                        disabled={initiateGarminAuth.isLoading}
-                        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center"
-                    >
-                        <FaSync className="mr-2" /> Sync with Garmin
-                    </button>
+                    {/*<button*/}
+                    {/*    onClick={() => initiateGarminAuth.mutate()}*/}
+                    {/*    disabled={initiateGarminAuth.isLoading}*/}
+                    {/*    className="mb-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center"*/}
+                    {/*>*/}
+                    {/*    <FaSync className="mr-2" /> Sync with Garmin*/}
+                    {/*</button>*/}
 
                     {fetchGarminActivities.data && (
                         <select
