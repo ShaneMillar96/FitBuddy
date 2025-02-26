@@ -4,16 +4,18 @@ import numpy as np
 from flask import Flask, request, jsonify
 import os
 import logging
-from typing import Set, Optional
+from typing import Set
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
 
 app = Flask(__name__)
 
+# Initialize MediaPipe Pose
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
+# Exercise type definitions
 EXERCISE_TYPES = {
     "Squat": 1,
     "SquatSnatch": 2,
@@ -21,130 +23,225 @@ EXERCISE_TYPES = {
     "Deadlift": 4
 }
 
-class SquatTracker:
+class SquatFormAnalyzer:
     def __init__(self):
-        self.is_squatting = False  # Tracks whether a squat is in progress
-        self.reps = 0  # Count completed squats
-        self.lowest_hip_position = None  # Track deepest hip position in current squat
-        self.feedback_set: Set[str] = set()  # Store unique feedback messages
-        self.previous_hip_knee_diff = 0.0  # Track previous depth for smoother transitions
-        self.squat_phase = "standing"  # Track phase: "standing", "descending", "ascending"
-        self.frame_count = 0  # Track frames for timing and stability
-        self.min_frames_per_rep = 15  # Minimum frames for a valid rep (adjust for video FPS, e.g., 30 FPS)
+        self.feedback_set: Set[str] = set()
 
     def _calculate_squat_depth(self, landmarks) -> float:
-        """Calculate average squat depth using both left and right sides for robustness."""
+        """Calculate squat depth."""
         left_hip = landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y
-        left_knee = landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y
-        left_ankle = landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y
-
         right_hip = landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y
+        left_knee = landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y
         right_knee = landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].y
-        right_ankle = landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].y
-
-        # Average positions for symmetry and robustness
-        avg_hip = (left_hip + right_hip) / 2
-        avg_knee = (left_knee + right_knee) / 2
-        avg_ankle = (left_ankle + right_ankle) / 2
-
-        # Depth is positive when hips are below knees
-        depth = avg_hip - avg_knee
-        return depth
+        return (left_hip + right_hip) / 2 - (left_knee + right_knee) / 2
 
     def _check_knee_position(self, landmarks) -> bool:
-        """Check if knees are tracking correctly (not excessively forward or collapsing)."""
+        """Check if knees are too far forward or collapsing inward."""
         left_foot_x = landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x
         left_knee_x = landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].x
         right_foot_x = landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].x
         right_knee_x = landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].x
+        return abs(left_knee_x - left_foot_x) > 0.25 or abs(right_knee_x - right_foot_x) > 0.25
 
-        left_knee_deviation = abs(left_knee_x - left_foot_x)
-        right_knee_deviation = abs(right_knee_x - right_foot_x)
+    def _check_back_angle(self, landmarks) -> bool:
+        """Check if back is excessively rounded."""
+        shoulder_y = (landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y + 
+                      landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y) / 2
+        hip_y = (landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y + 
+                 landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y) / 2
+        return shoulder_y > hip_y + 0.1
 
-        # Threshold for excessive forward knee travel (normalized 0-1, adjust based on testing)
-        return left_knee_deviation > 0.25 or right_knee_deviation > 0.25
-
-    def _check_full_extension(self, depth: float) -> bool:
-        """Check if user is fully standing up (hips above knees by a small margin)."""
-        return depth < -0.05  # Hips slightly above knees for full extension
-
-    def analyze_squat(self, landmarks) -> Optional[Set[str]]:
-        """
-        Tracks squat movement with improved rep counting and detailed feedback.
-        Returns feedback when a rep is completed or None if still in progress.
-        """
-        self.frame_count += 1
+    def analyze_squat_form(self, landmarks) -> Set[str]:
+        """Analyze squat form and provide coaching feedback."""
+        self.feedback_set.clear()
         depth = self._calculate_squat_depth(landmarks)
-        is_fully_extended = self._check_full_extension(depth)
 
-        logging.debug(f"Frame {self.frame_count}: Hip-Knee Depth = {depth}, Phase = {self.squat_phase}")
+        # Depth feedback
+        if depth < 0.05:
+            self.feedback_set.add("Sink your hips lower—aim for knees level with hips for full depth.")
+        elif depth > 0.08:
+            self.feedback_set.add("Nice depth! Maintain control to protect your knees.")
 
-        # State machine for squat phases
-        if self.squat_phase == "standing":
-            if depth > 0.03:  # Start descending if hips drop below knees significantly
-                self.squat_phase = "descending"
-                self.is_squatting = True
-                self.lowest_hip_position = depth
-                self.feedback_set.clear()
-                logging.info("Squat detected: descending started.")
-            return None
+        # Knee position feedback
+        if self._check_knee_position(landmarks):
+            self.feedback_set.add("Keep knees in line with your feet—don’t let them drift too far forward or inward.")
 
-        elif self.squat_phase == "descending":
-            if depth > self.lowest_hip_position:  # Track deepest point
-                self.lowest_hip_position = depth
-            if depth < 0.03 and self.frame_count > self.min_frames_per_rep:  # Start ascending (reversal point)
-                self.squat_phase = "ascending"
-                logging.info("Squat detected: ascending started.")
+        # Back angle feedback
+        if self._check_back_angle(landmarks):
+            self.feedback_set.add("Straighten your back more—chest up to avoid rounding.")
 
-        elif self.squat_phase == "ascending":
-            if is_fully_extended and self.frame_count > self.min_frames_per_rep:
-                # Rep completed: reset state and provide feedback
-                self.is_squatting = False
-                self.reps += 1
-                self.squat_phase = "standing"
-                self.frame_count = 0  # Reset frame count for next rep
+        return self.feedback_set if self.feedback_set else {"Good squat form—keep it up!"}
 
-                logging.info(f"Squat rep {self.reps} completed. Generating feedback.")
+class SquatSnatchFormAnalyzer:
+    def __init__(self):
+        self.feedback_set: Set[str] = set()
 
-                # Depth feedback (consistent and realistic)
-                if self.lowest_hip_position > 0.08:  # Deep squat threshold (adjust based on testing)
-                    self.feedback_set.add("Excellent squat depth!")
-                elif self.lowest_hip_position > 0.05:  # Moderate depth
-                    self.feedback_set.add("Good squat depth, but try to go slightly lower for optimal form.")
-                else:
-                    self.feedback_set.add("Increase squat depth: hips should go lower than knees for better form.")
+    def _calculate_depth(self, landmarks) -> float:
+        """Calculate squat depth for snatch."""
+        left_hip = landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y
+        right_hip = landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y
+        left_knee = landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y
+        right_knee = landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].y
+        return (left_hip + right_hip) / 2 - (left_knee + right_knee) / 2
 
-                # Knee position feedback
-                if self._check_knee_position(landmarks):
-                    self.feedback_set.add("Avoid excessive forward knee travel to protect your joints.")
+    def _check_overhead_position(self, landmarks) -> bool:
+        """Check if arms are locked out overhead."""
+        left_elbow = landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y
+        right_elbow = landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y
+        left_wrist = landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y
+        right_wrist = landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y
+        return left_wrist < left_elbow and right_wrist < right_elbow
 
-                # Full extension feedback
-                if not is_fully_extended:
-                    self.feedback_set.add("Ensure you stand up fully between reps for proper recovery.")
+    def _check_shoulder_position(self, landmarks) -> bool:
+        """Check if shoulders are over or behind bar."""
+        shoulder_x = (landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x + 
+                      landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x) / 2
+        foot_x = (landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x + 
+                  landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].x) / 2
+        return abs(shoulder_x - foot_x) > 0.15  # Shoulders too far forward/back
 
-                # Consistency check to avoid contradictions
-                if "Excellent squat depth!" in self.feedback_set and "Increase squat depth" in self.feedback_set:
-                    self.feedback_set.remove("Increase squat depth")
-                if "Good squat depth" in self.feedback_set and "Increase squat depth" in self.feedback_set:
-                    self.feedback_set.remove("Increase squat depth")
+    def analyze_squat_snatch_form(self, landmarks) -> Set[str]:
+        """Analyze squat snatch form and provide coaching feedback."""
+        self.feedback_set.clear()
+        depth = self._calculate_depth(landmarks)
 
-                return self.feedback_set
+        # Depth feedback
+        if depth < 0.05:
+            self.feedback_set.add("Drop deeper into the squat to catch the bar securely.")
+        elif depth > 0.08:
+            self.feedback_set.add("Solid squat depth—maintain stability overhead.")
 
-        self.previous_hip_knee_diff = depth
-        return None  # No feedback until rep is completed
+        # Overhead position feedback
+        if not self._check_overhead_position(landmarks):
+            self.feedback_set.add("Lock your elbows fully overhead—don’t let them bend.")
+
+        # Shoulder position feedback
+        if self._check_shoulder_position(landmarks):
+            self.feedback_set.add("Keep shoulders closer to over the bar—don’t lean too far forward or back.")
+
+        return self.feedback_set if self.feedback_set else {"Great squat snatch form—stay tight!"}
+
+class SquatCleanFormAnalyzer:
+    def __init__(self):
+        self.feedback_set: Set[str] = set()
+
+    def _calculate_depth(self, landmarks) -> float:
+        """Calculate squat depth for clean."""
+        left_hip = landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y
+        right_hip = landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y
+        left_knee = landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y
+        right_knee = landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].y
+        return (left_hip + right_hip) / 2 - (left_knee + right_knee) / 2
+
+    def _check_rack_position(self, landmarks) -> bool:
+        """Check if bar is racked properly on shoulders."""
+        left_wrist = landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y
+        right_wrist = landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y
+        left_shoulder = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y
+        right_shoulder = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y
+        return abs(left_wrist - left_shoulder) < 0.1 and abs(right_wrist - right_shoulder) < 0.1
+
+    def _check_elbow_position(self, landmarks) -> bool:
+        """Check if elbows are high during rack."""
+        left_elbow = landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y
+        right_elbow = landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y
+        chest_y = (landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y + 
+                   landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y) / 2
+        return left_elbow < chest_y and right_elbow < chest_y
+
+    def analyze_squat_clean_form(self, landmarks) -> Set[str]:
+        """Analyze squat clean form and provide coaching feedback."""
+        self.feedback_set.clear()
+        depth = self._calculate_depth(landmarks)
+
+        # Depth feedback
+        if depth < 0.05:
+            self.feedback_set.add("Squat lower to catch the bar—hips should drop more.")
+        elif depth > 0.08:
+            self.feedback_set.add("Good depth—keep your core braced.")
+
+        # Rack position feedback
+        if not self._check_rack_position(landmarks):
+            self.feedback_set.add("Rack the bar on your shoulders—keep wrists closer to your body.")
+
+        # Elbow position feedback
+        if not self._check_elbow_position(landmarks):
+            self.feedback_set.add("Lift your elbows higher to secure the bar in the rack position.")
+
+        return self.feedback_set if self.feedback_set else {"Solid squat clean form—nice work!"}
+
+class DeadliftFormAnalyzer:
+    def __init__(self):
+        self.feedback_set: Set[str] = set()
+
+    def _calculate_hip_height(self, landmarks) -> float:
+        """Track hip height for deadlift."""
+        left_hip = landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y
+        right_hip = landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y
+        return (left_hip + right_hip) / 2
+
+    def _check_back_angle(self, landmarks) -> bool:
+        """Check if back is excessively rounded."""
+        shoulder_y = (landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y + 
+                      landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y) / 2
+        hip_y = self._calculate_hip_height(landmarks)
+        return shoulder_y > hip_y + 0.1
+
+    def _check_hip_position(self, landmarks) -> bool:
+        """Check if hips are too high or too low."""
+        hip_y = self._calculate_hip_height(landmarks)
+        knee_y = (landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y + 
+                  landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].y) / 2
+        return hip_y < knee_y - 0.15 or hip_y > knee_y + 0.15  # Hips too high or too low
+
+    def _check_shoulder_position(self, landmarks) -> bool:
+        """Check if shoulders are too far forward."""
+        shoulder_x = (landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x + 
+                      landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x) / 2
+        foot_x = (landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x + 
+                  landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].x) / 2
+        return abs(shoulder_x - foot_x) > 0.2
+
+    def analyze_deadlift_form(self, landmarks) -> Set[str]:
+        """Analyze deadlift form and provide coaching feedback."""
+        self.feedback_set.clear()
+
+        # Back angle feedback
+        if self._check_back_angle(landmarks):
+            self.feedback_set.add("Keep your back flat—lift your chest to avoid rounding.")
+
+        # Hip position feedback
+        if self._check_hip_position(landmarks):
+            self.feedback_set.add("Adjust your hips—keep them between your knees and shoulders for optimal leverage.")
+
+        # Shoulder position feedback
+        if self._check_shoulder_position(landmarks):
+            self.feedback_set.add("Pull your shoulders back—keep them over the bar.")
+
+        return self.feedback_set if self.feedback_set else {"Great deadlift form—stay strong!"}
 
 def analyze_video(video_path, exercise_type_id: int):
-    """
-    Processes the video and applies the appropriate exercise analysis based on exercise_type_id.
-    """
     cap = cv2.VideoCapture(video_path)
-    squat_tracker = SquatTracker()  # Track squats over the whole video
     final_feedback = set()
-    total_reps = 0
     frame_count = 0
 
-    # Map exercise_type_id to name for logging
-    exercise_type_name = {v: k for k, v in EXERCISE_TYPES.items()}[exercise_type_id]
+    # Initialize appropriate form analyzer
+    if exercise_type_id == EXERCISE_TYPES["Squat"]:
+        analyzer = SquatFormAnalyzer()
+        analyze_func = analyzer.analyze_squat_form
+    elif exercise_type_id == EXERCISE_TYPES["SquatSnatch"]:
+        analyzer = SquatSnatchFormAnalyzer()
+        analyze_func = analyzer.analyze_squat_snatch_form
+    elif exercise_type_id == EXERCISE_TYPES["SquatClean"]:
+        analyzer = SquatCleanFormAnalyzer()
+        analyze_func = analyzer.analyze_squat_clean_form
+    elif exercise_type_id == EXERCISE_TYPES["Deadlift"]:
+        analyzer = DeadliftFormAnalyzer()
+        analyze_func = analyzer.analyze_deadlift_form
+    else:
+        return {"feedback": ["Invalid exercise type!"]}
+
+    exercise_name = {v: k for k, v in EXERCISE_TYPES.items()}[exercise_type_id]
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -157,49 +254,30 @@ def analyze_video(video_path, exercise_type_id: int):
 
         if results.pose_landmarks:
             landmarks = results.pose_landmarks.landmark
-            logging.debug(f"Processing frame {frame_count} for {exercise_type_name}")
-
-            if exercise_type_id == EXERCISE_TYPES["Squat"]:
-                squat_feedback = squat_tracker.analyze_squat(landmarks)
-                if squat_feedback:
-                    final_feedback.update(squat_feedback)
-                    total_reps = squat_tracker.reps  # Update total reps from tracker
+            logging.debug(f"Processing frame {frame_count} for {exercise_name}")
+            feedback = analyze_func(landmarks)
+            final_feedback.update(feedback)
 
     cap.release()
 
-    # Final feedback compilation
-    if total_reps > 0:
-        final_feedback.add(f"Completed {total_reps} squat rep{'s' if total_reps > 1 else ''}.")
-        if total_reps < 3:  # Suggest more reps for a workout (adjust based on goal)
-            final_feedback.add("Consider completing more reps for a full workout (e.g., 8-12 reps).")
-    else:
-        final_feedback.add("No complete squats detected. Please ensure proper squat form and depth.")
+    # If no issues detected across all frames, provide positive feedback
+    if not final_feedback:
+        final_feedback.add(f"Excellent {exercise_name.lower()} form throughout—well done!")
 
-    # Ensure feedback is consistent and realistic
-    if "Excellent squat depth!" in final_feedback and "Increase squat depth" in final_feedback:
-        final_feedback.remove("Increase squat depth")
-    if "Good squat depth" in final_feedback and "Increase squat depth" in final_feedback:
-        final_feedback.remove("Increase squat depth")
-
-    logging.info(f"Final Feedback for {exercise_type_name}: {final_feedback}")
-
-    feedback = list(final_feedback) if final_feedback else ["Good form detected!"]
-    return {"feedback": feedback, "reps": total_reps}  # Include rep count in response
+    return {"feedback": list(final_feedback)}
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
     file = request.files['video']
-    exercise_type_id = int(request.form['exercise_type'])  # Ensure it's an integer
+    exercise_type_id = int(request.form['exercise_type'])
     file_path = os.path.join("/tmp", file.filename)
     file.save(file_path)
 
     logging.info(f"Received video: {file.filename}, Exercise Type ID: {exercise_type_id}")
-
     result = analyze_video(file_path, exercise_type_id)
-    os.remove(file_path)  # Clean up
+    os.remove(file_path)
 
     logging.info(f"Returning analysis result: {result}")
-
     return jsonify(result)
 
 if __name__ == "__main__":
