@@ -31,6 +31,8 @@ builder.Services.AddScoped<IAnalysisService, AnalysisService>();
 
 builder.Services.AddHttpClient(); 
 
+builder.Services.AddDirectoryBrowser(); 
+
 // Configure CORS
 builder.Services.AddCors(options =>
 {
@@ -67,6 +69,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseStaticFiles(); 
 app.UseCors("AllowAllOrigins");
 app.UseAuthentication();
 app.UseAuthorization();

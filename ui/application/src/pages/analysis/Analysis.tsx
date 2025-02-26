@@ -29,7 +29,7 @@ const Analysis = () => {
                     setVideoId(id);
                     setFile(null);
                     setExerciseType("");
-                    if (fileInputRef.current) fileInputRef.current.value = "";
+                    if (fileInputRef.current) fileInputRef.current.value = ""; 
                 },
                 onError: (error) => {
                     toast.error(`Upload failed: ${(error as Error).message}`);
@@ -47,6 +47,8 @@ const Analysis = () => {
             setIsProcessing(false); 
         }
     }, [videoId, analysisQuery]);
+
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"; 
 
     return (
         <div className="container mx-auto p-6 bg-black text-gray-300 border border-gray-700 rounded-lg shadow-lg">
@@ -97,7 +99,12 @@ const Analysis = () => {
                             ? JSON.parse(analysisQuery.data.analysisResult).feedback.join(", ")
                             : "No feedback available."}
                     </p>
-                    <video src={analysisQuery.data.filePath} controls className="mt-4 w-full max-w-md" />
+                    <video
+                        src={`${apiBaseUrl}${analysisQuery.data.filePath}`} 
+                        controls
+                        className="mt-4 w-full max-w-md"
+                        onError={(e) => console.error("Video load error:", e)}
+                    />
                 </div>
             )}
         </div>

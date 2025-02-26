@@ -38,7 +38,8 @@ public class AnalysisController : FitBuddyBaseController
     public async Task<IActionResult> GetVideoAnalysis(int videoId)
     {
         var analysis = await _service.GetVideoAnalysisAsync(videoId);
-        if (analysis == null) return NotFound($"Video with ID {videoId} not found.");
+        if (analysis == null || analysis.MemberId != GetCurrentUserId())
+            return NotFound($"Video with ID {videoId} not found or not accessible.");
         return Ok(_mapper.Map<ExerciseVideoViewModel>(analysis));
     }
 }
