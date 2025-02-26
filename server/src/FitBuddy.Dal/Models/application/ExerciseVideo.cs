@@ -16,15 +16,18 @@ public partial class ExerciseVideo
     [Column("file_path")]
     public string FilePath { get; set; } = null!;
 
-    [Column("exercise_type")]
-    [StringLength(50)]
-    public string ExerciseType { get; set; } = null!;
-
     [Column("analysis_result")]
     public string? AnalysisResult { get; set; }
 
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime? CreatedDate { get; set; }
+
+    [Column("exercise_type_id")]
+    public int? ExerciseTypeId { get; set; }
+
+    [ForeignKey("ExerciseTypeId")]
+    [InverseProperty("ExerciseVideos")]
+    public virtual ExerciseType? ExerciseType { get; set; }
 
     [ForeignKey("MemberId")]
     [InverseProperty("ExerciseVideos")]

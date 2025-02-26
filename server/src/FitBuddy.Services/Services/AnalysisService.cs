@@ -7,6 +7,7 @@ using FitBuddy.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using FitBuddy.Dal.Enums;
 
 namespace FitBuddy.Services.Services;
 
@@ -15,7 +16,7 @@ public class AnalysisService : IAnalysisService
     private readonly IFitBudContext _context;
     private readonly IMapper _mapper;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly IWebHostEnvironment _webHostEnvironment; 
+    private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly string _videoStoragePath = "uploads/videos"; // Adjust for production (e.g., S3)
 
     public AnalysisService(
@@ -30,7 +31,7 @@ public class AnalysisService : IAnalysisService
         _webHostEnvironment = webHostEnvironment ?? throw new ArgumentNullException(nameof(webHostEnvironment));
     }
 
-    public async Task<int> UploadAndAnalyzeVideoAsync(int memberId, IFormFile videoFile, string exerciseType)
+    public async Task<int> UploadAndAnalyzeVideoAsync(int memberId, IFormFile videoFile, int exerciseTypeId)
     {
         // Safely get WebRootPath with fallback to a default directory
         string webRootPath = _webHostEnvironment?.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
@@ -52,7 +53,7 @@ public class AnalysisService : IAnalysisService
         var client = _httpClientFactory.CreateClient();
         var content = new MultipartFormDataContent();
         content.Add(new StreamContent(File.OpenRead(filePath)), "video", Path.GetFileName(filePath));
-        content.Add(new StringContent(exerciseType), "exercise_type");
+        content.Add(new StringContent(exerciseTypeId.ToString()), "exercise_type"); // Ensure it's sent as an integer string
 
         var response = await client.PostAsync("http://localhost:5001/analyze", content);
         response.EnsureSuccessStatusCode();
@@ -62,23 +63,28 @@ public class AnalysisService : IAnalysisService
         var video = new ExerciseVideo
         {
             MemberId = memberId,
-            FilePath = videoUrl, 
-            ExerciseType = exerciseType,
+            FilePath = videoUrl,
+            ExerciseTypeId = exerciseTypeId,
             AnalysisResult = analysisResult,
             CreatedDate = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified)
         };
         await _context.AddAsync(video);
         await _context.SaveChangesAsync();
 
-        //File.Delete(filePath); // Optional: Keep file for now, delete in production cleanup
+        // File.Delete(filePath); // Optional: Keep file for now, delete in production cleanup
 
         return video.Id;
     }
 
+
     public async Task<ExerciseVideoDto> GetVideoAnalysisAsync(int videoId)
     {
         var video = await _context.Get<ExerciseVideo>()
+            .Include(v => v.ExerciseType) // Include exercise type for mapping
             .FirstOrDefaultAsync(v => v.Id == videoId);
         return _mapper.Map<ExerciseVideoDto>(video);
     }
+
+    public Task<List<ExerciseTypeDto>> RetrieveExerciseTypes() =>
+        _mapper.ProjectTo<ExerciseTypeDto>(_context.Get<ExerciseType>()).ToListAsync();
 }

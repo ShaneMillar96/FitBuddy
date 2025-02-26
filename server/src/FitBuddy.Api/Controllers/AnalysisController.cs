@@ -5,6 +5,7 @@ using FitBuddy.Dal.Interfaces;
 using FitBuddy.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FitBuddy.Api.Controllers;
 
@@ -15,22 +16,31 @@ public class AnalysisController : FitBuddyBaseController
 {
     private readonly IMapper _mapper;
     private readonly IAnalysisService _service;
+    private readonly IFitBudContext _context;
 
     public AnalysisController(IMapper mapper, IAnalysisService service, IFitBudContext context)
         : base(context)
     {
         _mapper = mapper;
         _service = service;
+        _context = context;
     }
 
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadVideo(IFormFile videoFile, [FromForm] string exerciseType)
+    public async Task<IActionResult> UploadVideo(IFormFile videoFile, [FromForm] int exerciseTypeId)
     {
-        if (videoFile == null || string.IsNullOrEmpty(exerciseType))
-            return BadRequest("Video file and exercise type are required.");
+        if (videoFile == null)
+            return BadRequest("Video file is required.");
+
+        // // Validate exerciseTypeId against exercise_types table
+        // var exerciseTypeExists = await _context.Get<ExerciseType>()
+        //     .AnyAsync(et => et.Id == exerciseTypeId);
+        //
+        // if (!exerciseTypeExists)
+        //     return BadRequest($"Invalid exercise type ID: {exerciseTypeId}");
 
         var memberId = GetCurrentUserId();
-        var videoId = await _service.UploadAndAnalyzeVideoAsync(memberId, videoFile, exerciseType);
+        var videoId = await _service.UploadAndAnalyzeVideoAsync(memberId, videoFile, exerciseTypeId);
         return Ok(new { VideoId = videoId });
     }
 
@@ -41,5 +51,12 @@ public class AnalysisController : FitBuddyBaseController
         if (analysis == null || analysis.MemberId != GetCurrentUserId())
             return NotFound($"Video with ID {videoId} not found or not accessible.");
         return Ok(_mapper.Map<ExerciseVideoViewModel>(analysis));
+    }
+
+    [HttpGet("types")]
+    public async Task<ActionResult> GetExerciseTypes()
+    {
+        var exerciseTypes = await _service.RetrieveExerciseTypes();
+        return OkOrNoContent(_mapper.Map<List<ExerciseTypeViewModel>>(exerciseTypes));
     }
 }

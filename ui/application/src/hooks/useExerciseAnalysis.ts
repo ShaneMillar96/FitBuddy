@@ -1,24 +1,33 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosInstance from "@shared/integration/instance";
 import { QueryKeys } from "@/constants/query-keys";
 
-export interface AnalysisResult {
-    videoId: number;
-    memberId: number;
+
+interface AnalysisResult {
+    id: number;
     filePath: string;
-    exerciseType: string;
-    analysisResult?: string;
-    createdDate?: string;
+    analysisResult: string;
+    memberId: number;
+    exerciseTypeId: number; // Updated to use ID
+    createdDate: string;
 }
+
+interface UploadParams {
+    file: File;
+    exerciseTypeId: number; // Updated to use ID
+}
+
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 export const useExerciseAnalysis = () => {
     const queryClient = useQueryClient();
 
     const uploadVideo = useMutation({
-        mutationFn: async ({ file, exerciseType }: { file: File; exerciseType: string }) => {
+        mutationFn: async ({ file, exerciseTypeId }: UploadParams) => {
             const formData = new FormData();
-            formData.append("videoFile", file);
-            formData.append("exerciseType", exerciseType);
+            formData.append('videoFile', file);
+            formData.append('exerciseTypeId', exerciseTypeId.toString());
+
             const { data } = await axiosInstance.post("/analysis/upload", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });

@@ -15,6 +15,8 @@ public class AnalysisProfile : Profile
     private void ConfigureDtoToViewModel()
     {
         CreateMap<ExerciseVideoDto, ExerciseVideoViewModel>();
+        CreateMap<ExerciseTypeDto, ExerciseTypeViewModel>();
+
     }
     
     private void ConfigureViewModelToDto()

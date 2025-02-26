@@ -4,5 +4,6 @@ export const QueryKeys = {
     WORKOUT_COMMENTS: "workoutComments",
     WORKOUT_TYPES: "workoutTypes",
     DASHBOARD: "dashboard",
-    ANALYSIS: "analysis", 
+    ANALYSIS: "analysis",
+    EXERCISE_TYPES: "exerciseTypes",
  };

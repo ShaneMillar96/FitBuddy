@@ -15,6 +15,7 @@ public class AnalysisProfile : Profile
     private void ConfigureDomainToDto()
     {
         CreateMap<ExerciseVideo, ExerciseVideoDto>();
+        CreateMap<ExerciseType, ExerciseTypeDto>();
     }
     
     private void ConfigureDtoToDomain()
