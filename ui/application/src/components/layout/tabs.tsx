@@ -1,4 +1,4 @@
-import { useState, ReactNode } from "react";
+import { ReactNode } from "react";
 
 interface Tab {
     label: string;
@@ -7,25 +7,26 @@ interface Tab {
 
 interface TabsProps {
     tabs: Tab[];
-    defaultTabIndex?: number;
+    activeTab: string;
+    setActiveTab: (tab: string) => void;
 }
 
-const Tabs = ({ tabs, defaultTabIndex = 0 }: TabsProps) => {
-    const [activeTab, setActiveTab] = useState(defaultTabIndex);
+const Tabs = ({ tabs, activeTab, setActiveTab }: TabsProps) => {
+    const activeTabIndex = tabs.findIndex((tab) => tab.label === activeTab);
 
     return (
         <div className="mt-6">
             {/* Tab Buttons */}
-            <div className="flex border-b border-gray-700">
+            <div className="flex border-b border-gray-200">
                 {tabs.map((tab, index) => (
                     <button
                         key={index}
-                        className={`py-2 px-4 transition-all duration-200 ${
-                            activeTab === index
-                                ? "border-b-2 border-white text-white"
-                                : "text-gray-500 hover:text-gray-300"
+                        className={`py-2 px-4 transition-all duration-200 text-sm font-medium ${
+                            activeTabIndex === index
+                                ? "border-b-2 border-teal-400 text-teal-400"
+                                : "text-gray-500 hover:text-gray-700"
                         }`}
-                        onClick={() => setActiveTab(index)}
+                        onClick={() => setActiveTab(tab.label)}
                     >
                         {tab.label}
                     </button>
@@ -33,8 +34,8 @@ const Tabs = ({ tabs, defaultTabIndex = 0 }: TabsProps) => {
             </div>
 
             {/* Tab Content */}
-            <div className="mt-4 p-4 bg-gray-900 border border-gray-700 rounded-lg">
-                {tabs[activeTab].content}
+            <div className="mt-4 bg-white rounded-lg border border-gray-200 p-4">
+                {tabs[activeTabIndex].content}
             </div>
         </div>
     );

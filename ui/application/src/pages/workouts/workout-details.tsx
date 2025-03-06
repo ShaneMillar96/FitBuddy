@@ -4,7 +4,16 @@ import { useWorkoutDetails } from "@/hooks/useWorkoutDetails";
 import Tabs from "@/components/layout/Tabs";
 import Results from "@/components/workout/Results";
 import Comments from "@/components/workout/Comments";
-import { motion } from "framer-motion"; // For animations
+import { motion } from "framer-motion";
+
+// Skeleton loader for the header section
+const SkeletonHeader = () => (
+    <div className="bg-gray-100 animate-pulse rounded-2xl p-6 shadow-sm">
+        <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+    </div>
+);
 
 const WorkoutDetails = () => {
     const { id } = useParams();
@@ -14,12 +23,8 @@ const WorkoutDetails = () => {
     // Loading State
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-950">
-                <motion.div
-                    className="h-12 w-12 border-4 border-t-blue-500 border-gray-700 rounded-full"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                />
+            <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 p-6 lg:p-8">
+                <SkeletonHeader />
             </div>
         );
     }
@@ -30,15 +35,15 @@ const WorkoutDetails = () => {
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-red-400 text-center mt-20 font-semibold text-lg"
+                className="text-center py-20 text-red-500 font-medium text-lg"
             >
-                Failed to load workout details. Try again later.
+                Failed to load workout details. Please try again later.
             </motion.div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-950 text-white p-6 lg:p-10">
+        <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 text-gray-800 p-6 lg:p-8">
             {/* Header Section */}
             <motion.div
                 initial={{ y: -20, opacity: 0 }}
@@ -46,18 +51,16 @@ const WorkoutDetails = () => {
                 transition={{ duration: 0.5 }}
                 className="mb-8"
             >
-                <h1 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
-                    {workout.name}
-                </h1>
+                <h1 className="text-4xl font-semibold text-gray-900">{workout.name}</h1>
                 <div className="mt-4 space-y-2">
-                    <p className="text-gray-400 text-lg">
-                        <span className="text-gray-300 font-semibold">Type:</span> {workout.workoutType.name}
+                    <p className="text-gray-500 text-base">
+                        <span className="text-gray-600 font-medium">Type:</span> {workout.workoutType.name}
                     </p>
-                    <p className="text-gray-400 text-lg">
-                        <span className="text-gray-300 font-semibold">Created by:</span> {workout.createdBy.username}
+                    <p className="text-gray-500 text-base">
+                        <span className="text-gray-600 font-medium">Created by:</span> {workout.createdBy.username}
                     </p>
-                    <p className="text-gray-400 text-lg">
-                        <span className="text-gray-300 font-semibold">Created on:</span>{" "}
+                    <p className="text-gray-500 text-base">
+                        <span className="text-gray-600 font-medium">Created on:</span>{" "}
                         {new Date(workout.createdDate).toLocaleDateString()}
                     </p>
                 </div>
@@ -68,7 +71,7 @@ const WorkoutDetails = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="bg-gray-900/50 backdrop-blur-lg border border-gray-700/50 rounded-2xl p-6 mb-8 text-gray-300 whitespace-pre-line shadow-lg"
+                className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8 text-gray-600 whitespace-pre-line"
             >
                 {workout.description || "No description available."}
             </motion.div>

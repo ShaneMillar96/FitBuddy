@@ -31,14 +31,14 @@ const WeeklyWorkoutChart = ({ weeklyCounts }) => {
             {
                 label: "Workouts",
                 data: weeklyCounts.map((wc) => wc.count),
-                borderColor: "#60A5FA",
-                backgroundColor: "rgba(96, 165, 250, 0.2)",
+                borderColor: "#2DD4BF", // Teal for line
+                backgroundColor: "rgba(45, 212, 191, 0.1)", // Light teal fill
                 fill: true,
                 tension: 0.4,
-                pointBackgroundColor: "#60A5FA",
+                pointBackgroundColor: "#2DD4BF",
                 pointBorderColor: "#fff",
                 pointHoverBackgroundColor: "#fff",
-                pointHoverBorderColor: "#60A5FA",
+                pointHoverBorderColor: "#2DD4BF",
                 pointRadius: 4,
                 pointHoverRadius: 6,
             },
@@ -53,22 +53,22 @@ const WeeklyWorkoutChart = ({ weeklyCounts }) => {
                 beginAtZero: true,
                 ticks: {
                     precision: 0,
-                    color: "#A0A0A0",
+                    color: "#6B7280", // Gray-600 for ticks
                     font: { size: 12 },
                 },
                 grid: {
-                    color: "rgba(255, 255, 255, 0.05)",
+                    color: "rgba(0, 0, 0, 0.05)", // Very light grid lines
                 },
             },
             x: {
                 type: "time",
                 time: { unit: "day" },
                 ticks: {
-                    color: "#A0A0A0",
+                    color: "#6B7280", // Gray-600 for ticks
                     font: { size: 12 },
                 },
                 grid: {
-                    color: "rgba(255, 255, 255, 0.05)",
+                    color: "rgba(0, 0, 0, 0.05)", // Very light grid lines
                 },
             },
         },
@@ -77,10 +77,10 @@ const WeeklyWorkoutChart = ({ weeklyCounts }) => {
                 display: false,
             },
             tooltip: {
-                backgroundColor: "rgba(17, 24, 39, 0.9)", // Dark background
+                backgroundColor: "rgba(17, 24, 39, 0.9)", // Dark background for contrast
                 titleColor: "#fff",
-                bodyColor: "#A0A0A0",
-                borderColor: "rgba(96, 165, 250, 0.5)",
+                bodyColor: "#D1D5DB", // Gray-300
+                borderColor: "rgba(45, 212, 191, 0.5)", // Teal border
                 borderWidth: 1,
                 cornerRadius: 8,
             },
@@ -88,7 +88,7 @@ const WeeklyWorkoutChart = ({ weeklyCounts }) => {
     };
 
     return (
-        <div className="h-96 w-full">
+        <div className="h-80 w-full">
             <Line ref={chartRef} data={data} options={options} />
         </div>
     );
