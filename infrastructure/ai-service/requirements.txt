@@ -1,0 +1,5 @@
+flask==2.3.3
+werkzeug==3.0.1
+opencv-python-headless==4.9.0.80
+mediapipe==0.10.15
+numpy>=1.22.0

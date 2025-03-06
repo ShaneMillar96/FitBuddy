@@ -10,6 +10,9 @@ services:
       POSTGRES_DB: fitbuddy-dev
     volumes:
       - db:/var/lib/postgresql/data
+    profiles:
+      - dev
+
   flyway:
     image: flyway/flyway
     command: -url=jdbc:postgresql://db/fitbuddy-dev -schemas=public -user=fitbud -password=password1 -outOfOrder=true -connectRetries=5 migrate
@@ -17,5 +20,23 @@ services:
       - ./database:/flyway/sql
     depends_on:
       - db
+    profiles:
+      - dev
+
+  ai-service:
+    build:
+      context: ./infrastructure/ai-service
+      dockerfile: Dockerfile
+    ports:
+      - 5001:5001
+    volumes:
+      - ./infrastructure/ai-service:/app
+    environment:
+      - FLASK_ENV=development
+    depends_on:
+      - db  
+    profiles:
+      - dev
+
 volumes:
   db:
