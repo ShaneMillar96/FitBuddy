@@ -1,63 +1,107 @@
 import { useWorkouts } from "@/hooks/useWorkouts";
 import { useNavigate } from "react-router-dom";
-import { FaTrophy, FaCommentDots } from "react-icons/fa"; 
+import { FaTrophy, FaCommentDots, FaPlus } from "react-icons/fa";
+import { motion } from "framer-motion"; // For subtle animations
 
 const WorkoutList = () => {
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } = useWorkouts({ pageSize: 10 });
     const navigate = useNavigate();
 
+    // Loading State
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-black">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-opacity-50"></div>
+            <div className="flex justify-center items-center min-h-screen bg-gray-950">
+                <motion.div
+                    className="h-12 w-12 border-4 border-t-blue-500 border-gray-700 rounded-full"
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                />
             </div>
         );
     }
 
-    if (error) return <p className="text-red-500 text-center">Failed to load workouts.</p>;
+    // Error State
+    if (error) return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-red-400 text-center mt-20 font-semibold text-lg"
+        >
+            Failed to load workouts. Try again later.
+        </motion.div>
+    );
 
     const workouts = data?.pages.flatMap((page) => page.data) || [];
 
     return (
-        <div className="container mx-auto p-6 bg-black text-gray-300 border border-gray-700 rounded-lg shadow-lg">
-            <h1 className="text-white text-3xl font-bold mb-4 text-center">Workouts</h1>
+        <div className="min-h-screen bg-gray-950 text-white p-6 lg:p-10">
+            {/* Header Section */}
+            <motion.div
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="flex justify-between items-center mb-10"
+            >
+            </motion.div>
 
+            {/* Empty State */}
             {workouts.length === 0 ? (
-                <div className="text-center text-gray-400 py-10">
-                    <p className="text-lg">🚀 No workouts have been created yet.</p>
-                    <p className="text-sm text-gray-500">Be the first to create a new workout!</p>
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-20"
+                >
+                    <p className="text-2xl font-light text-gray-400 mb-6">No workouts yet. Start your journey!</p>
                     <button
                         onClick={() => navigate("/create-workout")}
-                        className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                        className="px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-lg hover:scale-105 transition-transform duration-300 shadow-lg"
                     >
                         + Create Workout
                     </button>
-                </div>
+                </motion.div>
             ) : (
                 <>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div
+                    {/* Workout Grid */}
+                    <motion.div
+                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                        initial="hidden"
+                        animate="visible"
+                        variants={{
+                            hidden: { opacity: 0 },
+                            visible: {
+                                opacity: 1,
+                                transition: { staggerChildren: 0.1 },
+                            },
+                        }}
+                    >
+                        {/* New Workout Card */}
+                        <motion.div
+                            variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
                             onClick={() => navigate("/create-workout")}
-                            className="bg-gray-900 text-white border border-gray-700 p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 cursor-pointer hover:border-white flex items-center justify-center"
+                            className="relative flex items-center justify-center h-64 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl shadow-xl cursor-pointer overflow-hidden group"
                         >
-                            <h2 className="text-white text-xl font-semibold">New Workout +</h2>
-                        </div>
+                            <div className="absolute inset-0 bg-black opacity-20 group-hover:opacity-10 transition-opacity duration-300" />
+                            <h2 className="text-2xl font-bold text-white z-10">New Workout +</h2>
+                        </motion.div>
 
+                        {/* Workout Cards */}
                         {workouts.map((workout) => (
-                            <div
+                            <motion.div
                                 key={workout.id}
+                                variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
                                 onClick={() => navigate(`/workouts/${workout.id}`)}
-                                className="bg-gray-900 text-white border border-gray-700 p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105 cursor-pointer hover:border-white relative"
+                                className="relative bg-gray-900/50 backdrop-blur-lg border border-gray-700/50 rounded-2xl p-6 shadow-lg cursor-pointer group overflow-hidden"
                             >
-                                <h2 className="text-white text-xl font-semibold">{workout.name}</h2>
-                                <p className="text-gray-500 text-sm mt-2">
-                                    <strong className="text-white">Created by:</strong> {workout.createdBy.username}
+                                {/* Gradient Overlay on Hover */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <h2 className="text-xl font-bold text-white relative z-10">{workout.name}</h2>
+                                <p className="text-gray-400 text-sm mt-2 relative z-10">
+                                    <span className="text-gray-300">By:</span> {workout.createdBy.username}
                                 </p>
-                                <p className="text-gray-500 text-sm">
-                                    <strong className="text-white">Type:</strong> {workout.workoutType.name}
+                                <p className="text-gray-400 text-sm relative z-10">
+                                    <span className="text-gray-300">Type:</span> {workout.workoutType.name}
                                 </p>
-
-                                <div className="flex justify-end items-center gap-4 mt-4 text-gray-400">
+                                <div className="flex justify-between items-center mt-4 text-gray-400 relative z-10">
                                     <span className="flex items-center gap-1">
                                         <FaTrophy className="text-yellow-400" /> {workout.resultsLogged}
                                     </span>
@@ -65,24 +109,29 @@ const WorkoutList = () => {
                                         <FaCommentDots className="text-blue-400" /> {workout.commentsCount}
                                     </span>
                                 </div>
-                            </div>
+                            </motion.div>
                         ))}
-                    </div>
+                    </motion.div>
 
+                    {/* Load More Button */}
                     {hasNextPage && (
-                        <div className="mt-6 text-center">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="mt-10 text-center"
+                        >
                             <button
                                 onClick={() => fetchNextPage()}
-                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                className="px-6 py-3 bg-gray-800 border border-gray-700 rounded-full hover:bg-gray-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                 disabled={isFetchingNextPage}
                             >
                                 {isFetchingNextPage ? (
-                                    <span className="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+                                    <span className="animate-spin inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
                                 ) : (
                                     "Load More"
                                 )}
                             </button>
-                        </div>
+                        </motion.div>
                     )}
                 </>
             )}

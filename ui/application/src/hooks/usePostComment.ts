@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@shared/integration/instance";
 import { APIRoutes } from "@/constants/api-routes";
 import { QueryKeys } from "@/constants/query-keys";
+import { toast } from "react-toastify";
 
 interface PostCommentPayload {
     workoutId: string;
@@ -9,14 +10,23 @@ interface PostCommentPayload {
 }
 
 export const usePostComment = () => {
-    const queryClient = useQueryClient(); 
+    const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: async ({ workoutId, comment }: PostCommentPayload) => {
-            await axiosInstance.post(APIRoutes.COMMENTS, { workoutId, comment });
+            const response = await axiosInstance.post(APIRoutes.COMMENTS, { workoutId, comment });
+            return response.data; // Return the response data if it includes the new comment
         },
-        onSuccess: (_, variables) => {
-            queryClient.invalidateQueries([QueryKeys.WORKOUT_COMMENTS, variables.workoutId]);
+        onSuccess: (data, variables) => {
+            toast.success("Comment posted successfully!");
+            // Invalidate the specific workout comments query
+            queryClient.invalidateQueries({
+                queryKey: [QueryKeys.WORKOUT_COMMENTS, variables.workoutId, { page: variables.page || 1, limit: 10 }],
+            });
+        },
+        onError: (error) => {
+            toast.error("Failed to post comment. Please try again.");
+            console.error("Post comment error:", error);
         },
     });
 };
