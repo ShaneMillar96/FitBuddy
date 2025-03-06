@@ -49,40 +49,25 @@ const Comments = ({ workoutId }: CommentsProps) => {
     return (
         <div className="min-h-[calc(100vh-200px)] p-6">
             {/* Header */}
-            <motion.h2
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="text-2xl font-semibold text-gray-900 mb-6"
-            >
-                Comments
-            </motion.h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-6">Comments</h2>
 
             {/* Comments List */}
             {isLoading || isPosting ? (
-                <motion.div className="space-y-4">
+                <div className="space-y-4">
                     {[...Array(3)].map((_, index) => (
                         <SkeletonComment key={index} />
                     ))}
-                </motion.div>
+                </div>
             ) : error ? (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-500 text-center py-6">
-                    Failed to load comments. Please try again.
-                </motion.div>
+                <div className="text-red-500 text-center py-6">Failed to load comments. Please try again.</div>
             ) : comments?.data?.length > 0 ? (
-                <motion.div
-                    className="space-y-4"
-                    initial="hidden"
-                    animate="visible"
-                    variants={{
-                        hidden: { opacity: 0 },
-                        visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-                    }}
-                >
+                <div className="space-y-4">
                     {comments.data.map((comment) => (
                         <motion.div
                             key={comment.id}
-                            variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
                             className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md"
                         >
                             <p className="text-gray-600">{comment.description || "No comment text"}</p>
@@ -91,18 +76,16 @@ const Comments = ({ workoutId }: CommentsProps) => {
                             </p>
                         </motion.div>
                     ))}
-                </motion.div>
+                </div>
             ) : (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-gray-500 text-center py-6">
-                    No comments yet. Be the first to share your thoughts!
-                </motion.div>
+                <div className="text-gray-500 text-center py-6">No comments yet. Be the first to share your thoughts!</div>
             )}
 
             {/* Comment Input */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
                 className="mt-6 flex items-center gap-4"
             >
                 <input
@@ -128,12 +111,7 @@ const Comments = ({ workoutId }: CommentsProps) => {
 
             {/* Pagination */}
             {comments?.data?.length > 0 && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="flex justify-between items-center mt-6"
-                >
+                <div className="flex justify-between items-center mt-6">
                     <button
                         disabled={commentPage === 1}
                         onClick={() => setCommentPage((prev) => Math.max(prev - 1, 1))}
@@ -149,7 +127,7 @@ const Comments = ({ workoutId }: CommentsProps) => {
                     >
                         Next
                     </button>
-                </motion.div>
+                </div>
             )}
         </div>
     );

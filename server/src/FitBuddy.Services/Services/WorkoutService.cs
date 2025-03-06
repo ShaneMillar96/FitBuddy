@@ -30,7 +30,7 @@ public class WorkoutService : IWorkoutService
     public async Task<PaginatedDto<WorkoutDto>> RetrieveWorkouts(PaginationDto pagination)
     {
         var (pageSize, pageNumber, searchQuery, sortBy, ascending) = pagination;
-        
+
         var query = _context
             .Get<Workout>()
             .Include(x => x.CreatedBy)
@@ -38,9 +38,7 @@ public class WorkoutService : IWorkoutService
             .Include(x => x.ScoreType)
             .Where(new WorkoutBySearchSpec(searchQuery));
 
-        var workouts = _mapper
-            .ProjectTo<WorkoutDto>(query)
-            .OrderByDescending(x => x.CreatedDate);
+        var workouts = _mapper.ProjectTo<WorkoutDto>(query);
 
         return await _paginationService.CreatePaginatedResponseAsync(workouts, pageSize, pageNumber);
     }
