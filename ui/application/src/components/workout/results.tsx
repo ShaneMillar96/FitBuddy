@@ -35,10 +35,12 @@ const Results = ({ workoutId, scoreType }: ResultsProps) => {
             {
                 workoutId: Number(workoutId),
                 result: resultText || garminData?.name || "",
-                duration: garminData?.duration,
-                avgHeartRate: garminData?.avgHeartRate,
-                caloriesBurned: garminData?.caloriesBurned,
-                garminActivityId: garminData?.activityId,
+                ...(garminData && {
+                    duration: garminData.duration,
+                    avgHeartRate: garminData.avgHeartRate,
+                    caloriesBurned: garminData.caloriesBurned,
+                    garminActivityId: garminData.activityId,
+                }),
             },
             {
                 onSuccess: () => {
@@ -120,15 +122,6 @@ const Results = ({ workoutId, scoreType }: ResultsProps) => {
                 >
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">Add Your Result</h2>
 
-                    {/* Uncomment if Garmin Sync is needed */}
-                    {/* <button
-            onClick={() => initiateGarminAuth.mutate()}
-            disabled={initiateGarminAuth.isLoading}
-            className="mb-4 px-5 py-2 bg-teal-400 text-white rounded-xl hover:bg-teal-500 flex items-center transition-all duration-300"
-          >
-            <FaSync className="mr-2" /> Sync with Garmin
-          </button> */}
-
                     {fetchGarminActivities.data && (
                         <select
                             onChange={(e) => {
@@ -163,6 +156,7 @@ const Results = ({ workoutId, scoreType }: ResultsProps) => {
                                     value={resultText}
                                     onChange={(e) => setResultText(e.target.value)}
                                     placeholder="Total Reps"
+                                    min="0"
                                     className="w-full px-5 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-teal-400 transition-all duration-300 placeholder-gray-400 text-gray-800"
                                 />
                             </div>
@@ -172,7 +166,7 @@ const Results = ({ workoutId, scoreType }: ResultsProps) => {
                     <div className="mt-4 flex space-x-4">
                         <button
                             onClick={() => handleSubmitResult()}
-                            disabled={addResultMutation.isLoading}
+                            disabled={addResultMutation.isLoading || !resultText.trim()}
                             className="px-5 py-2 rounded-xl bg-gradient-to-r from-teal-400 to-blue-400 text-white font-medium hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 shadow-md"
                         >
                             {addResultMutation.isLoading ? (
