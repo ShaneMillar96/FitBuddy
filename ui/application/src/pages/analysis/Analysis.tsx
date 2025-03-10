@@ -61,8 +61,9 @@ const Analysis = () => {
         }
     }, [videoId, analysisQuery]);
 
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5051";
 
+    
     return (
         <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 text-gray-800 p-6 lg:p-8">
             {/* Header Section */}
