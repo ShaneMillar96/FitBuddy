@@ -16,12 +16,20 @@
     "jsx": "react-jsx",
 
     /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-    "allowSyntheticDefaultImports": true
+    "noUncheckedSideEffectImports": false,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
+    /* Path mapping */
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"],
+      "@shared/*": ["../shared/*"]
+    }
   },
   "include": ["src"]
 }

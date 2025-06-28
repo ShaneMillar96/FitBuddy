@@ -28,6 +28,8 @@ builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IGarminService, GarminService>();
 builder.Services.AddScoped<IPaginationService, PaginationService>();
 builder.Services.AddScoped<IAnalysisService, AnalysisService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IExerciseService, ExerciseService>();
 
 builder.Services.AddHttpClient(); 
 

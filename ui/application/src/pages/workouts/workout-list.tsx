@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useWorkouts } from "@/hooks/useWorkouts";
 import { useNavigate } from "react-router-dom";
-import { FaPlus, FaFilter, FaSort, FaSearch } from "react-icons/fa";
+import { FaPlus, FaFilter, FaSearch, FaClock, FaStar } from "react-icons/fa";
 import { motion } from "framer-motion";
+import { CATEGORY_ICONS, WORKOUT_CATEGORIES } from "@/interfaces/categories";
 
 // Skeleton loader component for loading state
 const SkeletonCard = () => (
@@ -34,8 +35,9 @@ const useDebounce = (value: string, delay: number) => {
 const WorkoutList = () => {
     const navigate = useNavigate();
     const [searchInput, setSearchInput] = useState(""); // Real-time input value
-    const [sortBy, setSortBy] = useState("");
-    const [sortDirection, setSortDirection] = useState("asc");
+    const [sortBy] = useState("");
+    const [sortDirection] = useState("asc");
+    const [filterCategory, setFilterCategory] = useState<number | undefined>();
     const [filterType, setFilterType] = useState("");
     const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
@@ -47,6 +49,7 @@ const WorkoutList = () => {
         sortBy,
         sortDirection,
         search: debouncedSearch, // Use debounced search value
+        categoryId: filterCategory,
     });
 
     // Loading State with Skeleton Cards
@@ -78,11 +81,19 @@ const WorkoutList = () => {
     const workouts = data?.pages.flatMap((page) => page.data) || [];
 
     // Extract unique workout types for filter dropdown
-    const workoutTypes = [...new Set(workouts.map((workout) => workout.workoutType.name))];
+    const workoutTypes = [...new Set(workouts.map((workout) => workout.workoutType?.name).filter(Boolean))];
+    
+    // Extract unique categories for filter dropdown
+    const categories = [...new Set(workouts.map((workout) => workout.categoryId).filter(Boolean))]
+        .map(categoryId => ({
+            id: categoryId,
+            name: getCategoryName(categoryId!),
+            icon: CATEGORY_ICONS[categoryId as keyof typeof CATEGORY_ICONS]
+        }));
 
     // Filter workouts client-side based on workout type
     const filteredWorkouts = filterType
-        ? workouts.filter((workout) => workout.workoutType.name === filterType)
+        ? workouts.filter((workout) => workout.workoutType?.name === filterType)
         : workouts;
 
     // Handle search input change
@@ -90,10 +101,55 @@ const WorkoutList = () => {
         setSearchInput(e.target.value); // Update real-time input
     };
 
+    // Helper function to get category name
+    const getCategoryName = (categoryId: number): string => {
+        const categoryNames = {
+            [WORKOUT_CATEGORIES.WEIGHT_SESSION]: 'Weight Session',
+            [WORKOUT_CATEGORIES.CROSSFIT_WOD]: 'CrossFit WOD',
+            [WORKOUT_CATEGORIES.RUNNING_INTERVALS]: 'Running Intervals',
+            [WORKOUT_CATEGORIES.SWIMMING]: 'Swimming',
+            [WORKOUT_CATEGORIES.HYROX]: 'Hyrox',
+            [WORKOUT_CATEGORIES.STRETCHING]: 'Stretching'
+        };
+        return categoryNames[categoryId as keyof typeof categoryNames] || 'Unknown';
+    };
+
     // Handle filter selection
     const handleFilterChange = (type: string) => {
         setFilterType(type);
         setShowFilterDropdown(false);
+    };
+
+    // Handle category filter selection
+    const handleCategoryFilterChange = (categoryId: number | undefined) => {
+        setFilterCategory(categoryId);
+        setShowFilterDropdown(false);
+    };
+
+    // Get difficulty level display
+    const getDifficultyDisplay = (level?: number): string => {
+        if (!level) return '';
+        const difficultyNames = {
+            1: 'Beginner',
+            2: 'Easy', 
+            3: 'Moderate',
+            4: 'Hard',
+            5: 'Expert'
+        };
+        return difficultyNames[level as keyof typeof difficultyNames] || '';
+    };
+
+    // Get difficulty color
+    const getDifficultyColor = (level?: number): string => {
+        if (!level) return 'text-gray-400';
+        const colors = {
+            1: 'text-green-500',
+            2: 'text-green-400',
+            3: 'text-yellow-500',
+            4: 'text-orange-500',
+            5: 'text-red-500'
+        };
+        return colors[level as keyof typeof colors] || 'text-gray-400';
     };
 
     return (
@@ -118,24 +174,51 @@ const WorkoutList = () => {
                             </button>
                             {showFilterDropdown && (
                                 <div
-                                    className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-md border border-gray-200 z-20"
+                                    className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-md border border-gray-200 z-20"
                                 >
                                     <div className="p-2">
+                                        <div className="text-xs font-medium text-gray-500 px-4 py-2 border-b border-gray-100">
+                                            Categories
+                                        </div>
                                         <button
-                                            onClick={() => handleFilterChange("")}
+                                            onClick={() => handleCategoryFilterChange(undefined)}
                                             className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md"
                                         >
-                                            All Types
+                                            All Categories
                                         </button>
-                                        {workoutTypes.map((type) => (
+                                        {categories.map((category) => (
                                             <button
-                                                key={type}
-                                                onClick={() => handleFilterChange(type)}
-                                                className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md"
+                                                key={category.id}
+                                                onClick={() => handleCategoryFilterChange(category.id)}
+                                                className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md flex items-center space-x-2"
                                             >
-                                                {type}
+                                                <span>{category.icon}</span>
+                                                <span>{category.name}</span>
                                             </button>
                                         ))}
+                                        
+                                        {workoutTypes.length > 0 && (
+                                            <>
+                                                <div className="text-xs font-medium text-gray-500 px-4 py-2 border-b border-gray-100 mt-2">
+                                                    Legacy Types
+                                                </div>
+                                                <button
+                                                    onClick={() => handleFilterChange("")}
+                                                    className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md"
+                                                >
+                                                    All Types
+                                                </button>
+                                                {workoutTypes.map((type) => (
+                                                    <button
+                                                        key={type}
+                                                        onClick={() => handleFilterChange(type)}
+                                                        className="block w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-md"
+                                                    >
+                                                        {type}
+                                                    </button>
+                                                ))}
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -167,7 +250,7 @@ const WorkoutList = () => {
                         className="text-center py-20"
                     >
                         <p className="text-xl font-light text-gray-500 mb-6">
-                            {debouncedSearch || filterType
+                            {debouncedSearch || filterType || filterCategory
                                 ? "No workouts match your search or filter."
                                 : "No workouts yet. Let’s get started!"}
                         </p>
@@ -202,16 +285,68 @@ const WorkoutList = () => {
                                 >
                                     {/* Card Content */}
                                     <div className="relative z-10">
-                                        <h2 className="text-lg font-semibold text-gray-800 truncate">{workout.name}</h2>
-                                        <p className="text-sm text-gray-500 mt-1">
-                                            By: <span className="text-gray-600">{workout.createdBy.username}</span>
+                                        {/* Header with category icon and title */}
+                                        <div className="flex items-start justify-between mb-3">
+                                            <div className="flex items-center space-x-3">
+                                                {workout.categoryId && (
+                                                    <span className="text-2xl">
+                                                        {CATEGORY_ICONS[workout.categoryId as keyof typeof CATEGORY_ICONS]}
+                                                    </span>
+                                                )}
+                                                <div>
+                                                    <h2 className="text-lg font-semibold text-gray-800 truncate">{workout.name}</h2>
+                                                    {workout.categoryId && (
+                                                        <p className="text-xs text-gray-500">
+                                                            {getCategoryName(workout.categoryId)}
+                                                            {workout.subTypeName && ` • ${workout.subTypeName}`}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {workout.difficultyLevel && (
+                                                <div className="flex items-center space-x-1">
+                                                    <FaStar className={`text-xs ${getDifficultyColor(workout.difficultyLevel)}`} />
+                                                    <span className={`text-xs font-medium ${getDifficultyColor(workout.difficultyLevel)}`}>
+                                                        {getDifficultyDisplay(workout.difficultyLevel)}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Creator info */}
+                                        <p className="text-sm text-gray-500 mb-2">
+                                            By: <span className="text-gray-600">{workout.createdBy?.username || workout.createdBy}</span>
                                         </p>
-                                        <p className="text-sm text-gray-500 mt-1">
-                                            Type: <span className="text-gray-600">{workout.workoutType.name}</span>
-                                        </p>
-                                        <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
-                                            <span>🏋️‍♂️ {workout.resultsLogged} logged</span>
-                                            <span>💬 {workout.commentsCount} comments</span>
+
+                                        {/* Duration and Equipment */}
+                                        <div className="flex items-center space-x-4 mb-3 text-sm text-gray-500">
+                                            {workout.estimatedDurationMinutes && (
+                                                <div className="flex items-center space-x-1">
+                                                    <FaClock className="text-xs" />
+                                                    <span>{workout.estimatedDurationMinutes}min</span>
+                                                </div>
+                                            )}
+                                            {workout.equipmentNeeded && workout.equipmentNeeded.length > 0 && (
+                                                <div className="flex items-center space-x-1">
+                                                    <span className="text-xs">🔧</span>
+                                                    <span className="text-xs">
+                                                        {workout.equipmentNeeded.length} equipment
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Legacy type info */}
+                                        {workout.workoutType?.name && (
+                                            <p className="text-sm text-gray-500 mb-3">
+                                                Type: <span className="text-gray-600">{workout.workoutType.name}</span>
+                                            </p>
+                                        )}
+
+                                        {/* Stats */}
+                                        <div className="flex justify-between items-center text-sm text-gray-500">
+                                            <span>🏋️‍♂️ {workout.resultsLogged || 0} logged</span>
+                                            <span>💬 {workout.commentsCount || 0} comments</span>
                                         </div>
                                     </div>
                                     {/* Subtle Hover Overlay */}

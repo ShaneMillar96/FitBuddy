@@ -77,7 +77,7 @@ public class DashboardService : IDashboardService
         var allResultsQuery = _context.Get<WorkoutResult>()
             .Include(wr => wr.Workout)
             .ThenInclude(w => w.ScoreType)
-            .Where(wr => wr.Result != null)
+            .Where(wr => wr.ResultSummary != null)
             .AsEnumerable();
 
         return allResultsQuery
@@ -89,9 +89,9 @@ public class DashboardService : IDashboardService
                 g.Key.ScoreTypeId,
                 MemberResult = g.FirstOrDefault(wr => wr.CreatedById == memberId),
                 RankedResults = g.OrderBy(wr => wr.Workout.ScoreTypeId == 1 
-                    ? wr.Result 
+                    ? wr.ResultSummary 
                     : "").ThenByDescending(wr => wr.Workout.ScoreTypeId != 1 
-                    ? wr.Result 
+                    ? wr.ResultSummary 
                     : "").ToList()
             })
             .Where(x => x.MemberResult != null)
@@ -99,7 +99,7 @@ public class DashboardService : IDashboardService
             {
                 WorkoutId = x.WorkoutId,
                 WorkoutName = x.Name,
-                Result = x.MemberResult!.Result!,
+                Result = x.MemberResult!.ResultSummary!,
                 Rank = x.RankedResults.IndexOf(x.MemberResult) + 1
             })
             .MinBy(x => x.Rank);

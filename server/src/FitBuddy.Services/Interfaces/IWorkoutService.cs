@@ -5,7 +5,7 @@ namespace FitBuddy.Services.Interfaces;
 
 public interface IWorkoutService
 {
-    Task<PaginatedDto<WorkoutDto>> RetrieveWorkouts(PaginationDto pagination);
+    Task<PaginatedDto<WorkoutDto>> RetrieveWorkouts(PaginationDto pagination, int? categoryId = null, int? subTypeId = null, int? difficultyLevel = null);
     Task<WorkoutDto?> RetrieveWorkout(int workoutId);
     Task<int> CreateWorkout(CreateWorkoutDto workout);
     Task<bool> UpdateWorkout(int workoutId, UpdateWorkoutDto workout);

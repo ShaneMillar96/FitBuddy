@@ -1,7 +1,10 @@
 using FitBuddy.Api.Extensions;
 using FitBuddy.Api.Validation;
+using FitBuddy.Api.RequestModels.Exercises;
 using FitBuddy.Dal.Enums;
 using FluentValidation;
+using System.Text.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace FitBuddy.Api.RequestModels.Workouts;
 
@@ -23,6 +26,20 @@ public class CreateWorkoutRequestModel : IValidatable<CreateWorkoutRequestModelV
     }
     
     public int TypeId { get; set; }
+    
+    // Enhanced fields
+    public int? CategoryId { get; set; }
+    public int? SubTypeId { get; set; }
+    
+    [Range(1, 5)]
+    public int? DifficultyLevel { get; set; }
+    
+    [Range(1, 600)]
+    public int? EstimatedDurationMinutes { get; set; }
+    
+    public string[] EquipmentNeeded { get; set; } = Array.Empty<string>();
+    public JsonDocument? WorkoutStructure { get; set; }
+    public List<CreateWorkoutExerciseRequestModel> Exercises { get; set; } = new();
     
     public CreateWorkoutRequestModelValidator RetrieveValidator() => new ();
 }

@@ -27,7 +27,7 @@ public class WorkoutService : IWorkoutService
         _mapper = mapper;
     }
     
-    public async Task<PaginatedDto<WorkoutDto>> RetrieveWorkouts(PaginationDto pagination)
+    public async Task<PaginatedDto<WorkoutDto>> RetrieveWorkouts(PaginationDto pagination, int? categoryId = null, int? subTypeId = null, int? difficultyLevel = null)
     {
         var (pageSize, pageNumber, searchQuery, sortBy, ascending) = pagination;
 
@@ -37,6 +37,22 @@ public class WorkoutService : IWorkoutService
             .Include(x => x.WorkoutType)
             .Include(x => x.ScoreType)
             .Where(new WorkoutBySearchSpec(searchQuery));
+
+        // Apply additional filters
+        if (categoryId.HasValue)
+        {
+            query = query.Where(w => w.CategoryId == categoryId.Value);
+        }
+
+        if (subTypeId.HasValue)
+        {
+            query = query.Where(w => w.SubTypeId == subTypeId.Value);
+        }
+
+        if (difficultyLevel.HasValue)
+        {
+            query = query.Where(w => w.DifficultyLevel == difficultyLevel.Value);
+        }
 
         var workouts = _mapper.ProjectTo<WorkoutDto>(query);
 

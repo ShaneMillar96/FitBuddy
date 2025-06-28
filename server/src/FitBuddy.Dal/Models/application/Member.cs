@@ -44,4 +44,10 @@ public partial class Member
 
     [InverseProperty("CreatedBy")]
     public virtual ICollection<Workout> Workouts { get; set; } = new List<Workout>();
+
+    [InverseProperty("CreatedBy")]
+    public virtual ICollection<ExerciseResult> ExerciseResults { get; set; } = new List<ExerciseResult>();
+
+    [InverseProperty("Member")]
+    public virtual ICollection<WorkoutAchievement> Achievements { get; set; } = new List<WorkoutAchievement>();
 }

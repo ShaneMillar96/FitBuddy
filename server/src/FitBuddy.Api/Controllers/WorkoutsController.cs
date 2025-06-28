@@ -25,9 +25,20 @@ public class WorkoutsController : FitBuddyBaseController
     }
     
     [HttpGet]
-    public async Task<ActionResult> GetWorkouts([FromQuery] PaginationDto pagination)
+    public async Task<ActionResult> GetWorkouts(
+        [FromQuery] PaginationDto pagination,
+        [FromQuery] int? categoryId = null,
+        [FromQuery] int? subTypeId = null,
+        [FromQuery] int? difficultyLevel = null)
     {
-        var workouts = await _service.RetrieveWorkouts(pagination);
+        var workouts = await _service.RetrieveWorkouts(pagination, categoryId, subTypeId, difficultyLevel);
+        return OkOrNoContent(_mapper.Map<PaginatedViewModel<WorkoutViewModel>>(workouts));
+    }
+
+    [HttpGet("category/{categoryId}")]
+    public async Task<ActionResult> GetWorkoutsByCategory(int categoryId, [FromQuery] PaginationDto pagination)
+    {
+        var workouts = await _service.RetrieveWorkouts(pagination, categoryId);
         return OkOrNoContent(_mapper.Map<PaginatedViewModel<WorkoutViewModel>>(workouts));
     }
     

@@ -24,6 +24,18 @@ namespace FitBuddy.Dal.Contexts
         public virtual DbSet<WorkoutType> WorkoutTypes { get; set; }
         public virtual DbSet<Member> Members { get; set; }
         public virtual DbSet<Comment> Comments { get; set; }
+        public virtual DbSet<ScoreType> ScoreTypes { get; set; }
+        public virtual DbSet<ExerciseType> ExerciseTypes { get; set; }
+        public virtual DbSet<ExerciseVideo> ExerciseVideos { get; set; }
+        
+        // New enhanced entities
+        public virtual DbSet<WorkoutCategory> WorkoutCategories { get; set; }
+        public virtual DbSet<WorkoutSubType> WorkoutSubTypes { get; set; }
+        public virtual DbSet<Exercise> Exercises { get; set; }
+        public virtual DbSet<WorkoutExercise> WorkoutExercises { get; set; }
+        public virtual DbSet<ExerciseResult> ExerciseResults { get; set; }
+        public virtual DbSet<SetResult> SetResults { get; set; }
+        public virtual DbSet<WorkoutAchievement> WorkoutAchievements { get; set; }
         public int GetCurrentUserId()
         {
             var user = _httpContextAccessor.HttpContext?.User;
