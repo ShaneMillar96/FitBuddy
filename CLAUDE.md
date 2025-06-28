@@ -42,7 +42,7 @@ cd ui/application && nohup npm run dev > /tmp/vite.log 2>&1 &
 ```
 
 **Access Points:**
-- Frontend: `http://localhost:5173`
+- Frontend: `http://localhost:5174` (Note: Port may change if 5173 is in use)
 - Backend API: `http://localhost:5051`
 - Database: `localhost:5432`
 - AI Service: `http://localhost:5001`
@@ -116,11 +116,12 @@ python ai-analysis-service.py
 ## Troubleshooting
 
 ### Frontend Not Accessible
-If `http://localhost:5173` shows "connection refused":
+If `http://localhost:5174` shows "connection refused":
 1. Check if Vite process is running: `ps aux | grep vite`
 2. Kill existing processes: `pkill -f vite`
 3. Restart with background process: `cd ui/application && nohup npm run dev > /tmp/vite.log 2>&1 &`
-4. Wait 3-5 seconds then test: `curl -I http://localhost:5173`
+4. Wait 3-5 seconds then test: `curl -I http://localhost:5174`
+5. Note: Vite automatically uses next available port if 5173 is occupied
 
 ### Backend Issues
 - Backend warnings about nullable references are normal and don't prevent startup
@@ -152,3 +153,90 @@ If `http://localhost:5173` shows "connection refused":
 - Flyway versioned migrations with descriptive names
 - Separate schemas for application and affiliate management
 - Models follow EF Core conventions with proper relationships
+
+## Enhanced Workout System (Recent Implementation)
+
+### Workout Categories & Classification
+The application now features a comprehensive workout categorization system:
+
+**Categories Available:**
+- **CrossFit WOD** (ID: 1): High-intensity functional fitness workouts
+- **Hyrox** (ID: 2): Hybrid fitness race training combining running and functional movements
+- **Running Intervals** (ID: 3): Running-based cardio and interval training
+- **Stretching** (ID: 4): Flexibility, mobility, and recovery sessions
+- **Swimming** (ID: 5): Pool and open water swimming workouts
+- **Weight Session** (ID: 6): Traditional bodybuilding and strength training workouts
+
+### Enhanced Database Schema
+**New Tables:**
+- `workout_categories`: Primary workout classification
+- `workout_sub_types`: Specific variations within each category
+- `exercises`: Comprehensive exercise database
+- `workout_exercises`: Junction table linking workouts to exercises
+
+**Enhanced Existing Tables:**
+- `workouts`: Added category_id, sub_type_id, difficulty_level, estimated_duration_minutes, equipment_needed (nullable array), workout_structure (JSONB)
+- `exercises`: Added muscle_groups (nullable array), equipment_needed (nullable array), difficulty_level, is_compound
+
+### AutoMapper Configuration Lessons Learned
+When adding new models and DTOs, ensure all mapping layers are configured:
+
+1. **Services Layer** (`/src/FitBuddy.Services/Profiles/`):
+   - Domain models ↔ DTOs
+   - Handle nullable arrays with proper mapping
+   - Set CreatedDate for new entities
+
+2. **API Layer** (`/src/FitBuddy.Api/Profiles/`):
+   - DTOs ↔ ViewModels  
+   - RequestModels ↔ DTOs
+   - **Critical**: Map collection types (e.g., `CreateWorkoutExerciseRequestModel[]` → `CreateWorkoutExerciseDto[]`)
+
+3. **Common AutoMapper Issues Fixed:**
+   - Missing `CreateWorkoutExerciseRequestModel` → `CreateWorkoutExerciseDto` mapping
+   - Nullable array handling for `equipment_needed` and `muscle_groups`
+   - Complex navigation property mappings (e.g., `Exercise.Category.Name` → `ExerciseDto.CategoryName`)
+
+### Service Registration Requirements
+New services must be registered in `Program.cs`:
+```csharp
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IExerciseService, ExerciseService>();
+```
+
+### Frontend Integration Notes
+**Removed Duplicate UI Elements:**
+- Eliminated redundant "CrossFit Workout Type" section when CrossFit WOD category is selected
+- Streamlined workout creation flow to use category-based selection
+
+**Key Components:**
+- `CategorySelector`: Handles workout category and sub-type selection
+- `WorkoutBuilder`: Dynamic exercise selection based on category
+- Enhanced create-workout page with category-driven workflow
+
+### Database Troubleshooting
+**Nullable Array Columns:**
+- Changed `string[]` to `string[]?` in domain models for equipment_needed and muscle_groups
+- Prevents `InvalidCastException` when database contains null values
+- Critical for backward compatibility with existing data
+
+**Service Dependencies:**
+- Categories and exercises services must be registered before workout service
+- AutoMapper profiles must cover all DTO/ViewModel mappings used in controllers
+- Database must contain seed data for categories before testing workout creation
+
+### Development Workflow Improvements
+**Starting from Fresh State:**
+1. Restart Docker services: `docker compose --profile dev up -d`
+2. Kill existing backend: `pkill -f "dotnet run"`
+3. Start backend: `cd src/FitBuddy.Api && dotnet run > /tmp/backend.log 2>&1 &`
+4. Frontend auto-restarts via Vite HMR
+
+**Testing New Endpoints:**
+- Categories: `GET /categories`
+- Exercises by category: `GET /exercises/category/{categoryId}`
+- Enhanced workout creation: `POST /workouts` with category and exercise data
+
+### Performance Considerations
+- Use Entity Framework Include() for eager loading of related data
+- Category and exercise data can be cached on frontend for better UX
+- Consider pagination for large exercise lists within categories

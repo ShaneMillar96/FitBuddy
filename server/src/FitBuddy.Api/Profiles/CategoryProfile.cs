@@ -1,5 +1,6 @@
 using AutoMapper;
 using FitBuddy.Api.RequestModels.Categories;
+using FitBuddy.Api.RequestModels.Exercises;
 using FitBuddy.Api.ViewModels.Categories;
 using FitBuddy.Api.ViewModels.Exercises;
 using FitBuddy.Services.Dtos.Categories;
@@ -24,11 +25,17 @@ public class CategoryProfile : Profile
         
         // Exercise mappings
         CreateMap<ExerciseDto, ExerciseViewModel>();
+        CreateMap<WorkoutExerciseDto, WorkoutExerciseViewModel>();
     }
 
     private void ConfigureRequestModelToDto()
     {
         CreateMap<CreateWorkoutCategoryRequestModel, CreateWorkoutCategoryDto>();
         CreateMap<UpdateWorkoutCategoryRequestModel, UpdateWorkoutCategoryDto>();
+        
+        // Exercise request mappings
+        CreateMap<CreateExerciseRequestModel, CreateExerciseDto>();
+        CreateMap<UpdateExerciseRequestModel, UpdateExerciseDto>();
+        CreateMap<CreateWorkoutExerciseRequestModel, CreateWorkoutExerciseDto>();
     }
 }
