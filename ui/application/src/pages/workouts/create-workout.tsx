@@ -183,6 +183,7 @@ const CreateWorkout = () => {
                     >
                         <WorkoutBuilder
                             categoryId={selectedCategory}
+                            subTypeId={selectedSubType}
                             exercises={exercises}
                             onExercisesChange={setExercises}
                         />

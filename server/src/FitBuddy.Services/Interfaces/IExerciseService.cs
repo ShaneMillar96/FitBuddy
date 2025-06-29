@@ -14,4 +14,5 @@ public interface IExerciseService
     Task<bool> DeleteExerciseAsync(int id);
     Task<List<string>> GetMuscleGroupsAsync();
     Task<List<string>> GetEquipmentTypesAsync();
+    Task<List<ExerciseDto>> GetExercisesByCategoryAndSubTypeAsync(int categoryId, string? subTypeName = null);
 }

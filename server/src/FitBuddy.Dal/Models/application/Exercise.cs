@@ -35,6 +35,10 @@ public partial class Exercise
     [Column("is_compound")]
     public bool IsCompound { get; set; }
 
+    [Column("exercise_type")]
+    [StringLength(20)]
+    public string ExerciseType { get; set; } = "strength";
+
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime? CreatedDate { get; set; }
 

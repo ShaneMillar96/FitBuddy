@@ -24,6 +24,9 @@ public class CreateExerciseRequestModel
     public int? DifficultyLevel { get; set; }
 
     public bool IsCompound { get; set; }
+    
+    [StringLength(20)]
+    public string ExerciseType { get; set; } = "strength";
 }
 
 public class UpdateExerciseRequestModel
@@ -48,6 +51,9 @@ public class UpdateExerciseRequestModel
     public int? DifficultyLevel { get; set; }
 
     public bool IsCompound { get; set; }
+    
+    [StringLength(20)]
+    public string ExerciseType { get; set; } = "strength";
 }
 
 public class CreateWorkoutExerciseRequestModel

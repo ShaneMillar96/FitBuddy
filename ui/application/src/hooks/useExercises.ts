@@ -86,3 +86,18 @@ export const useEquipmentTypes = () => {
     },
   });
 };
+
+export const useExercisesByCategoryAndSubType = (categoryId: number, subTypeName?: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.EXERCISES, 'category-subtype', categoryId, subTypeName],
+    queryFn: async (): Promise<Exercise[]> => {
+      const params = new URLSearchParams();
+      if (subTypeName) params.append('subTypeName', subTypeName);
+      
+      const url = `${API_ROUTES.EXERCISES}/category/${categoryId}/subtype${params.toString() ? `?${params}` : ''}`;
+      const response = await axios.get(url);
+      return response.data;
+    },
+    enabled: !!categoryId,
+  });
+};

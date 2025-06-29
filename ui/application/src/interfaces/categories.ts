@@ -32,6 +32,7 @@ export interface Exercise {
   instructions?: string;
   difficultyLevel?: number;
   isCompound: boolean;
+  exerciseType: string; // strength, cardio, bodyweight, time_based, distance_based
   createdDate?: string;
 }
 

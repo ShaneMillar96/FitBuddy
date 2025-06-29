@@ -11,6 +11,7 @@ public class ExerciseDto
     public string? Instructions { get; set; }
     public int? DifficultyLevel { get; set; }
     public bool IsCompound { get; set; }
+    public string ExerciseType { get; set; } = "strength"; // strength, cardio, bodyweight, time_based, distance_based
     public DateTime? CreatedDate { get; set; }
     public string CategoryName { get; set; } = null!;
 }
@@ -25,6 +26,7 @@ public class CreateExerciseDto
     public string? Instructions { get; set; }
     public int? DifficultyLevel { get; set; }
     public bool IsCompound { get; set; }
+    public string ExerciseType { get; set; } = "strength";
 }
 
 public class UpdateExerciseDto
@@ -37,6 +39,7 @@ public class UpdateExerciseDto
     public string? Instructions { get; set; }
     public int? DifficultyLevel { get; set; }
     public bool IsCompound { get; set; }
+    public string ExerciseType { get; set; } = "strength";
 }
 
 public class WorkoutExerciseDto

@@ -12,6 +12,7 @@ public class ExerciseViewModel
     public string? Instructions { get; set; }
     public int? DifficultyLevel { get; set; }
     public bool IsCompound { get; set; }
+    public string ExerciseType { get; set; } = "strength";
     public DateTime? CreatedDate { get; set; }
 }
 

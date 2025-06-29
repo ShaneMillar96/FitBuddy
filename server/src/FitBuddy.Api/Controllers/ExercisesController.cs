@@ -51,6 +51,13 @@ public class ExercisesController : FitBuddyBaseController
         return OkOrNoContent(_mapper.Map<List<ExerciseViewModel>>(exercises));
     }
 
+    [HttpGet("category/{categoryId}/subtype")]
+    public async Task<ActionResult> GetExercisesByCategoryAndSubType(int categoryId, [FromQuery] string? subTypeName = null)
+    {
+        var exercises = await _exerciseService.GetExercisesByCategoryAndSubTypeAsync(categoryId, subTypeName);
+        return OkOrNoContent(_mapper.Map<List<ExerciseViewModel>>(exercises));
+    }
+
     [HttpGet("search")]
     public async Task<ActionResult> SearchExercises([FromQuery] string searchTerm, [FromQuery] int? categoryId = null)
     {

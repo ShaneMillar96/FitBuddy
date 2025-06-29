@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlus, FaTrash, FaGripVertical, FaSearch } from "react-icons/fa";
-import { useExercisesByCategory, useSearchExercises } from "@/hooks/useExercises";
+import { useExercisesByCategory, useSearchExercises, useExercisesByCategoryAndSubType } from "@/hooks/useExercises";
+import { useSubTypes } from "@/hooks/useCategories";
 import { Exercise, CreateWorkoutExercise } from "@/interfaces/categories";
 
 interface WorkoutBuilderProps {
   categoryId?: number;
+  subTypeId?: number;
   exercises: CreateWorkoutExercise[];
   onExercisesChange: (exercises: CreateWorkoutExercise[]) => void;
   className?: string;
@@ -13,6 +15,7 @@ interface WorkoutBuilderProps {
 
 const WorkoutBuilder = ({
   categoryId,
+  subTypeId,
   exercises,
   onExercisesChange,
   className = ""
@@ -20,18 +23,55 @@ const WorkoutBuilder = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   
-  const { data: categoryExercises, isLoading: categoryLoading } = useExercisesByCategory(categoryId || 0);
+  const { data: subTypes } = useSubTypes(categoryId || 0);
+  const selectedSubType = subTypes?.find(st => st.id === subTypeId);
+  
+  const { data: categoryExercises, isLoading: categoryLoading } = useExercisesByCategoryAndSubType(
+    categoryId || 0, 
+    selectedSubType?.name
+  );
   const { data: searchResults, isLoading: searchLoading } = useSearchExercises(searchTerm, categoryId);
 
   const availableExercises = searchTerm.length >= 2 ? searchResults : categoryExercises;
 
-  const addExercise = (exercise: Exercise) => {
-    const newExercise: CreateWorkoutExercise = {
+  // Get context-appropriate default values based on exercise type and category
+  const getExerciseDefaults = (exercise: Exercise) => {
+    const defaults: Partial<CreateWorkoutExercise> = {
       exerciseId: exercise.id,
       orderInWorkout: exercises.length + 1,
-      sets: exercise.categoryId === 1 ? 3 : undefined, // Default sets for weight training
-      reps: exercise.categoryId === 1 ? 10 : undefined, // Default reps for weight training
     };
+
+    // Set defaults based on exercise type and category
+    switch (exercise.exerciseType) {
+      case 'strength':
+        defaults.sets = 3;
+        defaults.reps = exercise.categoryId === 1 ? 10 : 5; // More reps for bodybuilding, fewer for powerlifting
+        defaults.restSeconds = 90;
+        break;
+      case 'bodyweight':
+        defaults.reps = 10;
+        if (exercise.categoryId === 2) { // CrossFit
+          defaults.restSeconds = 60;
+        }
+        break;
+      case 'cardio':
+        defaults.durationSeconds = 300; // 5 minutes default
+        break;
+      case 'distance_based':
+        defaults.distanceMeters = exercise.categoryId === 3 ? 400 : 1000; // Running vs other
+        break;
+      case 'time_based':
+        defaults.durationSeconds = 1800; // 30 minutes default
+        break;
+    }
+
+    return defaults;
+  };
+
+  const addExercise = (exercise: Exercise) => {
+    const newExercise: CreateWorkoutExercise = {
+      ...getExerciseDefaults(exercise)
+    } as CreateWorkoutExercise;
 
     onExercisesChange([...exercises, newExercise]);
     setShowExercisePicker(false);
@@ -70,6 +110,26 @@ const WorkoutBuilder = ({
 
   const getExerciseById = (exerciseId: number): Exercise | undefined => {
     return availableExercises?.find(ex => ex.id === exerciseId);
+  };
+
+  // Determine which fields to show based on exercise type
+  const getRelevantFields = (exerciseType: string) => {
+    switch (exerciseType) {
+      case 'strength':
+        return ['sets', 'reps', 'weight', 'rest'];
+      case 'bodyweight':
+        return selectedSubType?.name?.toLowerCase().includes('amrap') || selectedSubType?.name?.toLowerCase().includes('emom') 
+          ? ['reps'] 
+          : ['sets', 'reps', 'rest'];
+      case 'cardio':
+        return ['duration'];
+      case 'distance_based':
+        return ['distance'];
+      case 'time_based':
+        return ['duration'];
+      default:
+        return ['sets', 'reps', 'weight', 'rest'];
+    }
   };
 
   if (!categoryId) {
@@ -129,61 +189,105 @@ const WorkoutBuilder = ({
                       </button>
                     </div>
 
-                    {/* Exercise Parameters */}
+                    {/* Exercise Type Badge */}
+                    {exerciseData && (
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
+                          {exerciseData.exerciseType}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {exerciseData.muscleGroups.join(', ')}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Context-Aware Exercise Parameters */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                      {/* Sets */}
-                      <div>
-                        <label className="block text-xs text-gray-600 mb-1">Sets</label>
-                        <input
-                          type="number"
-                          min="1"
-                          max="100"
-                          value={exercise.sets || ''}
-                          onChange={(e) => updateExercise(index, { sets: e.target.value ? parseInt(e.target.value) : undefined })}
-                          className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                          placeholder="Sets"
-                        />
-                      </div>
+                      {exerciseData && getRelevantFields(exerciseData.exerciseType).includes('sets') && (
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Sets</label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="100"
+                            value={exercise.sets || ''}
+                            onChange={(e) => updateExercise(index, { sets: e.target.value ? parseInt(e.target.value) : undefined })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                            placeholder="Sets"
+                          />
+                        </div>
+                      )}
 
-                      {/* Reps */}
-                      <div>
-                        <label className="block text-xs text-gray-600 mb-1">Reps</label>
-                        <input
-                          type="number"
-                          min="1"
-                          value={exercise.reps || ''}
-                          onChange={(e) => updateExercise(index, { reps: e.target.value ? parseInt(e.target.value) : undefined })}
-                          className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                          placeholder="Reps"
-                        />
-                      </div>
+                      {exerciseData && getRelevantFields(exerciseData.exerciseType).includes('reps') && (
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Reps</label>
+                          <input
+                            type="number"
+                            min="1"
+                            value={exercise.reps || ''}
+                            onChange={(e) => updateExercise(index, { reps: e.target.value ? parseInt(e.target.value) : undefined })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                            placeholder="Reps"
+                          />
+                        </div>
+                      )}
 
-                      {/* Weight */}
-                      <div>
-                        <label className="block text-xs text-gray-600 mb-1">Weight (kg)</label>
-                        <input
-                          type="number"
-                          step="0.5"
-                          min="0"
-                          value={exercise.weightKg || ''}
-                          onChange={(e) => updateExercise(index, { weightKg: e.target.value ? parseFloat(e.target.value) : undefined })}
-                          className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                          placeholder="Weight"
-                        />
-                      </div>
+                      {exerciseData && getRelevantFields(exerciseData.exerciseType).includes('weight') && (
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Weight (kg)</label>
+                          <input
+                            type="number"
+                            step="0.5"
+                            min="0"
+                            value={exercise.weightKg || ''}
+                            onChange={(e) => updateExercise(index, { weightKg: e.target.value ? parseFloat(e.target.value) : undefined })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                            placeholder="Weight"
+                          />
+                        </div>
+                      )}
 
-                      {/* Rest */}
-                      <div>
-                        <label className="block text-xs text-gray-600 mb-1">Rest (sec)</label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={exercise.restSeconds || ''}
-                          onChange={(e) => updateExercise(index, { restSeconds: e.target.value ? parseInt(e.target.value) : undefined })}
-                          className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                          placeholder="Rest"
-                        />
-                      </div>
+                      {exerciseData && getRelevantFields(exerciseData.exerciseType).includes('distance') && (
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Distance (m)</label>
+                          <input
+                            type="number"
+                            min="1"
+                            value={exercise.distanceMeters || ''}
+                            onChange={(e) => updateExercise(index, { distanceMeters: e.target.value ? parseInt(e.target.value) : undefined })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                            placeholder="Distance"
+                          />
+                        </div>
+                      )}
+
+                      {exerciseData && getRelevantFields(exerciseData.exerciseType).includes('duration') && (
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Duration (sec)</label>
+                          <input
+                            type="number"
+                            min="1"
+                            value={exercise.durationSeconds || ''}
+                            onChange={(e) => updateExercise(index, { durationSeconds: e.target.value ? parseInt(e.target.value) : undefined })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                            placeholder="Duration"
+                          />
+                        </div>
+                      )}
+
+                      {exerciseData && getRelevantFields(exerciseData.exerciseType).includes('rest') && (
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Rest (sec)</label>
+                          <input
+                            type="number"
+                            min="0"
+                            value={exercise.restSeconds || ''}
+                            onChange={(e) => updateExercise(index, { restSeconds: e.target.value ? parseInt(e.target.value) : undefined })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                            placeholder="Rest"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {/* Notes */}
