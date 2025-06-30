@@ -11,30 +11,38 @@ import {
   FaDumbbell,
   FaUsers,
   FaComments,
-  FaCalendarAlt
+  FaCalendarAlt,
+  FaSpinner
 } from "react-icons/fa";
 import { CATEGORY_ICONS, WORKOUT_CATEGORIES } from "@/interfaces/categories";
 import { Workout } from "@/interfaces/workout";
+import { useWorkoutFavorite } from "../../hooks/useFavorites";
 
 interface EnhancedWorkoutCardProps {
   workout: Workout;
   viewMode?: 'grid' | 'list';
   onPreview?: (workout: Workout) => void;
-  onFavorite?: (workoutId: number) => void;
   onShare?: (workout: Workout) => void;
-  isFavorited?: boolean;
 }
 
 const EnhancedWorkoutCard = ({
   workout,
   viewMode = 'grid',
   onPreview,
-  onFavorite,
-  onShare,
-  isFavorited = false
+  onShare
 }: EnhancedWorkoutCardProps) => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
+  
+  // Use the custom hook for favorites functionality
+  const { 
+    isFavorited, 
+    totalFavorites, 
+    isLoading: favoritesLoading, 
+    isToggling, 
+    toggleFavorite,
+    error: favoriteError 
+  } = useWorkoutFavorite(workout.id);
 
   const getCategoryName = (categoryId: number): string => {
     const categoryNames = {
@@ -110,9 +118,14 @@ const EnhancedWorkoutCard = ({
     onPreview?.(workout);
   };
 
-  const handleFavorite = (e: React.MouseEvent) => {
+  const handleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    onFavorite?.(workout.id);
+    try {
+      await toggleFavorite();
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+      // You could add a toast notification here
+    }
   };
 
   const handleShare = (e: React.MouseEvent) => {
@@ -192,13 +205,19 @@ const EnhancedWorkoutCard = ({
                   
                   <button
                     onClick={handleFavorite}
+                    disabled={isToggling}
                     className={`action-button p-2 rounded-lg transition-colors ${
                       isFavorited 
                         ? 'bg-red-100 text-red-600 hover:bg-red-200' 
                         : 'bg-gray-100 hover:bg-gray-200 text-gray-600'
-                    }`}
+                    } ${isToggling ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    title={`${isFavorited ? 'Remove from' : 'Add to'} favorites${totalFavorites > 0 ? ` (${totalFavorites})` : ''}`}
                   >
-                    <FaHeart className="text-sm" />
+                    {isToggling ? (
+                      <FaSpinner className="text-sm animate-spin" />
+                    ) : (
+                      <FaHeart className="text-sm" />
+                    )}
                   </button>
                   
                   <button
@@ -246,14 +265,19 @@ const EnhancedWorkoutCard = ({
         
         <button
           onClick={handleFavorite}
+          disabled={isToggling}
           className={`action-button p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-200 ${
             isFavorited 
               ? 'bg-red-500 text-white' 
               : 'bg-white text-gray-600 hover:bg-red-50 hover:text-red-500'
-          }`}
-          title={isFavorited ? "Remove from favorites" : "Add to favorites"}
+          } ${isToggling ? 'opacity-50 cursor-not-allowed' : ''}`}
+          title={`${isFavorited ? 'Remove from' : 'Add to'} favorites${totalFavorites > 0 ? ` (${totalFavorites})` : ''}`}
         >
-          <FaHeart className="text-sm" />
+          {isToggling ? (
+            <FaSpinner className="text-sm animate-spin" />
+          ) : (
+            <FaHeart className="text-sm" />
+          )}
         </button>
         
         <button

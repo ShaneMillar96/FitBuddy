@@ -5,7 +5,7 @@ using FitBuddy.Dal.Interfaces;
 namespace FitBuddy.Dal.Models.application;
 
 [Table("workout_favorites")]
-public partial class WorkoutFavorite : ICreatedByTracking
+public partial class WorkoutFavorite
 {
     [Key]
     [Column("id")]
@@ -29,10 +29,4 @@ public partial class WorkoutFavorite : ICreatedByTracking
     [InverseProperty("WorkoutFavorites")]
     public virtual Workout Workout { get; set; } = null!;
 
-    // ICreatedByTracking implementation
-    public int CreatedById 
-    { 
-        get => MemberId; 
-        set => MemberId = value; 
-    }
 }

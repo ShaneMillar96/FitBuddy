@@ -67,7 +67,6 @@ const WorkoutList = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
   const [previewWorkout, setPreviewWorkout] = useState<Workout | null>(null);
-  const [favoriteWorkouts, setFavoriteWorkouts] = useState<Set<number>>(new Set());
   
   // Advanced filter state
   const [filters, setFilters] = useState({
@@ -230,17 +229,6 @@ const WorkoutList = () => {
     setPreviewWorkout(workout);
   };
 
-  const handleFavorite = (workoutId: number) => {
-    setFavoriteWorkouts(prev => {
-      const newFavorites = new Set(prev);
-      if (newFavorites.has(workoutId)) {
-        newFavorites.delete(workoutId);
-      } else {
-        newFavorites.add(workoutId);
-      }
-      return newFavorites;
-    });
-  };
 
   const handleShare = (workout: Workout) => {
     if (navigator.share) {
@@ -363,9 +351,7 @@ const WorkoutList = () => {
                         workout={workout}
                         viewMode={viewMode}
                         onPreview={handlePreview}
-                        onFavorite={handleFavorite}
                         onShare={handleShare}
-                        isFavorited={favoriteWorkouts.has(workout.id)}
                       />
                     </motion.div>
                   ))}
@@ -413,9 +399,7 @@ const WorkoutList = () => {
         workout={previewWorkout}
         isOpen={!!previewWorkout}
         onClose={() => setPreviewWorkout(null)}
-        onFavorite={handleFavorite}
         onShare={handleShare}
-        isFavorited={previewWorkout ? favoriteWorkouts.has(previewWorkout.id) : false}
       />
     </div>
   );

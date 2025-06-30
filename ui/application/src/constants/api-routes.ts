@@ -7,6 +7,7 @@ export const API_ROUTES = {
     CATEGORIES: "/categories",
     EXERCISES: "/exercises",
     DASHBOARD: "/dashboard",
+    FAVORITES: "/favorites",
 };
 
 // Keep backward compatibility

@@ -20,6 +20,19 @@ public class WorkoutFavoriteService : IWorkoutFavoriteService
 
     public async Task<ToggleFavoriteResultDto> ToggleFavoriteAsync(int memberId, int workoutId)
     {
+        // Validate member ID
+        if (memberId <= 0)
+        {
+            throw new ArgumentException("Invalid member ID. User must be authenticated.", nameof(memberId));
+        }
+
+        // Verify member exists
+        var memberExists = await _context.Get<Member>().AnyAsync(m => m.Id == memberId);
+        if (!memberExists)
+        {
+            throw new InvalidOperationException($"Member with ID {memberId} does not exist.");
+        }
+
         // Check if the favorite already exists
         var existingFavorite = await _context.Get<WorkoutFavorite>()
             .FirstOrDefaultAsync(wf => wf.MemberId == memberId && wf.WorkoutId == workoutId);
@@ -39,7 +52,7 @@ public class WorkoutFavoriteService : IWorkoutFavoriteService
             {
                 MemberId = memberId,
                 WorkoutId = workoutId,
-                CreatedDate = DateTime.UtcNow
+                CreatedDate = DateTime.Now
             };
             
             await _context.AddAsync(newFavorite);
@@ -71,8 +84,6 @@ public class WorkoutFavoriteService : IWorkoutFavoriteService
             .ThenInclude(w => w.WorkoutType)
             .Include(wf => wf.Workout)
             .ThenInclude(w => w.Category)
-            .Include(wf => wf.Workout)
-            .ThenInclude(w => w.CreatedBy)
             .Where(wf => wf.MemberId == memberId)
             .OrderByDescending(wf => wf.CreatedDate)
             .ToListAsync();

@@ -11,31 +11,39 @@ import {
   FaHeart,
   FaShare,
   FaList,
-  FaChevronRight
+  FaChevronRight,
+  FaSpinner
 } from "react-icons/fa";
 import { CATEGORY_ICONS, WORKOUT_CATEGORIES } from "@/interfaces/categories";
 import { Workout } from "@/interfaces/workout";
 import { useExercisesByCategory } from "@/hooks/useExercises";
+import { useWorkoutFavorite } from "../../hooks/useFavorites";
 
 interface WorkoutPreviewModalProps {
   workout: Workout | null;
   isOpen: boolean;
   onClose: () => void;
-  onFavorite?: (workoutId: number) => void;
   onShare?: (workout: Workout) => void;
-  isFavorited?: boolean;
 }
 
 const WorkoutPreviewModal = ({
   workout,
   isOpen,
   onClose,
-  onFavorite,
-  onShare,
-  isFavorited = false
+  onShare
 }: WorkoutPreviewModalProps) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'overview' | 'exercises'>('overview');
+  
+  // Use the custom hook for favorites functionality
+  const { 
+    isFavorited, 
+    totalFavorites, 
+    isLoading: favoritesLoading, 
+    isToggling, 
+    toggleFavorite,
+    error: favoriteError 
+  } = useWorkoutFavorite(workout?.id || 0);
   
   // Mock exercise data - in a real app, you'd fetch the actual workout exercises
   const { data: categoryExercises } = useExercisesByCategory(workout?.categoryId || 0);
@@ -97,8 +105,13 @@ const WorkoutPreviewModal = ({
     onClose();
   };
 
-  const handleFavorite = () => {
-    onFavorite?.(workout.id);
+  const handleFavorite = async () => {
+    try {
+      await toggleFavorite();
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+      // You could add a toast notification here
+    }
   };
 
   const handleShare = () => {
@@ -316,13 +329,19 @@ const WorkoutPreviewModal = ({
               <div className="flex space-x-3">
                 <button
                   onClick={handleFavorite}
+                  disabled={isToggling}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                     isFavorited
                       ? 'bg-red-100 text-red-600 hover:bg-red-200'
                       : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
-                  }`}
+                  } ${isToggling ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  title={`${isFavorited ? 'Remove from' : 'Add to'} favorites${totalFavorites > 0 ? ` (${totalFavorites})` : ''}`}
                 >
-                  <FaHeart className="text-sm" />
+                  {isToggling ? (
+                    <FaSpinner className="text-sm animate-spin" />
+                  ) : (
+                    <FaHeart className="text-sm" />
+                  )}
                   <span className="text-sm font-medium">
                     {isFavorited ? 'Favorited' : 'Favorite'}
                   </span>

@@ -24,17 +24,23 @@ public class FitBuddyBaseController : ControllerBase
     protected int GetCurrentUserId()
     {
         var user = HttpContext.User;
-        if (user == null || !user.Identity.IsAuthenticated) return 0;
+        if (user == null || !user.Identity?.IsAuthenticated == true)
+        {
+            throw new UnauthorizedAccessException("User is not authenticated.");
+        }
 
         var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
-        return userIdClaim != null && int.TryParse(userIdClaim.Value, out var userId) ? userId : 0;
+        if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId) || userId <= 0)
+        {
+            throw new UnauthorizedAccessException("Invalid or missing user ID claim.");
+        }
+
+        return userId;
     }
 
     protected async Task SaveGarminAccessTokenAsync(string accessToken)
     {
         var userId = GetCurrentUserId();
-        if (userId == 0) throw new UnauthorizedAccessException("User not authenticated.");
-
         var member = await _context.Get<Member>().FirstOrDefaultAsync(m => m.Id == userId);
         if (member == null) throw new InvalidOperationException("User not found.");
 
@@ -45,8 +51,6 @@ public class FitBuddyBaseController : ControllerBase
     protected async Task<string?> GetGarminAccessTokenAsync()
     {
         var userId = GetCurrentUserId();
-        if (userId == 0) return null;
-
         var member = await _context.Get<Member>().FirstOrDefaultAsync(m => m.Id == userId);
         return member?.GarminAccessToken;
     }
