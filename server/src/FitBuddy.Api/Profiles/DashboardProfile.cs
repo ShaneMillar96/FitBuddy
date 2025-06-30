@@ -17,7 +17,11 @@ public class DashboardProfile : Profile
     {
         CreateMap<DashboardDto, DashboardViewModel>();
         CreateMap<BestWorkoutResultDto, BestWorkoutResultViewModel>();
-        CreateMap<DailyWorkoutCountDto, DailyWorkoutCountViewModel>();    }
+        CreateMap<DailyWorkoutCountDto, DailyWorkoutCountViewModel>();
+        CreateMap<CategoryStatsDto, CategoryStatsViewModel>();
+        CreateMap<AchievementDto, AchievementViewModel>();
+        CreateMap<TrendingMetricsDto, TrendingMetricsViewModel>();
+    }
     
     private void ConfigureViewModelToDto()
     {

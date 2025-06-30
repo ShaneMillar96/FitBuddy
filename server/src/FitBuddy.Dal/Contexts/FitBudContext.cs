@@ -36,6 +36,7 @@ namespace FitBuddy.Dal.Contexts
         public virtual DbSet<ExerciseResult> ExerciseResults { get; set; }
         public virtual DbSet<SetResult> SetResults { get; set; }
         public virtual DbSet<WorkoutAchievement> WorkoutAchievements { get; set; }
+        public virtual DbSet<WorkoutFavorite> WorkoutFavorites { get; set; }
         public int GetCurrentUserId()
         {
             var user = _httpContextAccessor.HttpContext?.User;

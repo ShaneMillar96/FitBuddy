@@ -79,6 +79,9 @@ public partial class Workout : ICreatedByTracking
     [InverseProperty("Workout")]
     public virtual ICollection<WorkoutExercise> WorkoutExercises { get; set; } = new List<WorkoutExercise>();
 
+    [InverseProperty("Workout")]
+    public virtual ICollection<WorkoutFavorite> WorkoutFavorites { get; set; } = new List<WorkoutFavorite>();
+
     [ForeignKey("WorkoutTypeId")]
     [InverseProperty("Workouts")]
     public virtual WorkoutType WorkoutType { get; set; } = null!;

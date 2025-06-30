@@ -22,6 +22,8 @@ public class WorkoutProfile : Profile
         CreateMap<WorkoutTypeDto, WorkoutTypeViewModel>();
         CreateMap<ScoreTypeDto, ScoreTypeViewModel>();
         CreateMap<WorkoutResultDto, WorkoutResultViewModel>();
+        CreateMap<WorkoutFavoriteDto, WorkoutFavoriteViewModel>();
+        CreateMap<ToggleFavoriteResultDto, ToggleFavoriteResultViewModel>();
     }
     
     private void ConfigureViewModelToDto()

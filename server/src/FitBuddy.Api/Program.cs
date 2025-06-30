@@ -30,6 +30,7 @@ builder.Services.AddScoped<IPaginationService, PaginationService>();
 builder.Services.AddScoped<IAnalysisService, AnalysisService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IExerciseService, ExerciseService>();
+builder.Services.AddScoped<IWorkoutFavoriteService, WorkoutFavoriteService>();
 
 builder.Services.AddHttpClient(); 
 

@@ -28,6 +28,10 @@ public class WorkoutProfile : Profile
             .ForMember(d => d.Member, o => o.MapFrom(x => x.CreatedBy));
 
         CreateMap<ScoreType, ScoreTypeDto>();
+        
+        CreateMap<WorkoutFavorite, WorkoutFavoriteDto>()
+            .ForMember(d => d.Workout, o => o.MapFrom(x => x.Workout))
+            .ForMember(d => d.Member, o => o.MapFrom(x => x.Member));
     }
 
     private void ConfigureDtoToDomain()

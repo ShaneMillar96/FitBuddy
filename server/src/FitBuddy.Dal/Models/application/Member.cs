@@ -50,4 +50,7 @@ public partial class Member
 
     [InverseProperty("Member")]
     public virtual ICollection<WorkoutAchievement> Achievements { get; set; } = new List<WorkoutAchievement>();
+
+    [InverseProperty("Member")]
+    public virtual ICollection<WorkoutFavorite> WorkoutFavorites { get; set; } = new List<WorkoutFavorite>();
 }
