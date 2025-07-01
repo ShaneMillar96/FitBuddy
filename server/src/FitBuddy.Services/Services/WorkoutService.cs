@@ -27,7 +27,7 @@ public class WorkoutService : IWorkoutService
         _mapper = mapper;
     }
     
-    public async Task<PaginatedDto<WorkoutDto>> RetrieveWorkouts(PaginationDto pagination, int[]? categoryIds = null, int? subTypeId = null, int? minDifficultyLevel = null, int? maxDifficultyLevel = null, int? minDuration = null, int? maxDuration = null, string[]? equipmentNeeded = null)
+    public async Task<PaginatedDto<WorkoutDto>> RetrieveWorkouts(PaginationDto pagination, int[]? categoryIds = null, int? subTypeId = null, int? minDifficultyLevel = null, int? maxDifficultyLevel = null, int? minDuration = null, int? maxDuration = null)
     {
         var (pageSize, pageNumber, searchQuery, sortBy, ascending) = pagination;
 
@@ -72,11 +72,6 @@ public class WorkoutService : IWorkoutService
             query = query.Where(w => w.EstimatedDurationMinutes <= maxDuration.Value);
         }
 
-        // Apply equipment filter (workout must contain at least one of the specified equipment)
-        if (equipmentNeeded != null && equipmentNeeded.Length > 0)
-        {
-            query = query.Where(w => w.EquipmentNeeded != null && w.EquipmentNeeded.Any(eq => equipmentNeeded.Contains(eq)));
-        }
 
         var workouts = _mapper.ProjectTo<WorkoutDto>(query);
 
@@ -132,35 +127,6 @@ public class WorkoutService : IWorkoutService
     public Task<List<WorkoutTypeDto>> RetrieveWorkoutTypes() =>
         _mapper.ProjectTo<WorkoutTypeDto>(_context.Get<WorkoutType>()).ToListAsync();
 
-    public async Task<List<string>> RetrieveAvailableEquipment()
-    {
-        // Get all unique equipment from exercises that have been used in workouts
-        var equipmentFromExercises = await _context
-            .Get<Dal.Models.application.Exercise>()
-            .Where(e => e.EquipmentNeeded != null)
-            .SelectMany(e => e.EquipmentNeeded)
-            .Distinct()
-            .Where(eq => eq != null)
-            .OrderBy(eq => eq)
-            .ToListAsync();
-
-        // Also get equipment directly from workouts
-        var equipmentFromWorkouts = await _context
-            .Get<Workout>()
-            .Where(w => w.EquipmentNeeded != null)
-            .SelectMany(w => w.EquipmentNeeded)
-            .Distinct()
-            .Where(eq => eq != null)
-            .ToListAsync();
-
-        // Combine and return unique equipment
-        return equipmentFromExercises
-            .Union(equipmentFromWorkouts)
-            .Where(eq => !string.IsNullOrWhiteSpace(eq))
-            .Distinct()
-            .OrderBy(eq => eq)
-            .ToList();
-    }
     
     public async Task<PaginatedDto<WorkoutResultDto>> RetrieveWorkoutResults(PaginationDto pagination, int workoutId)
     {

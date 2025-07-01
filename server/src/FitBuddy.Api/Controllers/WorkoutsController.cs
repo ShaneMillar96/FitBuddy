@@ -33,9 +33,9 @@ public class WorkoutsController : FitBuddyBaseController
         [FromQuery] int? maxDifficultyLevel = null,
         [FromQuery] int? minDuration = null,
         [FromQuery] int? maxDuration = null,
-        [FromQuery] string[]? equipmentNeeded = null)
+        )
     {
-        var workouts = await _service.RetrieveWorkouts(pagination, categoryIds, subTypeId, minDifficultyLevel, maxDifficultyLevel, minDuration, maxDuration, equipmentNeeded);
+        var workouts = await _service.RetrieveWorkouts(pagination, categoryIds, subTypeId, minDifficultyLevel, maxDifficultyLevel, minDuration, maxDuration);
         return OkOrNoContent(_mapper.Map<PaginatedViewModel<WorkoutViewModel>>(workouts));
     }
 
@@ -90,12 +90,6 @@ public class WorkoutsController : FitBuddyBaseController
         return OkOrNoContent(_mapper.Map<List<WorkoutTypeViewModel>>(workoutTypes));
     }
 
-    [HttpGet("equipment")]
-    public async Task<ActionResult> GetAvailableEquipment()
-    {
-        var equipment = await _service.RetrieveAvailableEquipment();
-        return OkOrNoContent(equipment);
-    }
     
     [HttpGet("{id}/results")]
     public async Task<ActionResult> GetWorkoutResults([FromQuery] PaginationDto pagination, int id)

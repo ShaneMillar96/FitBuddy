@@ -10,7 +10,6 @@ import {
   FaDumbbell
 } from "react-icons/fa";
 import { useCategories } from "@/hooks/useCategories";
-import { useAvailableEquipment } from "@/hooks/useWorkouts";
 import { CATEGORY_ICONS } from "@/interfaces/categories";
 
 interface FilterPanelProps {
@@ -21,7 +20,6 @@ interface FilterPanelProps {
     subTypes: number[];
     difficulty: [number, number];
     duration: [number, number];
-    equipment: string[];
   };
   onFiltersChange: (filters: any) => void;
 }
@@ -33,7 +31,6 @@ const WorkoutFilterPanel = ({
   onFiltersChange
 }: FilterPanelProps) => {
   const { data: categories } = useCategories();
-  const { data: availableEquipment } = useAvailableEquipment();
   const [expandedSections, setExpandedSections] = useState<string[]>(['categories', 'difficulty']);
 
   const toggleSection = (section: string) => {
@@ -77,12 +74,6 @@ const WorkoutFilterPanel = ({
     updateFilter('categories', newCategories);
   };
 
-  const toggleEquipment = (equipment: string) => {
-    const newEquipment = filters.equipment.includes(equipment)
-      ? filters.equipment.filter(e => e !== equipment)
-      : [...filters.equipment, equipment];
-    updateFilter('equipment', newEquipment);
-  };
 
   if (!isOpen) return null;
 
@@ -324,51 +315,6 @@ const WorkoutFilterPanel = ({
               </AnimatePresence>
             </div>
 
-            {/* Equipment */}
-            <div>
-              <button
-                onClick={() => toggleSection('equipment')}
-                className="flex items-center justify-between w-full mb-4"
-              >
-                <h3 className="text-lg font-medium text-gray-900 flex items-center space-x-2">
-                  <span>🔧</span>
-                  <span>Equipment</span>
-                </h3>
-                {expandedSections.includes('equipment') ? 
-                  <FaChevronUp className="text-gray-400" /> : 
-                  <FaChevronDown className="text-gray-400" />
-                }
-              </button>
-
-              <AnimatePresence>
-                {expandedSections.includes('equipment') && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="space-y-3"
-                  >
-                    {availableEquipment?.map((equipment) => (
-                      <label
-                        key={equipment}
-                        className="flex items-center space-x-3 cursor-pointer group"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={filters.equipment.includes(equipment)}
-                          onChange={() => toggleEquipment(equipment)}
-                          className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
-                        />
-                        <span className="text-sm font-medium text-gray-900 group-hover:text-teal-600 transition-colors">
-                          {equipment}
-                        </span>
-                      </label>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
           </div>
 
           {/* Footer */}
@@ -379,8 +325,7 @@ const WorkoutFilterPanel = ({
                   categories: [],
                   subTypes: [],
                   difficulty: [1, 5],
-                  duration: [0, 120],
-                  equipment: []
+                  duration: [0, 120]
                 });
               }}
               className="w-full py-3 text-center text-gray-600 hover:text-gray-800 font-medium transition-colors"

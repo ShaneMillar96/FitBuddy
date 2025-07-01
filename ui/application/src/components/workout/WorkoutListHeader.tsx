@@ -29,9 +29,9 @@ interface WorkoutListHeaderProps {
     subTypes: number[];
     difficulty: [number, number];
     duration: [number, number];
-    equipment: string[];
   };
   onClearFilters: () => void;
+  onFiltersChange: (filters: any) => void;
   totalWorkouts: number;
 }
 
@@ -46,6 +46,7 @@ const WorkoutListHeader = ({
   onToggleFilters,
   activeFilters,
   onClearFilters,
+  onFiltersChange,
   totalWorkouts
 }: WorkoutListHeaderProps) => {
   const navigate = useNavigate();
@@ -73,8 +74,7 @@ const WorkoutListHeader = ({
     activeFilters.categories.length > 0 ||
     activeFilters.subTypes.length > 0 ||
     activeFilters.difficulty[0] > 1 || activeFilters.difficulty[1] < 5 ||
-    activeFilters.duration[0] > 0 || activeFilters.duration[1] < 120 ||
-    activeFilters.equipment.length > 0;
+    activeFilters.duration[0] > 0 || activeFilters.duration[1] < 120;
 
   const getCategoryName = (categoryId: number): string => {
     const categoryNames = {
@@ -90,24 +90,24 @@ const WorkoutListHeader = ({
 
   const removeCategory = (categoryId: number) => {
     const newCategories = activeFilters.categories.filter(id => id !== categoryId);
-    onClearFilters(); // For now, we'll use the clear all function
-    // TODO: Implement individual filter removal
-  };
-
-  const removeEquipment = (equipment: string) => {
-    const newEquipment = activeFilters.equipment.filter(eq => eq !== equipment);
-    onClearFilters(); // For now, we'll use the clear all function
-    // TODO: Implement individual filter removal
+    onFiltersChange({
+      ...activeFilters,
+      categories: newCategories
+    });
   };
 
   const removeDifficulty = () => {
-    onClearFilters(); // For now, we'll use the clear all function
-    // TODO: Implement individual filter removal
+    onFiltersChange({
+      ...activeFilters,
+      difficulty: [1, 5]
+    });
   };
 
   const removeDuration = () => {
-    onClearFilters(); // For now, we'll use the clear all function
-    // TODO: Implement individual filter removal
+    onFiltersChange({
+      ...activeFilters,
+      duration: [0, 120]
+    });
   };
 
   return (
@@ -217,7 +217,6 @@ const WorkoutListHeader = ({
                 <span className="bg-teal-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {
                     activeFilters.categories.length + 
-                    activeFilters.equipment.length +
                     (activeFilters.difficulty[0] > 1 || activeFilters.difficulty[1] < 5 ? 1 : 0) +
                     (activeFilters.duration[0] > 0 || activeFilters.duration[1] < 120 ? 1 : 0)
                   }
@@ -292,22 +291,6 @@ const WorkoutListHeader = ({
               </span>
             ))}
 
-            {/* Equipment Filters */}
-            {activeFilters.equipment.map((equipment) => (
-              <span
-                key={`equipment-${equipment}`}
-                className="flex items-center space-x-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-              >
-                <span>🔧</span>
-                <span>{equipment}</span>
-                <button 
-                  onClick={() => removeEquipment(equipment)}
-                  className="text-blue-600 hover:text-blue-800"
-                >
-                  <FaTimes className="text-xs" />
-                </button>
-              </span>
-            ))}
 
             {/* Difficulty Range */}
             {(activeFilters.difficulty[0] > 1 || activeFilters.difficulty[1] < 5) && (

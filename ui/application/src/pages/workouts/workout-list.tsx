@@ -77,8 +77,7 @@ const WorkoutList = () => {
     categories: [] as number[],
     subTypes: [] as number[],
     difficulty: [1, 5] as [number, number],
-    duration: [0, 120] as [number, number],
-    equipment: [] as string[]
+    duration: [0, 120] as [number, number]
   });
 
   // Debounce the search input
@@ -113,10 +112,6 @@ const WorkoutList = () => {
       params.maxDuration = filters.duration[1];
     }
 
-    // Equipment filtering
-    if (filters.equipment.length > 0) {
-      params.equipmentNeeded = filters.equipment;
-    }
 
     return params;
   };
@@ -209,8 +204,7 @@ const WorkoutList = () => {
       categories: [],
       subTypes: [],
       difficulty: [1, 5],
-      duration: [0, 120],
-      equipment: []
+      duration: [0, 120]
     });
   };
 
@@ -248,6 +242,7 @@ const WorkoutList = () => {
           onToggleFilters={() => setShowFilters(!showFilters)}
           activeFilters={filters}
           onClearFilters={handleClearFilters}
+          onFiltersChange={handleFiltersChange}
           totalWorkouts={workouts.length}
         />
 
@@ -277,18 +272,18 @@ const WorkoutList = () => {
               >
                 <div className="text-6xl mb-6">🏋️‍♂️</div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  {debouncedSearch || filters.categories.length > 0 || filters.equipment.length > 0
+                  {debouncedSearch || filters.categories.length > 0
                     ? "No workouts match your criteria"
                     : "No workouts yet"}
                 </h2>
                 <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                  {debouncedSearch || filters.categories.length > 0 || filters.equipment.length > 0
+                  {debouncedSearch || filters.categories.length > 0
                     ? "Try adjusting your filters or search terms to find what you're looking for."
                     : "Ready to start your fitness journey? Create your first workout and begin building your routine!"}
                 </p>
                 <button
                   onClick={() => {
-                    if (debouncedSearch || filters.categories.length > 0 || filters.equipment.length > 0) {
+                    if (debouncedSearch || filters.categories.length > 0) {
                       handleClearFilters();
                     } else {
                       navigate('/create-workout');
@@ -296,7 +291,7 @@ const WorkoutList = () => {
                   }}
                   className="px-6 py-3 bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-lg font-semibold hover:from-teal-600 hover:to-blue-600 transition-all duration-300 shadow-md hover:shadow-lg"
                 >
-                  {debouncedSearch || filters.categories.length > 0 || filters.equipment.length > 0
+                  {debouncedSearch || filters.categories.length > 0
                     ? "Clear Filters"
                     : "Create Your First Workout"}
                 </button>

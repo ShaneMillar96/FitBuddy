@@ -38,7 +38,7 @@ public class WorkoutsTests
         var workoutsDto = new PaginatedDto<WorkoutDto> { Data = new List<WorkoutDto>().ToArray(), TotalCount = 0 };
         var workoutsViewModel = new PaginatedViewModel<WorkoutViewModel> { Data = new List<WorkoutViewModel>().ToArray(), TotalCount = 0 };
 
-        _serviceMock.Setup(s => s.RetrieveWorkouts(paginationDto, null, null, null, null, null, null, null)).ReturnsAsync(workoutsDto);
+        _serviceMock.Setup(s => s.RetrieveWorkouts(paginationDto, null, null, null, null, null, null)).ReturnsAsync(workoutsDto);
         _mapperMock.Setup(m => m.Map<PaginatedViewModel<WorkoutViewModel>>(workoutsDto)).Returns(workoutsViewModel);
 
         // Act

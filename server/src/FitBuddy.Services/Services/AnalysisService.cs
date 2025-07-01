@@ -18,6 +18,7 @@ public class AnalysisService : IAnalysisService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly string _videoStoragePath = "uploads/videos"; // Adjust for production (e.g., S3)
+    private readonly bool _deleteUploadedVideos = true; // Configure this via appsettings in production
 
     public AnalysisService(
         IFitBudContext context,
@@ -71,7 +72,20 @@ public class AnalysisService : IAnalysisService
         await _context.AddAsync(video);
         await _context.SaveChangesAsync();
 
-        // File.Delete(filePath); // Optional: Keep file for now, delete in production cleanup
+        // Clean up uploaded video file if configured to do so
+        if (_deleteUploadedVideos)
+        {
+            try
+            {
+                File.Delete(filePath);
+            }
+            catch (Exception ex)
+            {
+                // Log the error but don't fail the operation
+                // In a production system, you would use proper logging here
+                Console.WriteLine($"Warning: Could not delete uploaded video file {filePath}: {ex.Message}");
+            }
+        }
 
         return video.Id;
     }

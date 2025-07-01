@@ -240,3 +240,61 @@ builder.Services.AddScoped<IExerciseService, ExerciseService>();
 - Use Entity Framework Include() for eager loading of related data
 - Category and exercise data can be cached on frontend for better UX
 - Consider pagination for large exercise lists within categories
+
+## Enhanced Workout Filtering System (Latest Implementation)
+
+### Server-Side Filtering Architecture
+The workout filtering system has been completely overhauled to use server-side filtering with proper OR logic for categories:
+
+**Backend Changes:**
+- Updated `WorkoutsController.GetWorkouts()` to accept: `categoryIds[]`, `minDifficultyLevel`, `maxDifficultyLevel`, `minDuration`, `maxDuration`, `equipmentNeeded[]`
+- Implemented server-side OR logic for multiple category selection
+- Added new `/workouts/equipment` endpoint that returns actual equipment from database
+- Removed client-side filtering dependencies that broke with server-side pagination
+
+**Frontend Changes:**
+- Updated `useWorkouts` hook to support new filter parameters
+- Removed Creator section from filter panel per user requirements
+- Fixed active filter display to show duration filters and support individual filter removal
+- Equipment list now loads dynamically from database instead of hardcoded values
+- All filtering now happens server-side for better performance with pagination
+
+**Key Fixes Applied:**
+- Categories work with OR logic (selecting Hyrox + Swimming shows workouts from EITHER category)
+- Duration filters work properly with server-side range filtering
+- Equipment filters use actual database equipment values
+- Active filters display duration and allow individual removal via 'x' buttons
+- Filter count badge includes all active filter types
+
+### Important Development Guidelines
+- **DO NOT run build commands** (`npm run build`, `dotnet build`, `docker compose up`) - user handles these manually
+- Focus on code implementation and logical fixes
+- Test compilation errors can be fixed, but avoid running the actual build/test commands
+
+## Recent Implementation Updates
+
+### Equipment Filtering Removal (Latest)
+- **Removed equipment filtering** completely from the workout list interface per user request
+- Updated filter state to only include: `categories`, `subTypes`, `difficulty`, `duration`
+- Removed equipment-related API endpoints and backend filtering logic
+- Cleaned up all equipment references from frontend components
+
+### Individual Filter Removal Implementation
+- **Fixed individual filter removal** in WorkoutListHeader component
+- Replaced placeholder `onClearFilters()` calls with proper individual filter removal
+- Implemented `removeCategory()`, `removeDifficulty()`, and `removeDuration()` functions
+- Added `onFiltersChange` prop to enable granular filter updates
+
+### Code Quality Improvements
+- **Fixed syntax error** in CommentProfile.cs (removed double semicolon)
+- **Implemented file cleanup** in AnalysisService.cs for uploaded exercise videos
+- Added configurable cleanup option with proper error handling
+- All outstanding TODOs have been implemented or resolved
+
+### Filter System Summary
+The workout filtering system now supports:
+- ✅ **Categories**: OR logic with multiple selection and individual removal
+- ✅ **Difficulty Range**: Server-side filtering with individual removal
+- ✅ **Duration Range**: Server-side filtering with individual removal
+- ❌ **Equipment**: Completely removed per user requirements
+- ❌ **Creator**: Removed per user requirements

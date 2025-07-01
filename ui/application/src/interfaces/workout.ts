@@ -58,8 +58,7 @@ export const getWorkouts = async ({
                                       minDifficultyLevel,
                                       maxDifficultyLevel,
                                       minDuration,
-                                      maxDuration,
-                                      equipmentNeeded
+                                      maxDuration
                                   }: {
                                       pageSize?: number;
                                       pageNumber?: number;
@@ -72,7 +71,6 @@ export const getWorkouts = async ({
                                       maxDifficultyLevel?: number;
                                       minDuration?: number;
                                       maxDuration?: number;
-                                      equipmentNeeded?: string[];
                                   } = {}): Promise<PaginatedWorkoutsResponse> => {
     const { data } = await axiosInstance.get(APIRoutes.WORKOUTS, {
         params: {
@@ -87,7 +85,6 @@ export const getWorkouts = async ({
             maxDifficultyLevel,
             minDuration,
             maxDuration,
-            equipmentNeeded,
         },
         paramsSerializer: { indexes: null }
     });
@@ -95,7 +92,3 @@ export const getWorkouts = async ({
     return data;
 };
 
-export const getAvailableEquipment = async (): Promise<string[]> => {
-    const { data } = await axiosInstance.get(`${APIRoutes.WORKOUTS}/equipment`);
-    return data;
-};
