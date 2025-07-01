@@ -316,7 +316,7 @@ const EnhancedWorkoutCard = ({
         </div>
 
         {/* Description */}
-        <p className="text-gray-700 text-sm mb-4 line-clamp-2 leading-relaxed">
+        <p className="text-gray-700 text-sm mb-4 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
           {workout.description}
         </p>
 

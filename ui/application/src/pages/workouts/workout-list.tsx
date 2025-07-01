@@ -3,6 +3,7 @@ import { useWorkouts } from "@/hooks/useWorkouts";
 import { motion, AnimatePresence } from "framer-motion";
 import { CATEGORY_ICONS, WORKOUT_CATEGORIES } from "@/interfaces/categories";
 import { Workout } from "@/interfaces/workout";
+import { useNavigate } from "react-router-dom";
 
 // Import our new components
 import WorkoutListHeader from "@/components/workout/WorkoutListHeader";
@@ -61,6 +62,9 @@ const useDebounce = (value: string, delay: number) => {
 };
 
 const WorkoutList = () => {
+  // Navigation
+  const navigate = useNavigate();
+  
   // State management
   const [searchInput, setSearchInput] = useState("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -89,8 +93,10 @@ const WorkoutList = () => {
       sortDirection: sortBy.includes('desc') ? 'desc' : 'asc'
     };
 
-    if (filters.categories.length > 0) {
-      params.categoryId = filters.categories[0]; // Use first category for now
+    // Only use server-side category filtering when exactly one category is selected
+    // Otherwise, we'll filter client-side to support multiple categories
+    if (filters.categories.length === 1) {
+      params.categoryId = filters.categories[0];
     }
 
     if (filters.difficulty[0] > 1 || filters.difficulty[1] < 5) {
@@ -173,6 +179,13 @@ const WorkoutList = () => {
 
   // Filter workouts client-side for additional criteria
   const filteredWorkouts = workouts.filter(workout => {
+    // Category filter (client-side when multiple categories selected)
+    if (filters.categories.length > 1) {
+      if (!workout.categoryId || !filters.categories.includes(workout.categoryId)) {
+        return false;
+      }
+    }
+
     // Equipment filter
     if (filters.equipment.length > 0) {
       const hasRequiredEquipment = filters.equipment.some(equipment => 
@@ -298,7 +311,13 @@ const WorkoutList = () => {
                     : "Ready to start your fitness journey? Create your first workout and begin building your routine!"}
                 </p>
                 <button
-                  onClick={handleClearFilters}
+                  onClick={() => {
+                    if (debouncedSearch || filters.categories.length > 0 || filters.equipment.length > 0) {
+                      handleClearFilters();
+                    } else {
+                      navigate('/workouts/create');
+                    }
+                  }}
                   className="px-6 py-3 bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-lg font-semibold hover:from-teal-600 hover:to-blue-600 transition-all duration-300 shadow-md hover:shadow-lg"
                 >
                   {debouncedSearch || filters.categories.length > 0 || filters.equipment.length > 0

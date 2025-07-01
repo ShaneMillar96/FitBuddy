@@ -17,7 +17,7 @@ export interface Workout {
     subTypeName?: string;
     difficultyLevel?: number;
     estimatedDurationMinutes?: number;
-    equipmentNeeded: string[];
+    equipmentNeeded?: string[];
     scoreTypeId?: number;
     scoreTypeName?: string;
     createdDate: string;
@@ -33,7 +33,7 @@ export interface CreateWorkout {
     subTypeId?: number;
     difficultyLevel?: number;
     estimatedDurationMinutes?: number;
-    equipmentNeeded: string[];
+    equipmentNeeded?: string[];
     exercises: CreateWorkoutExercise[];
 }
 

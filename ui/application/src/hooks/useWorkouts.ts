@@ -38,7 +38,7 @@ export const useWorkouts = ({
             const totalFetched = allPages.reduce((acc, page) => acc + page.data.length, 0);
             return totalFetched < lastPage.totalCount ? allPages.length + 1 : undefined;
         },
-        keepPreviousData: true,
+        placeholderData: (previousData) => previousData,
         staleTime: 0,
         refetchOnWindowFocus: true,
     });
