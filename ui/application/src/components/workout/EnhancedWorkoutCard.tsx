@@ -7,7 +7,6 @@ import {
   FaUser, 
   FaHeart, 
   FaShare, 
-  FaEye,
   FaDumbbell,
   FaUsers,
   FaComments,
@@ -110,13 +109,9 @@ const EnhancedWorkoutCard = ({
     if ((e.target as HTMLElement).closest('.action-button')) {
       return;
     }
-    navigate(`/workouts/${workout.id}`);
-  };
-
-  const handlePreview = (e: React.MouseEvent) => {
-    e.stopPropagation();
     onPreview?.(workout);
   };
+
 
   const handleFavorite = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -197,13 +192,6 @@ const EnhancedWorkoutCard = ({
                 {/* Actions */}
                 <div className="flex items-center space-x-2">
                   <button
-                    onClick={handlePreview}
-                    className="action-button p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100"
-                  >
-                    <FaEye className="text-sm text-gray-600" />
-                  </button>
-                  
-                  <button
                     onClick={handleFavorite}
                     disabled={isToggling}
                     className={`action-button p-2 rounded-lg transition-colors ${
@@ -255,14 +243,6 @@ const EnhancedWorkoutCard = ({
         animate={{ opacity: isHovered ? 1 : 0 }}
         className="absolute top-4 right-4 flex space-x-2 z-10"
       >
-        <button
-          onClick={handlePreview}
-          className="action-button p-2 rounded-full bg-white shadow-md hover:shadow-lg transition-all duration-200"
-          title="Quick Preview"
-        >
-          <FaEye className="text-sm text-gray-600" />
-        </button>
-        
         <button
           onClick={handleFavorite}
           disabled={isToggling}

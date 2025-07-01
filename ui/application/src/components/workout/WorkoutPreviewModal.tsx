@@ -101,7 +101,7 @@ const WorkoutPreviewModal = ({
   };
 
   const handleStartWorkout = () => {
-    navigate(`/workouts/${workout.id}`);
+    navigate(`/workouts/${workout.id}/session`);
     onClose();
   };
 

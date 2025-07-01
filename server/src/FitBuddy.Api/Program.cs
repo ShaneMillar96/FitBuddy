@@ -31,6 +31,7 @@ builder.Services.AddScoped<IAnalysisService, AnalysisService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IExerciseService, ExerciseService>();
 builder.Services.AddScoped<IWorkoutFavoriteService, WorkoutFavoriteService>();
+builder.Services.AddScoped<IWorkoutSessionService, WorkoutSessionService>();
 
 builder.Services.AddHttpClient(); 
 

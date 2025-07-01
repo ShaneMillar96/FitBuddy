@@ -32,8 +32,7 @@ public class WorkoutsController : FitBuddyBaseController
         [FromQuery] int? minDifficultyLevel = null,
         [FromQuery] int? maxDifficultyLevel = null,
         [FromQuery] int? minDuration = null,
-        [FromQuery] int? maxDuration = null,
-        )
+        [FromQuery] int? maxDuration = null)
     {
         var workouts = await _service.RetrieveWorkouts(pagination, categoryIds, subTypeId, minDifficultyLevel, maxDifficultyLevel, minDuration, maxDuration);
         return OkOrNoContent(_mapper.Map<PaginatedViewModel<WorkoutViewModel>>(workouts));

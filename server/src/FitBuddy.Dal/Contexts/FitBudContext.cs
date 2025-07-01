@@ -37,6 +37,11 @@ namespace FitBuddy.Dal.Contexts
         public virtual DbSet<SetResult> SetResults { get; set; }
         public virtual DbSet<WorkoutAchievement> WorkoutAchievements { get; set; }
         public virtual DbSet<WorkoutFavorite> WorkoutFavorites { get; set; }
+        
+        // Session management entities
+        public virtual DbSet<WorkoutSession> WorkoutSessions { get; set; }
+        public virtual DbSet<SessionExerciseProgress> SessionExerciseProgress { get; set; }
+        public virtual DbSet<SessionSetProgress> SessionSetProgress { get; set; }
         public int GetCurrentUserId()
         {
             var user = _httpContextAccessor.HttpContext?.User;
