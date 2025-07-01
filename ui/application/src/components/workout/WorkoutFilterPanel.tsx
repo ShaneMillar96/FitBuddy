@@ -10,6 +10,7 @@ import {
   FaDumbbell
 } from "react-icons/fa";
 import { useCategories } from "@/hooks/useCategories";
+import { useAvailableEquipment } from "@/hooks/useWorkouts";
 import { CATEGORY_ICONS } from "@/interfaces/categories";
 
 interface FilterPanelProps {
@@ -21,7 +22,6 @@ interface FilterPanelProps {
     difficulty: [number, number];
     duration: [number, number];
     equipment: string[];
-    creator: string;
   };
   onFiltersChange: (filters: any) => void;
 }
@@ -33,6 +33,7 @@ const WorkoutFilterPanel = ({
   onFiltersChange
 }: FilterPanelProps) => {
   const { data: categories } = useCategories();
+  const { data: availableEquipment } = useAvailableEquipment();
   const [expandedSections, setExpandedSections] = useState<string[]>(['categories', 'difficulty']);
 
   const toggleSection = (section: string) => {
@@ -61,17 +62,6 @@ const WorkoutFilterPanel = ({
     120: '120min+'
   };
 
-  const commonEquipment = [
-    'Barbell', 'Dumbbells', 'Kettlebell', 'Pull-up bar', 'Rowing machine',
-    'Treadmill', 'Jump rope', 'Medicine ball', 'Resistance bands', 'None'
-  ];
-
-  const creatorOptions = [
-    { value: '', label: 'All Creators' },
-    { value: 'me', label: 'My Workouts' },
-    { value: 'following', label: 'People I Follow' },
-    { value: 'popular', label: 'Popular Creators' }
-  ];
 
   const updateFilter = (key: string, value: any) => {
     onFiltersChange({
@@ -358,7 +348,7 @@ const WorkoutFilterPanel = ({
                     exit={{ height: 0, opacity: 0 }}
                     className="space-y-3"
                   >
-                    {commonEquipment.map((equipment) => (
+                    {availableEquipment?.map((equipment) => (
                       <label
                         key={equipment}
                         className="flex items-center space-x-3 cursor-pointer group"
@@ -379,52 +369,6 @@ const WorkoutFilterPanel = ({
               </AnimatePresence>
             </div>
 
-            {/* Creator */}
-            <div>
-              <button
-                onClick={() => toggleSection('creator')}
-                className="flex items-center justify-between w-full mb-4"
-              >
-                <h3 className="text-lg font-medium text-gray-900 flex items-center space-x-2">
-                  <FaUser className="text-purple-600" />
-                  <span>Creator</span>
-                </h3>
-                {expandedSections.includes('creator') ? 
-                  <FaChevronUp className="text-gray-400" /> : 
-                  <FaChevronDown className="text-gray-400" />
-                }
-              </button>
-
-              <AnimatePresence>
-                {expandedSections.includes('creator') && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="space-y-3"
-                  >
-                    {creatorOptions.map((option) => (
-                      <label
-                        key={option.value}
-                        className="flex items-center space-x-3 cursor-pointer group"
-                      >
-                        <input
-                          type="radio"
-                          name="creator"
-                          value={option.value}
-                          checked={filters.creator === option.value}
-                          onChange={(e) => updateFilter('creator', e.target.value)}
-                          className="border-gray-300 text-teal-600 focus:ring-teal-500"
-                        />
-                        <span className="text-sm font-medium text-gray-900 group-hover:text-teal-600 transition-colors">
-                          {option.label}
-                        </span>
-                      </label>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
           </div>
 
           {/* Footer */}
@@ -436,8 +380,7 @@ const WorkoutFilterPanel = ({
                   subTypes: [],
                   difficulty: [1, 5],
                   duration: [0, 120],
-                  equipment: [],
-                  creator: ''
+                  equipment: []
                 });
               }}
               className="w-full py-3 text-center text-gray-600 hover:text-gray-800 font-medium transition-colors"

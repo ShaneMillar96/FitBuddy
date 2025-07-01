@@ -30,7 +30,6 @@ interface WorkoutListHeaderProps {
     difficulty: [number, number];
     duration: [number, number];
     equipment: string[];
-    creator: string;
   };
   onClearFilters: () => void;
   totalWorkouts: number;
@@ -75,8 +74,7 @@ const WorkoutListHeader = ({
     activeFilters.subTypes.length > 0 ||
     activeFilters.difficulty[0] > 1 || activeFilters.difficulty[1] < 5 ||
     activeFilters.duration[0] > 0 || activeFilters.duration[1] < 120 ||
-    activeFilters.equipment.length > 0 ||
-    activeFilters.creator !== '';
+    activeFilters.equipment.length > 0;
 
   const getCategoryName = (categoryId: number): string => {
     const categoryNames = {
@@ -88,6 +86,28 @@ const WorkoutListHeader = ({
       [WORKOUT_CATEGORIES.STRETCHING]: 'Stretching'
     };
     return categoryNames[categoryId as keyof typeof categoryNames] || 'Unknown';
+  };
+
+  const removeCategory = (categoryId: number) => {
+    const newCategories = activeFilters.categories.filter(id => id !== categoryId);
+    onClearFilters(); // For now, we'll use the clear all function
+    // TODO: Implement individual filter removal
+  };
+
+  const removeEquipment = (equipment: string) => {
+    const newEquipment = activeFilters.equipment.filter(eq => eq !== equipment);
+    onClearFilters(); // For now, we'll use the clear all function
+    // TODO: Implement individual filter removal
+  };
+
+  const removeDifficulty = () => {
+    onClearFilters(); // For now, we'll use the clear all function
+    // TODO: Implement individual filter removal
+  };
+
+  const removeDuration = () => {
+    onClearFilters(); // For now, we'll use the clear all function
+    // TODO: Implement individual filter removal
   };
 
   return (
@@ -195,7 +215,12 @@ const WorkoutListHeader = ({
               <span className="text-sm">Filters</span>
               {hasActiveFilters && (
                 <span className="bg-teal-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {activeFilters.categories.length + activeFilters.equipment.length}
+                  {
+                    activeFilters.categories.length + 
+                    activeFilters.equipment.length +
+                    (activeFilters.difficulty[0] > 1 || activeFilters.difficulty[1] < 5 ? 1 : 0) +
+                    (activeFilters.duration[0] > 0 || activeFilters.duration[1] < 120 ? 1 : 0)
+                  }
                 </span>
               )}
             </button>
@@ -258,7 +283,10 @@ const WorkoutListHeader = ({
               >
                 <span>{CATEGORY_ICONS[categoryId as keyof typeof CATEGORY_ICONS]}</span>
                 <span>{getCategoryName(categoryId)}</span>
-                <button className="text-teal-600 hover:text-teal-800">
+                <button 
+                  onClick={() => removeCategory(categoryId)}
+                  className="text-teal-600 hover:text-teal-800"
+                >
                   <FaTimes className="text-xs" />
                 </button>
               </span>
@@ -272,7 +300,10 @@ const WorkoutListHeader = ({
               >
                 <span>🔧</span>
                 <span>{equipment}</span>
-                <button className="text-blue-600 hover:text-blue-800">
+                <button 
+                  onClick={() => removeEquipment(equipment)}
+                  className="text-blue-600 hover:text-blue-800"
+                >
                   <FaTimes className="text-xs" />
                 </button>
               </span>
@@ -285,7 +316,26 @@ const WorkoutListHeader = ({
                 <span>
                   Difficulty: {activeFilters.difficulty[0]} - {activeFilters.difficulty[1]}
                 </span>
-                <button className="text-yellow-600 hover:text-yellow-800">
+                <button 
+                  onClick={removeDifficulty}
+                  className="text-yellow-600 hover:text-yellow-800"
+                >
+                  <FaTimes className="text-xs" />
+                </button>
+              </span>
+            )}
+
+            {/* Duration Range */}
+            {(activeFilters.duration[0] > 0 || activeFilters.duration[1] < 120) && (
+              <span className="flex items-center space-x-2 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                <FaClock className="text-xs" />
+                <span>
+                  Duration: {activeFilters.duration[0]}min - {activeFilters.duration[1] >= 120 ? '120min+' : `${activeFilters.duration[1]}min`}
+                </span>
+                <button 
+                  onClick={removeDuration}
+                  className="text-purple-600 hover:text-purple-800"
+                >
                   <FaTimes className="text-xs" />
                 </button>
               </span>

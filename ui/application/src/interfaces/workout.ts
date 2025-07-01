@@ -53,18 +53,26 @@ export const getWorkouts = async ({
                                       sortBy = "",
                                       sortDirection = "asc",
                                       search = "",
-                                      categoryId,
+                                      categoryIds,
                                       subTypeId,
-                                      difficultyLevel
+                                      minDifficultyLevel,
+                                      maxDifficultyLevel,
+                                      minDuration,
+                                      maxDuration,
+                                      equipmentNeeded
                                   }: {
                                       pageSize?: number;
                                       pageNumber?: number;
                                       sortBy?: string;
                                       sortDirection?: string;
                                       search?: string;
-                                      categoryId?: number;
+                                      categoryIds?: number[];
                                       subTypeId?: number;
-                                      difficultyLevel?: number;
+                                      minDifficultyLevel?: number;
+                                      maxDifficultyLevel?: number;
+                                      minDuration?: number;
+                                      maxDuration?: number;
+                                      equipmentNeeded?: string[];
                                   } = {}): Promise<PaginatedWorkoutsResponse> => {
     const { data } = await axiosInstance.get(APIRoutes.WORKOUTS, {
         params: {
@@ -73,12 +81,21 @@ export const getWorkouts = async ({
             sortBy,
             sortDirection,
             search,
-            categoryId,
+            categoryIds,
             subTypeId,
-            difficultyLevel,
+            minDifficultyLevel,
+            maxDifficultyLevel,
+            minDuration,
+            maxDuration,
+            equipmentNeeded,
         },
         paramsSerializer: { indexes: null }
     });
 
+    return data;
+};
+
+export const getAvailableEquipment = async (): Promise<string[]> => {
+    const { data } = await axiosInstance.get(`${APIRoutes.WORKOUTS}/equipment`);
     return data;
 };

@@ -78,8 +78,7 @@ const WorkoutList = () => {
     subTypes: [] as number[],
     difficulty: [1, 5] as [number, number],
     duration: [0, 120] as [number, number],
-    equipment: [] as string[],
-    creator: ''
+    equipment: [] as string[]
   });
 
   // Debounce the search input
@@ -93,14 +92,30 @@ const WorkoutList = () => {
       sortDirection: sortBy.includes('desc') ? 'desc' : 'asc'
     };
 
-    // Only use server-side category filtering when exactly one category is selected
-    // Otherwise, we'll filter client-side to support multiple categories
-    if (filters.categories.length === 1) {
-      params.categoryId = filters.categories[0];
+    // Server-side category filtering with OR logic
+    if (filters.categories.length > 0) {
+      params.categoryIds = filters.categories;
     }
 
-    if (filters.difficulty[0] > 1 || filters.difficulty[1] < 5) {
-      params.difficultyLevel = filters.difficulty[0];
+    // Difficulty range filtering
+    if (filters.difficulty[0] > 1) {
+      params.minDifficultyLevel = filters.difficulty[0];
+    }
+    if (filters.difficulty[1] < 5) {
+      params.maxDifficultyLevel = filters.difficulty[1];
+    }
+
+    // Duration range filtering
+    if (filters.duration[0] > 0) {
+      params.minDuration = filters.duration[0];
+    }
+    if (filters.duration[1] < 120) {
+      params.maxDuration = filters.duration[1];
+    }
+
+    // Equipment filtering
+    if (filters.equipment.length > 0) {
+      params.equipmentNeeded = filters.equipment;
     }
 
     return params;
@@ -176,47 +191,9 @@ const WorkoutList = () => {
   }
 
   const workouts = data?.pages.flatMap((page) => (page as any)?.data) || [];
-
-  // Filter workouts client-side for additional criteria
-  const filteredWorkouts = workouts.filter(workout => {
-    // Category filter (client-side when multiple categories selected)
-    if (filters.categories.length > 1) {
-      if (!workout.categoryId || !filters.categories.includes(workout.categoryId)) {
-        return false;
-      }
-    }
-
-    // Equipment filter
-    if (filters.equipment.length > 0) {
-      const hasRequiredEquipment = filters.equipment.some(equipment => 
-        workout.equipmentNeeded?.includes(equipment)
-      );
-      if (!hasRequiredEquipment) return false;
-    }
-
-    // Duration filter
-    if (workout.estimatedDurationMinutes) {
-      const duration = workout.estimatedDurationMinutes;
-      if (duration < filters.duration[0] || duration > filters.duration[1]) {
-        return false;
-      }
-    }
-
-    // Difficulty filter (more precise client-side filtering)
-    if (workout.difficultyLevel) {
-      if (workout.difficultyLevel < filters.difficulty[0] || workout.difficultyLevel > filters.difficulty[1]) {
-        return false;
-      }
-    }
-
-    // Creator filter
-    if (filters.creator === 'me') {
-      // In a real app, you'd check against current user
-      return (workout.createdBy as any)?.username === 'ShaneMillar';
-    }
-
-    return true;
-  });
+  
+  // All filtering is now handled server-side, so we use workouts directly
+  const filteredWorkouts = workouts;
 
   // Event handlers
   const handleSearchChange = (value: string) => {
@@ -233,8 +210,7 @@ const WorkoutList = () => {
       subTypes: [],
       difficulty: [1, 5],
       duration: [0, 120],
-      equipment: [],
-      creator: ''
+      equipment: []
     });
   };
 
@@ -315,7 +291,7 @@ const WorkoutList = () => {
                     if (debouncedSearch || filters.categories.length > 0 || filters.equipment.length > 0) {
                       handleClearFilters();
                     } else {
-                      navigate('/workouts/create');
+                      navigate('/create-workout');
                     }
                   }}
                   className="px-6 py-3 bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-lg font-semibold hover:from-teal-600 hover:to-blue-600 transition-all duration-300 shadow-md hover:shadow-lg"
