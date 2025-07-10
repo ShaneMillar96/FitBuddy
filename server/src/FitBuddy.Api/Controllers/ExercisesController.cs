@@ -70,19 +70,7 @@ public class ExercisesController : FitBuddyBaseController
         return OkOrNoContent(_mapper.Map<List<ExerciseViewModel>>(exercises));
     }
 
-    [HttpGet("muscle-groups")]
-    public async Task<ActionResult> GetMuscleGroups()
-    {
-        var muscleGroups = await _exerciseService.GetMuscleGroupsAsync();
-        return OkOrNoContent(muscleGroups);
-    }
-
-    [HttpGet("equipment-types")]
-    public async Task<ActionResult> GetEquipmentTypes()
-    {
-        var equipmentTypes = await _exerciseService.GetEquipmentTypesAsync();
-        return OkOrNoContent(equipmentTypes);
-    }
+    // GetMuscleGroups and GetEquipmentTypes endpoints removed for CrossFit simplification
 
     [Authorize]
     [HttpPost]

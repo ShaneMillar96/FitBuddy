@@ -45,6 +45,7 @@ public class CategoryProfile : Profile
                 
         CreateMap<UpdateExerciseDto, Exercise>();
         
-        CreateMap<CreateWorkoutExerciseDto, WorkoutExercise>();
+        CreateMap<CreateWorkoutExerciseDto, WorkoutExercise>()
+            .ForMember(d => d.TimeSeconds, o => o.MapFrom(s => s.TimeSeconds));
     }
 }

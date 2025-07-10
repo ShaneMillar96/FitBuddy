@@ -17,27 +17,11 @@ public partial class Exercise
     [Column("category_id")]
     public int CategoryId { get; set; }
 
-    [Column("muscle_groups")]
-    public string[]? MuscleGroups { get; set; }
-
-    [Column("equipment_needed")]
-    public string[]? EquipmentNeeded { get; set; }
-
     [Column("description")]
     public string? Description { get; set; }
 
     [Column("instructions")]
     public string? Instructions { get; set; }
-
-    [Column("difficulty_level")]
-    public int? DifficultyLevel { get; set; }
-
-    [Column("is_compound")]
-    public bool IsCompound { get; set; }
-
-    [Column("exercise_type")]
-    [StringLength(20)]
-    public string ExerciseType { get; set; } = "strength";
 
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime? CreatedDate { get; set; }

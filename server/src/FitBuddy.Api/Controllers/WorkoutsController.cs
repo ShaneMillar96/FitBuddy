@@ -25,25 +25,14 @@ public class WorkoutsController : FitBuddyBaseController
     }
     
     [HttpGet]
-    public async Task<ActionResult> GetWorkouts(
-        [FromQuery] PaginationDto pagination,
-        [FromQuery] int[]? categoryIds = null,
-        [FromQuery] int? subTypeId = null,
-        [FromQuery] int? minDifficultyLevel = null,
-        [FromQuery] int? maxDifficultyLevel = null,
-        [FromQuery] int? minDuration = null,
-        [FromQuery] int? maxDuration = null)
+    public async Task<ActionResult> GetWorkouts([FromQuery] PaginationDto pagination)
     {
-        var workouts = await _service.RetrieveWorkouts(pagination, categoryIds, subTypeId, minDifficultyLevel, maxDifficultyLevel, minDuration, maxDuration);
+        // Simplified for CrossFit-only workouts - no filtering needed
+        var workouts = await _service.RetrieveWorkouts(pagination);
         return OkOrNoContent(_mapper.Map<PaginatedViewModel<WorkoutViewModel>>(workouts));
     }
 
-    [HttpGet("category/{categoryId}")]
-    public async Task<ActionResult> GetWorkoutsByCategory(int categoryId, [FromQuery] PaginationDto pagination)
-    {
-        var workouts = await _service.RetrieveWorkouts(pagination, new int[] { categoryId });
-        return OkOrNoContent(_mapper.Map<PaginatedViewModel<WorkoutViewModel>>(workouts));
-    }
+    // Removed category-specific endpoint since we're CrossFit-only
     
     [HttpGet("{id}")]
     public async Task<ActionResult> GetWorkout(int id)

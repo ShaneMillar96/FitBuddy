@@ -26,25 +26,16 @@ export interface Exercise {
   name: string;
   categoryId: number;
   categoryName: string;
-  muscleGroups: string[];
-  equipmentNeeded: string[];
   description?: string;
   instructions?: string;
-  difficultyLevel?: number;
-  isCompound: boolean;
-  exerciseType: string; // strength, cardio, bodyweight, time_based, distance_based
   createdDate?: string;
 }
 
 export interface CreateExercise {
   name: string;
   categoryId: number;
-  muscleGroups: string[];
-  equipmentNeeded: string[];
   description?: string;
   instructions?: string;
-  difficultyLevel?: number;
-  isCompound: boolean;
 }
 
 export interface WorkoutExercise {
@@ -54,9 +45,7 @@ export interface WorkoutExercise {
   orderInWorkout: number;
   sets?: number;
   reps?: number;
-  weightKg?: number;
-  distanceMeters?: number;
-  durationSeconds?: number;
+  timeSeconds?: number;
   restSeconds?: number;
   notes?: string;
   exercise: Exercise;
@@ -67,27 +56,28 @@ export interface CreateWorkoutExercise {
   orderInWorkout: number;
   sets?: number;
   reps?: number;
-  weightKg?: number;
-  distanceMeters?: number;
-  durationSeconds?: number;
+  timeSeconds?: number;
   restSeconds?: number;
   notes?: string;
+  name?: string; // Add for display purposes
 }
 
-export const WORKOUT_CATEGORIES = {
-  WEIGHT_SESSION: 1,
-  CROSSFIT_WOD: 2,
-  RUNNING_INTERVALS: 3,
-  SWIMMING: 4,
-  HYROX: 5,
-  STRETCHING: 6
+export const CROSSFIT_CATEGORY_ID = 2;
+
+export const CROSSFIT_SUB_TYPES = {
+  EMOM: 7,
+  AMRAP: 8,
+  FOR_TIME: 9,
+  TABATA: 10
 } as const;
 
+// Simplified constants for CrossFit-only workouts
 export const CATEGORY_ICONS = {
-  [WORKOUT_CATEGORIES.WEIGHT_SESSION]: '🏋️',
-  [WORKOUT_CATEGORIES.CROSSFIT_WOD]: '🔥',
-  [WORKOUT_CATEGORIES.RUNNING_INTERVALS]: '🏃',
-  [WORKOUT_CATEGORIES.SWIMMING]: '🏊',
-  [WORKOUT_CATEGORIES.HYROX]: '⚡',
-  [WORKOUT_CATEGORIES.STRETCHING]: '🧘'
-} as const;
+  [CROSSFIT_CATEGORY_ID]: '🔥'
+};
+
+export const WORKOUT_CATEGORIES = [{
+  id: CROSSFIT_CATEGORY_ID,
+  name: 'CrossFit WOD',
+  icon: '🔥'
+}];

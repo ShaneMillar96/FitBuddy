@@ -27,7 +27,7 @@ public class WorkoutService : IWorkoutService
         _mapper = mapper;
     }
     
-    public async Task<PaginatedDto<WorkoutDto>> RetrieveWorkouts(PaginationDto pagination, int[]? categoryIds = null, int? subTypeId = null, int? minDifficultyLevel = null, int? maxDifficultyLevel = null, int? minDuration = null, int? maxDuration = null)
+    public async Task<PaginatedDto<WorkoutDto>> RetrieveWorkouts(PaginationDto pagination, int? subTypeId = null, int? minDuration = null, int? maxDuration = null)
     {
         var (pageSize, pageNumber, searchQuery, sortBy, ascending) = pagination;
 
@@ -40,27 +40,12 @@ public class WorkoutService : IWorkoutService
             .Include(x => x.SubType)
             .Where(new WorkoutBySearchSpec(searchQuery));
 
-        // Apply category filter with OR logic
-        if (categoryIds != null && categoryIds.Length > 0)
-        {
-            query = query.Where(w => w.CategoryId.HasValue && categoryIds.Contains(w.CategoryId.Value));
-        }
-
         // Apply sub-type filter
         if (subTypeId.HasValue)
         {
             query = query.Where(w => w.SubTypeId == subTypeId.Value);
         }
 
-        // Apply difficulty range filter
-        if (minDifficultyLevel.HasValue)
-        {
-            query = query.Where(w => w.DifficultyLevel >= minDifficultyLevel.Value);
-        }
-        if (maxDifficultyLevel.HasValue)
-        {
-            query = query.Where(w => w.DifficultyLevel <= maxDifficultyLevel.Value);
-        }
 
         // Apply duration range filter
         if (minDuration.HasValue)

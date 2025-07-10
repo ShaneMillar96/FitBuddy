@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
 import { useWorkouts } from "@/hooks/useWorkouts";
-import { motion, AnimatePresence } from "framer-motion";
-import { CATEGORY_ICONS, WORKOUT_CATEGORIES } from "@/interfaces/categories";
+import { motion } from "framer-motion";
 import { Workout } from "@/interfaces/workout";
 import { useNavigate } from "react-router-dom";
+import {
+  FaPlus,
+  FaSearch,
+  FaTh,
+  FaList
+} from "react-icons/fa";
 
-// Import our new components
-import WorkoutListHeader from "@/components/workout/WorkoutListHeader";
-import WorkoutFilterPanel from "@/components/workout/WorkoutFilterPanel";
+// Import our components
 import EnhancedWorkoutCard from "@/components/workout/EnhancedWorkoutCard";
 import WorkoutPreviewModal from "@/components/workout/WorkoutPreviewModal";
 
@@ -62,100 +65,56 @@ const useDebounce = (value: string, delay: number) => {
 };
 
 const WorkoutList = () => {
-  // Navigation
   const navigate = useNavigate();
   
-  // State management
+  // Simplified state management - no filters needed
   const [searchInput, setSearchInput] = useState("");
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [sortBy, setSortBy] = useState("newest");
-  const [showFilters, setShowFilters] = useState(false);
   const [previewWorkout, setPreviewWorkout] = useState<Workout | null>(null);
   
-  // Advanced filter state
-  const [filters, setFilters] = useState({
-    categories: [] as number[],
-    subTypes: [] as number[],
-    difficulty: [1, 5] as [number, number],
-    duration: [0, 120] as [number, number]
-  });
-
   // Debounce the search input
   const debouncedSearch = useDebounce(searchInput, 500);
 
-  // Build query parameters from filters
-  const getQueryParams = () => {
-    const params: any = {
-      search: debouncedSearch,
-      sortBy,
-      sortDirection: sortBy.includes('desc') ? 'desc' : 'asc'
-    };
+  // Simplified query parameters - only basic search and sort
+  const getQueryParams = () => ({
+    search: debouncedSearch,
+    sortBy,
+    sortDirection: sortBy.includes('desc') ? 'desc' : 'asc'
+  });
 
-    // Server-side category filtering with OR logic
-    if (filters.categories.length > 0) {
-      params.categoryIds = filters.categories;
-    }
-
-    // Difficulty range filtering
-    if (filters.difficulty[0] > 1) {
-      params.minDifficultyLevel = filters.difficulty[0];
-    }
-    if (filters.difficulty[1] < 5) {
-      params.maxDifficultyLevel = filters.difficulty[1];
-    }
-
-    // Duration range filtering
-    if (filters.duration[0] > 0) {
-      params.minDuration = filters.duration[0];
-    }
-    if (filters.duration[1] < 120) {
-      params.maxDuration = filters.duration[1];
-    }
-
-
-    return params;
-  };
-
-  // Fetch workouts with current filters
+  // Fetch workouts with simplified parameters
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, error } = useWorkouts({
     pageSize: 12,
     ...getQueryParams()
   });
 
+  const sortOptions = [
+    { value: 'newest', label: 'Newest First' },
+    { value: 'oldest', label: 'Oldest First' },
+    { value: 'popular', label: 'Most Popular' },
+    { value: 'alphabetical', label: 'A to Z' },
+  ];
+
   // Loading State with Skeleton Cards
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           {/* Header Skeleton */}
           <div className="mb-8">
             <div className="h-10 bg-gray-200 rounded w-1/3 mb-4 animate-pulse"></div>
             <div className="h-12 bg-gray-200 rounded-xl w-full mb-6 animate-pulse"></div>
-            <div className="flex space-x-3">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-8 bg-gray-200 rounded-full w-24 animate-pulse"></div>
-              ))}
-            </div>
           </div>
 
           {/* Content Skeleton */}
-          <div className="flex gap-6">
-            {/* Sidebar Skeleton */}
-            <div className="hidden lg:block w-80">
-              <div className="bg-gray-100 rounded-xl p-6 h-96 animate-pulse"></div>
-            </div>
-
-            {/* Main Content Skeleton */}
-            <div className="flex-1">
-              <div className={viewMode === 'grid' 
-                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" 
-                : "space-y-4"
-              }>
-                {[...Array(6)].map((_, idx) => (
-                  <SkeletonCard key={idx} viewMode={viewMode} />
-                ))}
-              </div>
-            </div>
+          <div className={viewMode === 'grid' 
+            ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" 
+            : "space-y-4"
+          }>
+            {[...Array(8)].map((_, idx) => (
+              <SkeletonCard key={idx} viewMode={viewMode} />
+            ))}
           </div>
         </div>
       </div>
@@ -176,7 +135,7 @@ const WorkoutList = () => {
           <p className="text-gray-600 mb-6">We couldn't load your workouts. Please try again later.</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-6 py-3 bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-lg font-semibold hover:from-teal-600 hover:to-blue-600 transition-all duration-300"
+            className="px-6 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg font-semibold hover:from-red-600 hover:to-orange-600 transition-all duration-300"
           >
             Try Again
           </button>
@@ -186,203 +145,217 @@ const WorkoutList = () => {
   }
 
   const workouts = data?.pages.flatMap((page) => (page as any)?.data) || [];
-  
-  // All filtering is now handled server-side, so we use workouts directly
-  const filteredWorkouts = workouts;
 
-  // Event handlers
   const handleSearchChange = (value: string) => {
     setSearchInput(value);
-  };
-
-  const handleFiltersChange = (newFilters: typeof filters) => {
-    setFilters(newFilters);
-  };
-
-  const handleClearFilters = () => {
-    setFilters({
-      categories: [],
-      subTypes: [],
-      difficulty: [1, 5],
-      duration: [0, 120]
-    });
   };
 
   const handlePreview = (workout: Workout) => {
     setPreviewWorkout(workout);
   };
 
-
   const handleShare = (workout: Workout) => {
     if (navigator.share) {
       navigator.share({
         title: workout.name,
-        text: workout.description,
+        text: `CrossFit WOD: ${workout.name}`,
         url: `${window.location.origin}/workouts/${workout.id}`
       });
     } else {
       // Fallback to clipboard
       navigator.clipboard.writeText(`${window.location.origin}/workouts/${workout.id}`);
-      // You could show a toast notification here
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      <div className="max-w-7xl mx-auto p-6 lg:p-8">
-        {/* Enhanced Header */}
-        <WorkoutListHeader
-          searchInput={searchInput}
-          onSearchChange={handleSearchChange}
-          viewMode={viewMode}
-          onViewModeChange={setViewMode}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-          showFilters={showFilters}
-          onToggleFilters={() => setShowFilters(!showFilters)}
-          activeFilters={filters}
-          onClearFilters={handleClearFilters}
-          onFiltersChange={handleFiltersChange}
-          totalWorkouts={workouts.length}
-        />
+      <div className="max-w-6xl mx-auto p-6 lg:p-8">
+        {/* Simplified Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                CrossFit Workouts 🔥
+              </h1>
+              <p className="text-gray-600 mt-2">
+                Discover and track your CrossFit WODs
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/create-workout')}
+              className="px-6 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-xl font-semibold hover:from-red-600 hover:to-orange-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center space-x-2"
+            >
+              <FaPlus />
+              <span>Create WOD</span>
+            </button>
+          </div>
 
-        {/* Main Content Area */}
-        <div className="flex gap-6">
-          {/* Filter Sidebar - Desktop */}
-          <div className="hidden lg:block w-80">
-            <div className="sticky top-6">
-              {/* Filters */}
-              <WorkoutFilterPanel
-                isOpen={true}
-                onClose={() => {}}
-                filters={filters}
-                onFiltersChange={handleFiltersChange}
-              />
+          {/* Search and Controls Bar */}
+          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+              {/* Search */}
+              <div className="relative flex-1 max-w-md">
+                <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search CrossFit workouts..."
+                  value={searchInput}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Controls */}
+              <div className="flex items-center space-x-4">
+                {/* Sort */}
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                >
+                  {sortOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+
+                {/* View Toggle */}
+                <div className="flex bg-gray-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setViewMode('grid')}
+                    className={`p-2 rounded transition-colors ${
+                      viewMode === 'grid' 
+                        ? 'bg-white text-red-600 shadow-sm' 
+                        : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    <FaTh />
+                  </button>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`p-2 rounded transition-colors ${
+                      viewMode === 'list' 
+                        ? 'bg-white text-red-600 shadow-sm' 
+                        : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                  >
+                    <FaList />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Main Workout List */}
-          <div className="flex-1">
-            {/* Empty State */}
-            {filteredWorkouts.length === 0 ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center py-20"
-              >
-                <div className="text-6xl mb-6">🏋️‍♂️</div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  {debouncedSearch || filters.categories.length > 0
-                    ? "No workouts match your criteria"
-                    : "No workouts yet"}
-                </h2>
-                <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                  {debouncedSearch || filters.categories.length > 0
-                    ? "Try adjusting your filters or search terms to find what you're looking for."
-                    : "Ready to start your fitness journey? Create your first workout and begin building your routine!"}
-                </p>
+        {/* Main Content */}
+        {workouts.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center py-20"
+          >
+            <div className="text-6xl mb-6">🏋️‍♂️</div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              {debouncedSearch 
+                ? "No workouts match your search"
+                : "No workouts yet"}
+            </h2>
+            <p className="text-gray-600 mb-8 max-w-md mx-auto">
+              {debouncedSearch
+                ? "Try a different search term to find CrossFit workouts."
+                : "Ready to start your CrossFit journey? Create your first WOD!"}
+            </p>
+            <button
+              onClick={() => {
+                if (debouncedSearch) {
+                  setSearchInput("");
+                } else {
+                  navigate('/create-workout');
+                }
+              }}
+              className="px-6 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg font-semibold hover:from-red-600 hover:to-orange-600 transition-all duration-300 shadow-md hover:shadow-lg"
+            >
+              {debouncedSearch ? "Clear Search" : "Create Your First WOD"}
+            </button>
+          </motion.div>
+        ) : (
+          <>
+            {/* Results Summary */}
+            <div className="flex items-center justify-between mb-6">
+              <p className="text-gray-600">
+                Showing {workouts.length} CrossFit workouts
+              </p>
+              {debouncedSearch && (
                 <button
-                  onClick={() => {
-                    if (debouncedSearch || filters.categories.length > 0) {
-                      handleClearFilters();
-                    } else {
-                      navigate('/create-workout');
-                    }
-                  }}
-                  className="px-6 py-3 bg-gradient-to-r from-teal-500 to-blue-500 text-white rounded-lg font-semibold hover:from-teal-600 hover:to-blue-600 transition-all duration-300 shadow-md hover:shadow-lg"
+                  onClick={() => setSearchInput("")}
+                  className="text-sm text-red-600 hover:text-red-700 font-medium"
                 >
-                  {debouncedSearch || filters.categories.length > 0
-                    ? "Clear Filters"
-                    : "Create Your First Workout"}
+                  Clear search
+                </button>
+              )}
+            </div>
+
+            {/* Workout Grid/List */}
+            <motion.div
+              className={viewMode === 'grid' 
+                ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" 
+                : "space-y-4"
+              }
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: { staggerChildren: 0.1 },
+                },
+              }}
+            >
+              {workouts.map((workout) => (
+                <motion.div
+                  key={workout.id}
+                  variants={{ 
+                    hidden: { opacity: 0, y: 20 }, 
+                    visible: { opacity: 1, y: 0 } 
+                  }}
+                >
+                  <EnhancedWorkoutCard
+                    workout={workout}
+                    viewMode={viewMode}
+                    onPreview={handlePreview}
+                    onShare={handleShare}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Load More Button */}
+            {hasNextPage && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mt-12 text-center"
+              >
+                <button
+                  onClick={() => fetchNextPage()}
+                  disabled={isFetchingNextPage}
+                  className="px-8 py-4 bg-white border-2 border-red-500 text-red-600 rounded-xl font-semibold hover:bg-red-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+                >
+                  {isFetchingNextPage ? (
+                    <div className="flex items-center space-x-3">
+                      <div className="animate-spin w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full"></div>
+                      <span>Loading more workouts...</span>
+                    </div>
+                  ) : (
+                    "Load More Workouts"
+                  )}
                 </button>
               </motion.div>
-            ) : (
-              <>
-                {/* Results Summary */}
-                <div className="flex items-center justify-between mb-6">
-                  <p className="text-gray-600">
-                    Showing {filteredWorkouts.length} of {workouts.length} workouts
-                  </p>
-                  {(debouncedSearch || filters.categories.length > 0) && (
-                    <button
-                      onClick={handleClearFilters}
-                      className="text-sm text-teal-600 hover:text-teal-700 font-medium"
-                    >
-                      Clear all filters
-                    </button>
-                  )}
-                </div>
-
-                {/* Workout Grid/List */}
-                <motion.div
-                  className={viewMode === 'grid' 
-                    ? "grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6" 
-                    : "space-y-4"
-                  }
-                  initial="hidden"
-                  animate="visible"
-                  variants={{
-                    hidden: { opacity: 0 },
-                    visible: {
-                      opacity: 1,
-                      transition: { staggerChildren: 0.1 },
-                    },
-                  }}
-                >
-                  {filteredWorkouts.map((workout) => (
-                    <motion.div
-                      key={workout.id}
-                      variants={{ 
-                        hidden: { opacity: 0, y: 20 }, 
-                        visible: { opacity: 1, y: 0 } 
-                      }}
-                    >
-                      <EnhancedWorkoutCard
-                        workout={workout}
-                        viewMode={viewMode}
-                        onPreview={handlePreview}
-                        onShare={handleShare}
-                      />
-                    </motion.div>
-                  ))}
-                </motion.div>
-
-                {/* Load More Button */}
-                {hasNextPage && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="mt-12 text-center"
-                  >
-                    <button
-                      onClick={() => fetchNextPage()}
-                      disabled={isFetchingNextPage}
-                      className="px-8 py-4 bg-white border-2 border-teal-500 text-teal-600 rounded-xl font-semibold hover:bg-teal-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
-                    >
-                      {isFetchingNextPage ? (
-                        <div className="flex items-center space-x-3">
-                          <div className="animate-spin w-5 h-5 border-2 border-teal-500 border-t-transparent rounded-full"></div>
-                          <span>Loading more workouts...</span>
-                        </div>
-                      ) : (
-                        "Load More Workouts"
-                      )}
-                    </button>
-                  </motion.div>
-                )}
-              </>
             )}
-          </div>
-        </div>
+          </>
+        )}
       </div>
-
-      {/* Mobile Filter Panel */}
-      <WorkoutFilterPanel
-        isOpen={showFilters}
-        onClose={() => setShowFilters(false)}
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-      />
 
       {/* Workout Preview Modal */}
       <WorkoutPreviewModal

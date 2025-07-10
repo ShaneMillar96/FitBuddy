@@ -12,7 +12,5 @@ public interface IExerciseService
     Task<int> CreateExerciseAsync(CreateExerciseDto dto);
     Task<bool> UpdateExerciseAsync(int id, UpdateExerciseDto dto);
     Task<bool> DeleteExerciseAsync(int id);
-    Task<List<string>> GetMuscleGroupsAsync();
-    Task<List<string>> GetEquipmentTypesAsync();
     Task<List<ExerciseDto>> GetExercisesByCategoryAndSubTypeAsync(int categoryId, string? subTypeName = null);
 }

@@ -34,36 +34,15 @@ const WorkoutBuilder = ({
 
   const availableExercises = searchTerm.length >= 2 ? searchResults : categoryExercises;
 
-  // Get context-appropriate default values based on exercise type and category
+  // Get default values for CrossFit exercises
   const getExerciseDefaults = (exercise: Exercise) => {
     const defaults: Partial<CreateWorkoutExercise> = {
       exerciseId: exercise.id,
       orderInWorkout: exercises.length + 1,
+      sets: 1,
+      reps: 10,
+      restSeconds: 60,
     };
-
-    // Set defaults based on exercise type and category
-    switch (exercise.exerciseType) {
-      case 'strength':
-        defaults.sets = 3;
-        defaults.reps = exercise.categoryId === 1 ? 10 : 5; // More reps for bodybuilding, fewer for powerlifting
-        defaults.restSeconds = 90;
-        break;
-      case 'bodyweight':
-        defaults.reps = 10;
-        if (exercise.categoryId === 2) { // CrossFit
-          defaults.restSeconds = 60;
-        }
-        break;
-      case 'cardio':
-        defaults.durationSeconds = 300; // 5 minutes default
-        break;
-      case 'distance_based':
-        defaults.distanceMeters = exercise.categoryId === 3 ? 400 : 1000; // Running vs other
-        break;
-      case 'time_based':
-        defaults.durationSeconds = 1800; // 30 minutes default
-        break;
-    }
 
     return defaults;
   };
@@ -112,24 +91,22 @@ const WorkoutBuilder = ({
     return availableExercises?.find(ex => ex.id === exerciseId);
   };
 
-  // Determine which fields to show based on exercise type
-  const getRelevantFields = (exerciseType: string) => {
-    switch (exerciseType) {
-      case 'strength':
-        return ['sets', 'reps', 'weight', 'rest'];
-      case 'bodyweight':
-        return selectedSubType?.name?.toLowerCase().includes('amrap') || selectedSubType?.name?.toLowerCase().includes('emom') 
-          ? ['reps'] 
-          : ['sets', 'reps', 'rest'];
-      case 'cardio':
-        return ['duration'];
-      case 'distance_based':
-        return ['distance'];
-      case 'time_based':
-        return ['duration'];
-      default:
-        return ['sets', 'reps', 'weight', 'rest'];
+  // Determine which fields to show for CrossFit exercises
+  const getRelevantFields = () => {
+    // Show different fields based on CrossFit sub-type
+    if (selectedSubType) {
+      const subTypeName = selectedSubType.toString();
+      // For EMOM (7) and AMRAP (8), show rounds/reps and time
+      if (subTypeName === '7' || subTypeName === '8') {
+        return ['reps', 'time'];
+      }
+      // For Tabata (10), show reps and rest
+      if (subTypeName === '10') {
+        return ['reps', 'rest'];
+      }
     }
+    // Default: show sets, reps, and rest
+    return ['sets', 'reps', 'rest'];
   };
 
   if (!categoryId) {
@@ -189,21 +166,18 @@ const WorkoutBuilder = ({
                       </button>
                     </div>
 
-                    {/* Exercise Type Badge */}
-                    {exerciseData && (
-                      <div className="flex items-center space-x-2 mb-2">
-                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-medium">
-                          {exerciseData.exerciseType}
-                        </span>
+                    {/* Exercise Info */}
+                    {exerciseData && exerciseData.description && (
+                      <div className="mb-2">
                         <span className="text-xs text-gray-500">
-                          {exerciseData.muscleGroups.join(', ')}
+                          {exerciseData.description}
                         </span>
                       </div>
                     )}
 
-                    {/* Context-Aware Exercise Parameters */}
+                    {/* CrossFit Exercise Parameters */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                      {exerciseData && getRelevantFields(exerciseData.exerciseType).includes('sets') && (
+                      {getRelevantFields().includes('sets') && (
                         <div>
                           <label className="block text-xs text-gray-600 mb-1">Sets</label>
                           <input
@@ -218,7 +192,7 @@ const WorkoutBuilder = ({
                         </div>
                       )}
 
-                      {exerciseData && getRelevantFields(exerciseData.exerciseType).includes('reps') && (
+                      {getRelevantFields().includes('reps') && (
                         <div>
                           <label className="block text-xs text-gray-600 mb-1">Reps</label>
                           <input
@@ -232,50 +206,21 @@ const WorkoutBuilder = ({
                         </div>
                       )}
 
-                      {exerciseData && getRelevantFields(exerciseData.exerciseType).includes('weight') && (
+                      {getRelevantFields().includes('time') && (
                         <div>
-                          <label className="block text-xs text-gray-600 mb-1">Weight (kg)</label>
-                          <input
-                            type="number"
-                            step="0.5"
-                            min="0"
-                            value={exercise.weightKg || ''}
-                            onChange={(e) => updateExercise(index, { weightKg: e.target.value ? parseFloat(e.target.value) : undefined })}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                            placeholder="Weight"
-                          />
-                        </div>
-                      )}
-
-                      {exerciseData && getRelevantFields(exerciseData.exerciseType).includes('distance') && (
-                        <div>
-                          <label className="block text-xs text-gray-600 mb-1">Distance (m)</label>
+                          <label className="block text-xs text-gray-600 mb-1">Time (sec)</label>
                           <input
                             type="number"
                             min="1"
-                            value={exercise.distanceMeters || ''}
-                            onChange={(e) => updateExercise(index, { distanceMeters: e.target.value ? parseInt(e.target.value) : undefined })}
+                            value={exercise.timeSeconds || ''}
+                            onChange={(e) => updateExercise(index, { timeSeconds: e.target.value ? parseInt(e.target.value) : undefined })}
                             className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                            placeholder="Distance"
+                            placeholder="Time"
                           />
                         </div>
                       )}
 
-                      {exerciseData && getRelevantFields(exerciseData.exerciseType).includes('duration') && (
-                        <div>
-                          <label className="block text-xs text-gray-600 mb-1">Duration (sec)</label>
-                          <input
-                            type="number"
-                            min="1"
-                            value={exercise.durationSeconds || ''}
-                            onChange={(e) => updateExercise(index, { durationSeconds: e.target.value ? parseInt(e.target.value) : undefined })}
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
-                            placeholder="Duration"
-                          />
-                        </div>
-                      )}
-
-                      {exerciseData && getRelevantFields(exerciseData.exerciseType).includes('rest') && (
+                      {getRelevantFields().includes('rest') && (
                         <div>
                           <label className="block text-xs text-gray-600 mb-1">Rest (sec)</label>
                           <input
@@ -375,14 +320,11 @@ const WorkoutBuilder = ({
                     <div className="flex items-center justify-between">
                       <div>
                         <h4 className="font-medium text-gray-800">{exercise.name}</h4>
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <span>{exercise.muscleGroups.join(', ')}</span>
-                          {exercise.difficultyLevel && (
-                            <span className="px-2 py-1 bg-gray-100 rounded text-xs">
-                              Level {exercise.difficultyLevel}
-                            </span>
-                          )}
-                        </div>
+                        {exercise.description && (
+                          <div className="text-sm text-gray-600">
+                            {exercise.description}
+                          </div>
+                        )}
                       </div>
                       <FaPlus className="text-teal-500" />
                     </div>

@@ -15,6 +15,19 @@ interface DashboardData {
         result: string;
     };
     weeklyWorkoutCounts: { date: string; count: number }[];
+    // CrossFit-focused simplified fields
+    workoutsCreated: number;
+    workoutsCompleted: number;
+    favoriteWorkouts: number;
+    totalMinutesExercised: number;
+    currentStreak: number;
+    personalBests: number;
+    weeklyGoal: number;
+    weeklyProgress: number;
+    weeklyCompletionPercentage: number;
+    trendingMetrics: any[];
+    categoryBreakdown: any[];
+    recentAchievements: any[];
 }
 
 export const useDashboard = () => {

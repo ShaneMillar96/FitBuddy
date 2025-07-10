@@ -26,15 +26,8 @@ public partial class WorkoutExercise
     [Column("reps")]
     public int? Reps { get; set; }
 
-    [Column("weight_kg")]
-    [Precision(5, 2)]
-    public decimal? WeightKg { get; set; }
-
-    [Column("distance_meters")]
-    public int? DistanceMeters { get; set; }
-
-    [Column("duration_seconds")]
-    public int? DurationSeconds { get; set; }
+    [Column("time_seconds")]
+    public int? TimeSeconds { get; set; }
 
     [Column("rest_seconds")]
     public int? RestSeconds { get; set; }

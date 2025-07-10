@@ -3,7 +3,7 @@ import axiosInstance from "@shared/integration/instance";
 import { QueryKeys } from "@/constants/query-keys";
 
 
-interface AnalysisResult {
+export interface AnalysisResult {
     id: number;
     filePath: string;
     analysisResult: string;

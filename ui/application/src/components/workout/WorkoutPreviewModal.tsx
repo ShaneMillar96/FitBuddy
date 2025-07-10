@@ -4,19 +4,15 @@ import { useNavigate } from "react-router-dom";
 import { 
   FaTimes, 
   FaClock, 
-  FaStar, 
   FaUser, 
   FaDumbbell,
   FaPlay,
   FaHeart,
   FaShare,
-  FaList,
-  FaChevronRight,
   FaSpinner
 } from "react-icons/fa";
-import { CATEGORY_ICONS, WORKOUT_CATEGORIES } from "@/interfaces/categories";
+import { CATEGORY_ICONS } from "@/interfaces/categories";
 import { Workout } from "@/interfaces/workout";
-import { useExercisesByCategory } from "@/hooks/useExercises";
 import { useWorkoutFavorite } from "../../hooks/useFavorites";
 
 interface WorkoutPreviewModalProps {
@@ -33,7 +29,7 @@ const WorkoutPreviewModal = ({
   onShare
 }: WorkoutPreviewModalProps) => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'overview' | 'exercises'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'leaderboard'>('overview');
   
   // Use the custom hook for favorites functionality
   const { 
@@ -45,59 +41,19 @@ const WorkoutPreviewModal = ({
     error: favoriteError 
   } = useWorkoutFavorite(workout?.id || 0);
   
-  // Mock exercise data - in a real app, you'd fetch the actual workout exercises
-  const { data: categoryExercises } = useExercisesByCategory(workout?.categoryId || 0);
-  const mockExercises = categoryExercises?.slice(0, 5) || [];
+  // No longer needed since we removed exercises preview
 
   if (!workout) return null;
 
   const getCategoryName = (categoryId: number): string => {
-    const categoryNames = {
-      [WORKOUT_CATEGORIES.WEIGHT_SESSION]: 'Weight Session',
-      [WORKOUT_CATEGORIES.CROSSFIT_WOD]: 'CrossFit WOD',
-      [WORKOUT_CATEGORIES.RUNNING_INTERVALS]: 'Running Intervals',
-      [WORKOUT_CATEGORIES.SWIMMING]: 'Swimming',
-      [WORKOUT_CATEGORIES.HYROX]: 'Hyrox',
-      [WORKOUT_CATEGORIES.STRETCHING]: 'Stretching'
-    };
-    return categoryNames[categoryId as keyof typeof categoryNames] || 'Unknown';
+    // Since we're CrossFit only, always return CrossFit WOD
+    return 'CrossFit WOD';
   };
 
-  const getDifficultyDisplay = (level?: number): string => {
-    if (!level) return '';
-    const difficultyNames = {
-      1: 'Beginner',
-      2: 'Easy', 
-      3: 'Moderate',
-      4: 'Hard',
-      5: 'Expert'
-    };
-    return difficultyNames[level as keyof typeof difficultyNames] || '';
-  };
-
-  const getDifficultyColor = (level?: number): string => {
-    if (!level) return 'text-gray-400';
-    const colors = {
-      1: 'text-green-500',
-      2: 'text-green-400',
-      3: 'text-yellow-500',
-      4: 'text-orange-500',
-      5: 'text-red-500'
-    };
-    return colors[level as keyof typeof colors] || 'text-gray-400';
-  };
 
   const getCategoryGradient = (categoryId?: number): string => {
-    if (!categoryId) return 'from-gray-400 to-gray-500';
-    const gradients = {
-      [WORKOUT_CATEGORIES.WEIGHT_SESSION]: 'from-blue-500 to-purple-600',
-      [WORKOUT_CATEGORIES.CROSSFIT_WOD]: 'from-red-500 to-orange-500',
-      [WORKOUT_CATEGORIES.RUNNING_INTERVALS]: 'from-green-500 to-teal-500',
-      [WORKOUT_CATEGORIES.SWIMMING]: 'from-cyan-500 to-blue-500',
-      [WORKOUT_CATEGORIES.HYROX]: 'from-yellow-500 to-orange-500',
-      [WORKOUT_CATEGORIES.STRETCHING]: 'from-purple-500 to-pink-500'
-    };
-    return gradients[categoryId as keyof typeof gradients] || 'from-gray-400 to-gray-500';
+    // Since we're CrossFit only, always return the CrossFit gradient
+    return 'from-red-500 to-orange-500';
   };
 
   const handleStartWorkout = () => {
@@ -162,10 +118,10 @@ const WorkoutPreviewModal = ({
                         {workout.subTypeName && ` • ${workout.subTypeName}`}
                       </span>
                     )}
-                    {workout.difficultyLevel && (
+                    {workout.estimatedDurationMinutes && (
                       <div className="flex items-center space-x-1">
-                        <FaStar className="text-xs" />
-                        <span className="text-sm">{getDifficultyDisplay(workout.difficultyLevel)}</span>
+                        <FaClock className="text-xs" />
+                        <span className="text-sm">{workout.estimatedDurationMinutes} min</span>
                       </div>
                     )}
                   </div>
@@ -180,10 +136,10 @@ const WorkoutPreviewModal = ({
                     <span className="text-sm">{workout.estimatedDurationMinutes} minutes</span>
                   </div>
                 )}
-                {workout.equipmentNeeded && workout.equipmentNeeded.length > 0 && (
+                {workout.exercises && workout.exercises.length > 0 && (
                   <div className="flex items-center space-x-2">
                     <FaDumbbell className="text-sm" />
-                    <span className="text-sm">{workout.equipmentNeeded.length} equipment</span>
+                    <span className="text-sm">{workout.exercises.length} exercises</span>
                   </div>
                 )}
                 <div className="flex items-center space-x-2">
@@ -208,14 +164,14 @@ const WorkoutPreviewModal = ({
                 Overview
               </button>
               <button
-                onClick={() => setActiveTab('exercises')}
+                onClick={() => setActiveTab('leaderboard')}
                 className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
-                  activeTab === 'exercises'
+                  activeTab === 'leaderboard'
                     ? 'text-teal-600 border-b-2 border-teal-600'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
-                Exercises Preview
+                Leaderboard
               </button>
             </div>
 
@@ -226,20 +182,20 @@ const WorkoutPreviewModal = ({
                   {/* Description */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
-                    <p className="text-gray-700 leading-relaxed">{workout.description}</p>
+                    <p className="text-gray-700 leading-relaxed">CrossFit WOD: {workout.name}</p>
                   </div>
 
                   {/* Equipment Needed */}
-                  {workout.equipmentNeeded && workout.equipmentNeeded.length > 0 && (
+                  {workout.exercises && workout.exercises.length > 0 && (
                     <div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">Equipment Needed</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">Exercises</h3>
                       <div className="flex flex-wrap gap-2">
-                        {workout.equipmentNeeded.map((equipment, index) => (
+                        {workout.exercises.map((exercise, index) => (
                           <span
                             key={index}
                             className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
                           >
-                            {equipment}
+                            {exercise.name || `Exercise ${index + 1}`}
                           </span>
                         ))}
                       </div>
@@ -267,59 +223,30 @@ const WorkoutPreviewModal = ({
                 </div>
               )}
 
-              {activeTab === 'exercises' && (
+              {activeTab === 'leaderboard' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900">Exercise Preview</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">Leaderboard</h3>
                     <span className="text-sm text-gray-500">
-                      {mockExercises.length} exercises (sample)
+                      Top performers
                     </span>
                   </div>
                   
-                  {mockExercises.length > 0 ? (
-                    <div className="space-y-3">
-                      {mockExercises.map((exercise, index) => (
-                        <div
-                          key={exercise.id}
-                          className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg"
-                        >
-                          <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center text-sm font-semibold">
-                            {index + 1}
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-900">{exercise.name}</div>
-                            <div className="text-sm text-gray-600">
-                              {exercise.muscleGroups.join(', ')}
-                            </div>
-                          </div>
-                          <div className="text-xs text-gray-500 bg-white px-2 py-1 rounded">
-                            {exercise.exerciseType}
-                          </div>
-                        </div>
-                      ))}
-                      
-                      <div className="text-center py-4">
-                        <button
-                          onClick={handleStartWorkout}
-                          className="text-teal-600 hover:text-teal-700 font-medium text-sm flex items-center justify-center space-x-1"
-                        >
-                          <span>View full workout</span>
-                          <FaChevronRight className="text-xs" />
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      <FaList className="mx-auto text-2xl mb-2" />
-                      <p>Exercise details will be shown here</p>
-                      <button
-                        onClick={handleStartWorkout}
-                        className="mt-2 text-teal-600 hover:text-teal-700 font-medium"
-                      >
-                        View full workout details
-                      </button>
-                    </div>
-                  )}
+                  {/* Leaderboard placeholder */}
+                  <div className="text-center py-12 text-gray-500">
+                    <div className="text-4xl mb-4">🏆</div>
+                    <h4 className="text-lg font-semibold text-gray-700 mb-2">Leaderboard Coming Soon</h4>
+                    <p className="text-sm text-gray-600 mb-6">
+                      See how you rank against other athletes who have completed this workout.
+                    </p>
+                    <button
+                      onClick={handleStartWorkout}
+                      className="px-6 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-lg font-semibold hover:from-red-600 hover:to-orange-600 transition-all duration-300 shadow-md flex items-center space-x-2 mx-auto"
+                    >
+                      <FaPlay className="text-sm" />
+                      <span>Start Workout</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>

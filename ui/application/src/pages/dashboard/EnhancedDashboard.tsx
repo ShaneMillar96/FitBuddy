@@ -197,7 +197,11 @@ const EnhancedDashboard = () => {
               weeklyGoal={data.weeklyGoal}
               weeklyProgress={data.weeklyProgress}
               weeklyCompletionPercentage={data.weeklyCompletionPercentage}
-              trendingMetrics={data.trendingMetrics}
+              trendingMetrics={{
+                workoutFrequencyTrend: data.trendingMetrics?.workoutFrequencyTrend || 0,
+                mostActiveDay: data.trendingMetrics?.mostActiveDay || 'Monday',
+                consecutiveDaysActive: data.trendingMetrics?.consecutiveDaysActive || 0
+              }}
             />
           </motion.div>
 

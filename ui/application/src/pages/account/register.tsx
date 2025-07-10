@@ -70,13 +70,13 @@ const Register = () => {
                 {/* Register Button */}
                 <motion.button
                     onClick={handleRegister}
-                    disabled={registerMutation.isLoading}
+                    disabled={registerMutation.isPending}
                     className="w-full px-5 py-3 mt-8 rounded-xl bg-gradient-to-r from-teal-400 to-blue-400 text-white font-medium hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 shadow-md"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
                 >
-                    {registerMutation.isLoading ? (
+                    {registerMutation.isPending ? (
                         <span className="animate-spin inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
                     ) : (
                         "Register"

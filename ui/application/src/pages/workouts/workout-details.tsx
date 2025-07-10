@@ -66,14 +66,17 @@ const WorkoutDetails = () => {
                 </div>
             </motion.div>
 
-            {/* Description Section */}
+            {/* CrossFit WOD Section */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8 text-gray-600 whitespace-pre-line"
             >
-                {workout.description || "No description available."}
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">CrossFit WOD</h3>
+                <p className="text-gray-600">
+                  {workout.workoutType.name} • {workout.estimatedDurationMinutes} minutes
+                </p>
             </motion.div>
 
             {/* Tabs Section */}

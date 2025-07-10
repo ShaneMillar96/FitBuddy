@@ -1,4 +1,4 @@
-import { Workout, WorkoutExercise } from "./workout";
+import { Workout } from "./workout";
 import { Exercise } from "./categories";
 
 export type SessionStatus = 'not_started' | 'active' | 'paused' | 'completed' | 'abandoned';
@@ -125,7 +125,7 @@ export interface SessionContextState {
 
 // Actions for session management
 export type SessionAction = 
-  | { type: 'START_SESSION'; payload: { workout: Workout; exercises: WorkoutExercise[] } }
+  | { type: 'START_SESSION'; payload: { workout: Workout; exercises: Exercise[] } }
   | { type: 'PAUSE_SESSION' }
   | { type: 'RESUME_SESSION' }
   | { type: 'END_SESSION'; payload: WorkoutResult }

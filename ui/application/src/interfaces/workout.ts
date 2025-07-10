@@ -5,35 +5,29 @@ import { CreateWorkoutExercise } from "@/interfaces/categories";
 export interface Workout {
     id: number;
     name: string;
-    description: string;
     createdBy: string;
     createdById: number;
     workoutTypeId: number;
     workoutTypeName?: string;
-    // Enhanced fields
+    // CrossFit-specific fields
     categoryId?: number;
     categoryName?: string;
     subTypeId?: number;
     subTypeName?: string;
-    difficultyLevel?: number;
     estimatedDurationMinutes?: number;
-    equipmentNeeded?: string[];
     scoreTypeId?: number;
     scoreTypeName?: string;
+    exercises?: CreateWorkoutExercise[];
     createdDate: string;
     modifiedDate?: string;
 }
 
 export interface CreateWorkout {
     name: string;
-    description: string;
     typeId: number;
-    // Enhanced fields
-    categoryId?: number;
+    // CrossFit-specific fields
     subTypeId?: number;
-    difficultyLevel?: number;
     estimatedDurationMinutes?: number;
-    equipmentNeeded?: string[];
     exercises: CreateWorkoutExercise[];
 }
 
@@ -52,25 +46,13 @@ export const getWorkouts = async ({
                                       pageNumber = 1,
                                       sortBy = "",
                                       sortDirection = "asc",
-                                      search = "",
-                                      categoryIds,
-                                      subTypeId,
-                                      minDifficultyLevel,
-                                      maxDifficultyLevel,
-                                      minDuration,
-                                      maxDuration
+                                      search = ""
                                   }: {
                                       pageSize?: number;
                                       pageNumber?: number;
                                       sortBy?: string;
                                       sortDirection?: string;
                                       search?: string;
-                                      categoryIds?: number[];
-                                      subTypeId?: number;
-                                      minDifficultyLevel?: number;
-                                      maxDifficultyLevel?: number;
-                                      minDuration?: number;
-                                      maxDuration?: number;
                                   } = {}): Promise<PaginatedWorkoutsResponse> => {
     const { data } = await axiosInstance.get(APIRoutes.WORKOUTS, {
         params: {
@@ -78,13 +60,7 @@ export const getWorkouts = async ({
             pageNumber,
             sortBy,
             sortDirection,
-            search,
-            categoryIds,
-            subTypeId,
-            minDifficultyLevel,
-            maxDifficultyLevel,
-            minDuration,
-            maxDuration,
+            search
         },
         paramsSerializer: { indexes: null }
     });

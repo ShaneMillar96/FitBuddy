@@ -36,6 +36,7 @@ public class CategoryProfile : Profile
         // Exercise request mappings
         CreateMap<CreateExerciseRequestModel, CreateExerciseDto>();
         CreateMap<UpdateExerciseRequestModel, UpdateExerciseDto>();
-        CreateMap<CreateWorkoutExerciseRequestModel, CreateWorkoutExerciseDto>();
+        CreateMap<CreateWorkoutExerciseRequestModel, CreateWorkoutExerciseDto>()
+            .ForMember(d => d.TimeSeconds, o => o.MapFrom(s => s.TimeSeconds));
     }
 }

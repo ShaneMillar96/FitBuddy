@@ -13,7 +13,7 @@ import {
   FaCalendarAlt,
   FaSpinner
 } from "react-icons/fa";
-import { CATEGORY_ICONS, WORKOUT_CATEGORIES } from "@/interfaces/categories";
+import { CROSSFIT_CATEGORY_ID } from "@/interfaces/categories";
 import { Workout } from "@/interfaces/workout";
 import { useWorkoutFavorite } from "../../hooks/useFavorites";
 
@@ -44,52 +44,14 @@ const EnhancedWorkoutCard = ({
   } = useWorkoutFavorite(workout.id);
 
   const getCategoryName = (categoryId: number): string => {
-    const categoryNames = {
-      [WORKOUT_CATEGORIES.WEIGHT_SESSION]: 'Weight Session',
-      [WORKOUT_CATEGORIES.CROSSFIT_WOD]: 'CrossFit WOD',
-      [WORKOUT_CATEGORIES.RUNNING_INTERVALS]: 'Running Intervals',
-      [WORKOUT_CATEGORIES.SWIMMING]: 'Swimming',
-      [WORKOUT_CATEGORIES.HYROX]: 'Hyrox',
-      [WORKOUT_CATEGORIES.STRETCHING]: 'Stretching'
-    };
-    return categoryNames[categoryId as keyof typeof categoryNames] || 'Unknown';
+    // Since we're CrossFit only, always return CrossFit WOD
+    return 'CrossFit WOD';
   };
 
-  const getDifficultyDisplay = (level?: number): string => {
-    if (!level) return '';
-    const difficultyNames = {
-      1: 'Beginner',
-      2: 'Easy', 
-      3: 'Moderate',
-      4: 'Hard',
-      5: 'Expert'
-    };
-    return difficultyNames[level as keyof typeof difficultyNames] || '';
-  };
-
-  const getDifficultyColor = (level?: number): string => {
-    if (!level) return 'text-gray-400';
-    const colors = {
-      1: 'text-green-500',
-      2: 'text-green-400',
-      3: 'text-yellow-500',
-      4: 'text-orange-500',
-      5: 'text-red-500'
-    };
-    return colors[level as keyof typeof colors] || 'text-gray-400';
-  };
 
   const getCategoryGradient = (categoryId?: number): string => {
-    if (!categoryId) return 'from-gray-400 to-gray-500';
-    const gradients = {
-      [WORKOUT_CATEGORIES.WEIGHT_SESSION]: 'from-blue-500 to-purple-600',
-      [WORKOUT_CATEGORIES.CROSSFIT_WOD]: 'from-red-500 to-orange-500',
-      [WORKOUT_CATEGORIES.RUNNING_INTERVALS]: 'from-green-500 to-teal-500',
-      [WORKOUT_CATEGORIES.SWIMMING]: 'from-cyan-500 to-blue-500',
-      [WORKOUT_CATEGORIES.HYROX]: 'from-yellow-500 to-orange-500',
-      [WORKOUT_CATEGORIES.STRETCHING]: 'from-purple-500 to-pink-500'
-    };
-    return gradients[categoryId as keyof typeof gradients] || 'from-gray-400 to-gray-500';
+    // Since we're CrossFit only, always return the CrossFit gradient
+    return 'from-red-500 to-orange-500';
   };
 
   const formatDate = (dateString: string): string => {
@@ -142,7 +104,7 @@ const EnhancedWorkoutCard = ({
         <div className="flex items-center space-x-4">
           {/* Category Icon */}
           <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${getCategoryGradient(workout.categoryId)} flex items-center justify-center text-white text-xl`}>
-            {workout.categoryId && CATEGORY_ICONS[workout.categoryId as keyof typeof CATEGORY_ICONS]}
+            🔥
           </div>
 
           {/* Main Content */}
@@ -153,20 +115,10 @@ const EnhancedWorkoutCard = ({
                   {workout.name}
                 </h3>
                 <div className="flex items-center space-x-3 mt-1">
-                  {workout.categoryId && (
-                    <span className="text-sm text-gray-600">
-                      {getCategoryName(workout.categoryId)}
-                      {workout.subTypeName && ` • ${workout.subTypeName}`}
-                    </span>
-                  )}
-                  {workout.difficultyLevel && (
-                    <div className="flex items-center space-x-1">
-                      <FaStar className={`text-xs ${getDifficultyColor(workout.difficultyLevel)}`} />
-                      <span className={`text-xs font-medium ${getDifficultyColor(workout.difficultyLevel)}`}>
-                        {getDifficultyDisplay(workout.difficultyLevel)}
-                      </span>
-                    </div>
-                  )}
+                  <span className="text-sm text-gray-600">
+                    {getCategoryName(workout.categoryId)}
+                    {workout.subTypeName && ` • ${workout.subTypeName}`}
+                  </span>
                 </div>
               </div>
 
@@ -274,11 +226,9 @@ const EnhancedWorkoutCard = ({
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3 flex-1 min-w-0">
-            {workout.categoryId && (
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${getCategoryGradient(workout.categoryId)} flex items-center justify-center text-white text-xl shadow-md`}>
-                {CATEGORY_ICONS[workout.categoryId as keyof typeof CATEGORY_ICONS]}
-              </div>
-            )}
+            <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${getCategoryGradient(workout.categoryId)} flex items-center justify-center text-white text-xl shadow-md`}>
+              🔥
+            </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-xl font-bold text-gray-900 truncate group-hover:text-teal-600 transition-colors">
                 {workout.name}
@@ -295,34 +245,13 @@ const EnhancedWorkoutCard = ({
           </div>
         </div>
 
-        {/* Description */}
-        <p className="text-gray-700 text-sm mb-4 overflow-hidden" style={{display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical'}}>
-          {workout.description}
+        {/* CrossFit WOD Info */}
+        <p className="text-gray-700 text-sm mb-4">
+          CrossFit WOD {workout.subTypeName && `• ${workout.subTypeName}`}
         </p>
 
         {/* Metadata Grid */}
         <div className="grid grid-cols-2 gap-4 mb-4">
-          {/* Difficulty */}
-          {workout.difficultyLevel && (
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-1">
-                {[...Array(5)].map((_, i) => (
-                  <FaStar
-                    key={i}
-                    className={`text-xs ${
-                      i < workout.difficultyLevel! 
-                        ? getDifficultyColor(workout.difficultyLevel) 
-                        : 'text-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className={`text-xs font-medium ${getDifficultyColor(workout.difficultyLevel)}`}>
-                {getDifficultyDisplay(workout.difficultyLevel)}
-              </span>
-            </div>
-          )}
-
           {/* Duration */}
           {workout.estimatedDurationMinutes && (
             <div className="flex items-center space-x-2">
@@ -333,12 +262,12 @@ const EnhancedWorkoutCard = ({
             </div>
           )}
 
-          {/* Equipment Count */}
-          {workout.equipmentNeeded && workout.equipmentNeeded.length > 0 && (
+          {/* Exercise Count */}
+          {workout.exercises && workout.exercises.length > 0 && (
             <div className="flex items-center space-x-2">
               <FaDumbbell className="text-purple-500 text-sm" />
               <span className="text-sm text-gray-700">
-                {workout.equipmentNeeded.length} equipment
+                {workout.exercises.length} exercises
               </span>
             </div>
           )}
@@ -352,20 +281,20 @@ const EnhancedWorkoutCard = ({
           </div>
         </div>
 
-        {/* Equipment Tags */}
-        {workout.equipmentNeeded && workout.equipmentNeeded.length > 0 && (
+        {/* Exercise Tags */}
+        {workout.exercises && workout.exercises.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
-            {workout.equipmentNeeded.slice(0, 3).map((equipment, index) => (
+            {workout.exercises.slice(0, 3).map((exercise, index) => (
               <span
                 key={index}
                 className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full"
               >
-                {equipment}
+                {exercise.name}
               </span>
             ))}
-            {workout.equipmentNeeded.length > 3 && (
+            {workout.exercises.length > 3 && (
               <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                +{workout.equipmentNeeded.length - 3} more
+                +{workout.exercises.length - 3} more
               </span>
             )}
           </div>

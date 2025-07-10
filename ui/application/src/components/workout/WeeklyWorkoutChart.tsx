@@ -61,8 +61,8 @@ const WeeklyWorkoutChart = ({ weeklyCounts }) => {
                 },
             },
             x: {
-                type: "time",
-                time: { unit: "day" },
+                type: "time" as const,
+                time: { unit: "day" as const },
                 ticks: {
                     color: "#6B7280", // Gray-600 for ticks
                     font: { size: 12 },

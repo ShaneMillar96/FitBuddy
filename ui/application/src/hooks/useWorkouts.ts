@@ -7,12 +7,6 @@ interface UseWorkoutsProps {
     sortBy?: string;
     sortDirection?: string;
     search?: string;
-    categoryIds?: number[];
-    subTypeId?: number;
-    minDifficultyLevel?: number;
-    maxDifficultyLevel?: number;
-    minDuration?: number;
-    maxDuration?: number;
 }
 
 export const useWorkouts = ({
@@ -20,32 +14,21 @@ export const useWorkouts = ({
                                 sortBy = "",
                                 sortDirection = "asc",
                                 search = "",
-                                categoryIds,
-                                subTypeId,
-                                minDifficultyLevel,
-                                maxDifficultyLevel,
-                                minDuration,
-                                maxDuration,
                             }: UseWorkoutsProps = {}) => {
     return useInfiniteQuery({
-        queryKey: [QUERY_KEYS.WORKOUTS, pageSize, sortBy, sortDirection, search, categoryIds, subTypeId, minDifficultyLevel, maxDifficultyLevel, minDuration, maxDuration],
+        queryKey: [QUERY_KEYS.WORKOUTS, pageSize, sortBy, sortDirection, search],
         queryFn: ({ pageParam = 1 }) =>
             getWorkouts({ 
                 pageSize, 
                 pageNumber: pageParam, 
                 sortBy, 
                 sortDirection, 
-                search, 
-                categoryIds, 
-                subTypeId, 
-                minDifficultyLevel,
-                maxDifficultyLevel,
-                minDuration,
-                maxDuration
+                search
             }),
+        initialPageParam: 1,
         getNextPageParam: (lastPage, allPages) => {
-            const totalFetched = allPages.reduce((acc, page) => acc + page.data.length, 0);
-            return totalFetched < lastPage.totalCount ? allPages.length + 1 : undefined;
+            const totalFetched = allPages.reduce((acc, page) => acc + (page as any).data.length, 0);
+            return totalFetched < (lastPage as any).totalCount ? allPages.length + 1 : undefined;
         },
         placeholderData: (previousData) => previousData,
         staleTime: 0,
