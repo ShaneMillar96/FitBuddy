@@ -26,13 +26,13 @@ const Comments = ({ workoutId }: CommentsProps) => {
         refetch();
     }, [workoutId, refetch, commentPage]);
 
-    const isNextDisabled = comments?.data?.length < 10 || (commentPage * 10) >= (comments?.totalCount || 0);
+    const isNextDisabled = (comments as any)?.data?.length < 10 || (commentPage * 10) >= ((comments as any)?.totalCount || 0);
 
     const handlePostComment = () => {
         if (!commentText.trim()) return;
         setIsPosting(true);
         postCommentMutation.mutate(
-            { workoutId, comment: commentText, page: commentPage },
+            { workoutId, comment: commentText },
             {
                 onSuccess: () => {
                     setCommentText("");
@@ -60,9 +60,9 @@ const Comments = ({ workoutId }: CommentsProps) => {
                 </div>
             ) : error ? (
                 <div className="text-red-500 text-center py-6">Failed to load comments. Please try again.</div>
-            ) : comments?.data?.length > 0 ? (
+            ) : (comments as any)?.data?.length > 0 ? (
                 <div className="space-y-4">
-                    {comments.data.map((comment) => (
+                    {(comments as any).data.map((comment: any) => (
                         <motion.div
                             key={comment.id}
                             initial={{ opacity: 0, y: 10 }}
@@ -98,10 +98,10 @@ const Comments = ({ workoutId }: CommentsProps) => {
                 />
                 <button
                     onClick={handlePostComment}
-                    disabled={postCommentMutation.isLoading || isPosting}
+                    disabled={postCommentMutation.isPending || isPosting}
                     className="px-5 py-3 rounded-xl bg-gradient-to-r from-teal-400 to-blue-400 text-white font-medium hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100 shadow-md"
                 >
-                    {postCommentMutation.isLoading || isPosting ? (
+                    {postCommentMutation.isPending || isPosting ? (
                         <span className="animate-spin inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
                     ) : (
                         "Post"
@@ -110,7 +110,7 @@ const Comments = ({ workoutId }: CommentsProps) => {
             </motion.div>
 
             {/* Pagination */}
-            {comments?.data?.length > 0 && (
+            {(comments as any)?.data?.length > 0 && (
                 <div className="flex justify-between items-center mt-6">
                     <button
                         disabled={commentPage === 1}
