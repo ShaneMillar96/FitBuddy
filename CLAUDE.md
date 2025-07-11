@@ -273,17 +273,38 @@ The workout filtering system has been completely overhauled to use server-side f
 
 ## Recent Implementation Updates
 
-### Equipment Filtering Removal (Latest)
-- **Removed equipment filtering** completely from the workout list interface per user request
-- Updated filter state to only include: `categories`, `subTypes`, `difficulty`, `duration`
-- Removed equipment-related API endpoints and backend filtering logic
-- Cleaned up all equipment references from frontend components
+### CrossFit-Only Simplification (Latest)
+- **Simplified Database Schema**: Removed complex migration files V1.2-V1.16, replaced with single V1.2__simplified_crossfit_schema.sql
+- **Streamlined Tables**: Reduced from 16+ tables to 9 core tables focused on CrossFit functionality
+- **Removed Filtering**: Eliminated complex filtering from workout list interface, replaced with simple search and sort
+- **UI Redesign**: Simplified workout-list.tsx and workout-session.tsx for CrossFit-only focus
+- **Backend API**: Removed category filtering endpoints, streamlined WorkoutsController for basic pagination
 
-### Individual Filter Removal Implementation
-- **Fixed individual filter removal** in WorkoutListHeader component
-- Replaced placeholder `onClearFilters()` calls with proper individual filter removal
-- Implemented `removeCategory()`, `removeDifficulty()`, and `removeDuration()` functions
-- Added `onFiltersChange` prop to enable granular filter updates
+### Database Schema Redesign
+**New Simplified Schema (9 tables)**:
+- `members` - User accounts with authentication
+- `workout_types` - CrossFit types (EMOM, AMRAP, For Time, Tabata, Ladder)
+- `workouts` - Workout definitions with CrossFit-specific fields
+- `exercises` - Library of 24 essential CrossFit movements
+- `workout_exercises` - Junction table for workout composition
+- `workout_results` - Enhanced performance tracking
+- `comments` - Member comments on workouts
+- `score_types` - Scoring methods (Time, Rounds, Weight, etc.)
+- `workout_favorites` - Member favorites functionality
+
+### CrossFit Exercise Library
+**Essential CrossFit Movements**:
+- Bodyweight: Burpees, Push-ups, Pull-ups, Air Squats, Mountain Climbers
+- Weighted: Thrusters, Deadlifts, Kettlebell Swings, Wall Balls, Box Jumps
+- Olympic: Clean and Jerk, Snatch
+- Gymnastic: Muscle-ups, Handstand Push-ups, Toes-to-Bar
+- Cardio: Rowing, Running, Bike/Assault Bike
+
+### UI Simplification
+- **Workout List**: Removed complex filtering, kept search and sort only
+- **Workout Session**: Redesigned to match CrossFit session interface with orange gradient header, circular timer, 2x2 stats grid
+- **Preview Modal**: Replaced exercises preview with leaderboard placeholder
+- **CrossFit Branding**: Red/orange color scheme throughout application
 
 ### Code Quality Improvements
 - **Fixed syntax error** in CommentProfile.cs (removed double semicolon)
@@ -291,10 +312,30 @@ The workout filtering system has been completely overhauled to use server-side f
 - Added configurable cleanup option with proper error handling
 - All outstanding TODOs have been implemented or resolved
 
-### Filter System Summary
-The workout filtering system now supports:
-- ✅ **Categories**: OR logic with multiple selection and individual removal
-- ✅ **Difficulty Range**: Server-side filtering with individual removal
-- ✅ **Duration Range**: Server-side filtering with individual removal
-- ❌ **Equipment**: Completely removed per user requirements
-- ❌ **Creator**: Removed per user requirements
+## Documentation
+
+### Comprehensive Documentation System
+- **claudedocs Directory**: Created comprehensive documentation system with organized structure
+- **Architecture Docs**: System overview, backend architecture, frontend architecture, database design
+- **Feature Docs**: Detailed documentation for workout management, authentication, and other core features
+- **API Docs**: Complete API reference and usage examples
+- **Development Docs**: Setup guides, workflows, and troubleshooting
+
+**Documentation Structure**:
+```
+claudedocs/
+├── README.md (Overview and navigation)
+├── architecture/ (System design and component relationships)
+├── features/ (Feature-specific documentation)
+├── api/ (API documentation and examples)
+├── frontend/ (Component library and patterns)
+├── database/ (Schema and data relationships)
+├── infrastructure/ (Docker, AI service, deployment)
+└── development/ (Setup, workflows, troubleshooting)
+```
+
+**Documentation Maintenance**:
+- Update relevant documentation when implementing new features
+- Keep CLAUDE.md updated with references to new documentation
+- Include code examples and implementation details in feature docs
+- Maintain architecture diagrams and relationship mappings
