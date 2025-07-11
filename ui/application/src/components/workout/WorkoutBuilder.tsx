@@ -1,9 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaPlus, FaTrash, FaGripVertical, FaSearch } from "react-icons/fa";
-import { useExercisesByCategory, useSearchExercises, useExercisesByCategoryAndSubType } from "@/hooks/useExercises";
-import { useSubTypes } from "@/hooks/useCategories";
-import { Exercise, CreateWorkoutExercise } from "@/interfaces/categories";
+import { CreateWorkoutExercise } from "@/interfaces/categories";
 
 interface WorkoutBuilderProps {
   categoryId?: number;
@@ -12,6 +10,36 @@ interface WorkoutBuilderProps {
   onExercisesChange: (exercises: CreateWorkoutExercise[]) => void;
   className?: string;
 }
+
+// Hardcoded CrossFit exercises list
+interface Exercise {
+  id: number;
+  name: string;
+  description?: string;
+}
+
+const CROSSFIT_EXERCISES: Exercise[] = [
+  { id: 1, name: "Air Squats", description: "Bodyweight squats with full range of motion" },
+  { id: 2, name: "Push-ups", description: "Standard push-ups from knees or toes" },
+  { id: 3, name: "Burpees", description: "Full body exercise: squat, plank, jump" },
+  { id: 4, name: "Pull-ups", description: "Chin over bar, dead hang start" },
+  { id: 5, name: "Kettlebell Swings", description: "Hip-driven kettlebell swing to eye level" },
+  { id: 6, name: "Box Jumps", description: "Jump onto box/platform, step down" },
+  { id: 7, name: "Deadlifts", description: "Barbell deadlift with proper form" },
+  { id: 8, name: "Thrusters", description: "Front squat to overhead press combination" },
+  { id: 9, name: "Wall Balls", description: "Squat and throw medicine ball to target" },
+  { id: 10, name: "Rowing", description: "Rowing machine for distance or time" },
+  { id: 11, name: "Double Unders", description: "Jump rope passing under feet twice per jump" },
+  { id: 12, name: "Toes-to-Bar", description: "Hanging from bar, bring toes to touch bar" },
+  { id: 13, name: "Ring Dips", description: "Dips on gymnastic rings" },
+  { id: 14, name: "Handstand Push-ups", description: "Push-ups in handstand position against wall" },
+  { id: 15, name: "Clean and Jerk", description: "Olympic lift: clean to shoulders, jerk overhead" },
+  { id: 16, name: "Snatch", description: "Olympic lift: ground to overhead in one motion" },
+  { id: 17, name: "Mountain Climbers", description: "Plank position, alternating knee drives" },
+  { id: 18, name: "Russian Kettlebell Swings", description: "Kettlebell swing to chest level" },
+  { id: 19, name: "Goblet Squats", description: "Squat holding weight at chest" },
+  { id: 20, name: "Bear Crawl", description: "Crawl on hands and feet, knees off ground" },
+];
 
 const WorkoutBuilder = ({
   categoryId,
@@ -23,16 +51,13 @@ const WorkoutBuilder = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   
-  const { data: subTypes } = useSubTypes(categoryId || 0);
-  const selectedSubType = subTypes?.find(st => st.id === subTypeId);
-  
-  const { data: categoryExercises, isLoading: categoryLoading } = useExercisesByCategoryAndSubType(
-    categoryId || 0, 
-    selectedSubType?.name
-  );
-  const { data: searchResults, isLoading: searchLoading } = useSearchExercises(searchTerm, categoryId);
-
-  const availableExercises = searchTerm.length >= 2 ? searchResults : categoryExercises;
+  // Filter exercises based on search term
+  const availableExercises = searchTerm.length >= 2 
+    ? CROSSFIT_EXERCISES.filter(ex => 
+        ex.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ex.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : CROSSFIT_EXERCISES;
 
   // Get default values for CrossFit exercises
   const getExerciseDefaults = (exercise: Exercise) => {
@@ -94,14 +119,13 @@ const WorkoutBuilder = ({
   // Determine which fields to show for CrossFit exercises
   const getRelevantFields = () => {
     // Show different fields based on CrossFit sub-type
-    if (selectedSubType) {
-      const subTypeName = selectedSubType.toString();
+    if (subTypeId) {
       // For EMOM (7) and AMRAP (8), show rounds/reps and time
-      if (subTypeName === '7' || subTypeName === '8') {
+      if (subTypeId === 7 || subTypeId === 8) {
         return ['reps', 'time'];
       }
       // For Tabata (10), show reps and rest
-      if (subTypeName === '10') {
+      if (subTypeId === 10) {
         return ['reps', 'rest'];
       }
     }
@@ -300,14 +324,6 @@ const WorkoutBuilder = ({
 
               {/* Exercise List */}
               <div className="flex-1 overflow-y-auto space-y-2">
-                {(categoryLoading || searchLoading) && (
-                  <div className="space-y-2">
-                    {[...Array(5)].map((_, i) => (
-                      <div key={i} className="h-16 bg-gray-200 rounded animate-pulse"></div>
-                    ))}
-                  </div>
-                )}
-
                 {availableExercises?.map((exercise) => (
                   <motion.button
                     key={exercise.id}
@@ -331,7 +347,7 @@ const WorkoutBuilder = ({
                   </motion.button>
                 ))}
 
-                {availableExercises?.length === 0 && !categoryLoading && !searchLoading && (
+                {availableExercises?.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
                     <p>No exercises found. Try adjusting your search.</p>
                   </div>

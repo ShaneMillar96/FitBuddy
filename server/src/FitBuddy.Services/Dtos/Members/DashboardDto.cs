@@ -14,7 +14,6 @@ public class DashboardDto
     public int WorkoutsCreated { get; set; }
     public int WorkoutsCompleted { get; set; }
     public int FavoriteWorkouts { get; set; }
-    public int TotalMinutesExercised { get; set; }
     public int CurrentStreak { get; set; }
     public int PersonalBests { get; set; }
     
@@ -23,8 +22,6 @@ public class DashboardDto
     public int WeeklyProgress { get; set; }
     public double WeeklyCompletionPercentage { get; set; }
     
-    // Category breakdown
-    public List<CategoryStatsDto> CategoryBreakdown { get; set; } = new();
     
     // Recent achievements
     public List<AchievementDto> RecentAchievements { get; set; } = new();
@@ -54,7 +51,6 @@ public class AchievementDto
 public class TrendingMetricsDto
 {
     public double WorkoutFrequencyTrend { get; set; } // percentage change week over week
-    public double AverageWorkoutDuration { get; set; }
     public double AverageWorkoutDurationTrend { get; set; }
     public string MostActiveDay { get; set; } = string.Empty;
     public int ConsecutiveDaysActive { get; set; }

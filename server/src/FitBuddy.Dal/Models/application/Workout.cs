@@ -35,24 +35,6 @@ public partial class Workout : ICreatedByTracking
     [Column("score_type_id")]
     public int? ScoreTypeId { get; set; }
 
-    // New enhanced fields
-    [Column("category_id")]
-    public int? CategoryId { get; set; }
-
-    [Column("sub_type_id")]
-    public int? SubTypeId { get; set; }
-
-    [Column("difficulty_level")]
-    public int? DifficultyLevel { get; set; }
-
-    [Column("estimated_duration_minutes")]
-    public int? EstimatedDurationMinutes { get; set; }
-
-    [Column("equipment_needed")]
-    public string[]? EquipmentNeeded { get; set; }
-
-    [Column("workout_structure", TypeName = "jsonb")]
-    public JsonDocument? WorkoutStructure { get; set; }
 
     [InverseProperty("Workout")]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
@@ -65,13 +47,6 @@ public partial class Workout : ICreatedByTracking
     [InverseProperty("Workouts")]
     public virtual ScoreType? ScoreType { get; set; }
 
-    [ForeignKey("CategoryId")]
-    [InverseProperty("Workouts")]
-    public virtual WorkoutCategory? Category { get; set; }
-
-    [ForeignKey("SubTypeId")]
-    [InverseProperty("Workouts")]
-    public virtual WorkoutSubType? SubType { get; set; }
 
     [InverseProperty("Workout")]
     public virtual ICollection<WorkoutResult> WorkoutResults { get; set; } = new List<WorkoutResult>();

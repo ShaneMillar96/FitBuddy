@@ -24,8 +24,6 @@ public partial class WorkoutAchievement
     [Column("achievement_description")]
     public string? AchievementDescription { get; set; }
 
-    [Column("category_id")]
-    public int? CategoryId { get; set; }
 
     [Column("earned_date", TypeName = "timestamp without time zone")]
     public DateTime? EarnedDate { get; set; }
@@ -37,9 +35,6 @@ public partial class WorkoutAchievement
     [InverseProperty("Achievements")]
     public virtual Member Member { get; set; } = null!;
 
-    [ForeignKey("CategoryId")]
-    [InverseProperty("Achievements")]
-    public virtual WorkoutCategory? Category { get; set; }
 
     [ForeignKey("WorkoutResultId")]
     [InverseProperty("Achievements")]

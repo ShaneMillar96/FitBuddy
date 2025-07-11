@@ -35,27 +35,7 @@ public class WorkoutService : IWorkoutService
             .Include(x => x.CreatedBy)
             .Include(x => x.WorkoutType)
             .Include(x => x.ScoreType)
-            .Include(x => x.Category)
-            .Include(x => x.SubType)
             .Where(new WorkoutBySearchSpec(searchQuery));
-
-        // Apply sub-type filter
-        if (subTypeId.HasValue)
-        {
-            query = query.Where(w => w.SubTypeId == subTypeId.Value);
-        }
-
-
-        // Apply duration range filter
-        if (minDuration.HasValue)
-        {
-            query = query.Where(w => w.EstimatedDurationMinutes >= minDuration.Value);
-        }
-        if (maxDuration.HasValue)
-        {
-            query = query.Where(w => w.EstimatedDurationMinutes <= maxDuration.Value);
-        }
-
 
         var workouts = _mapper.ProjectTo<WorkoutDto>(query);
 

@@ -39,10 +39,8 @@ public class DashboardService : IDashboardService
         // Enhanced stats
         var workoutsCreated = await GetWorkoutsCreatedCount(memberId);
         var favoriteWorkouts = await GetFavoriteWorkoutsCount(memberId);
-        var totalMinutesExercised = await GetTotalMinutesExercised(workoutResultsQuery);
         var currentStreak = await GetCurrentStreak(memberId);
         var personalBests = await GetPersonalBestsCount(memberId);
-        var categoryBreakdown = await GetCategoryBreakdown(workoutResultsQuery);
         var recentAchievements = await GetRecentAchievements(memberId);
         var trendingMetrics = await GetTrendingMetrics(workoutResultsQuery, today);
 
@@ -60,7 +58,6 @@ public class DashboardService : IDashboardService
             WorkoutsCreated = workoutsCreated,
             WorkoutsCompleted = workoutsAllTime,
             FavoriteWorkouts = favoriteWorkouts,
-            TotalMinutesExercised = totalMinutesExercised,
             CurrentStreak = currentStreak,
             PersonalBests = personalBests,
             
@@ -70,7 +67,6 @@ public class DashboardService : IDashboardService
             WeeklyCompletionPercentage = Math.Min(100, (workoutsThisWeek / 4.0) * 100),
             
             // Enhanced data
-            CategoryBreakdown = categoryBreakdown,
             RecentAchievements = recentAchievements,
             TrendingMetrics = trendingMetrics
         };
@@ -169,13 +165,11 @@ public class DashboardService : IDashboardService
             .CountAsync(wf => wf.MemberId == memberId);
     }
 
-    private async Task<int> GetTotalMinutesExercised(IQueryable<WorkoutResult> workoutResultsQuery)
-    {
-        return await workoutResultsQuery
-            .Include(wr => wr.Workout)
-            .Where(wr => wr.Workout.EstimatedDurationMinutes.HasValue)
-            .SumAsync(wr => wr.Workout.EstimatedDurationMinutes!.Value);
-    }
+    // private async Task<int> GetTotalMinutesExercised(IQueryable<WorkoutResult> workoutResultsQuery)
+    // {
+    //     return await workoutResultsQuery
+    //         .Include(wr => wr.Workout)
+    // }
 
     private async Task<int> GetCurrentStreak(int memberId)
     {
@@ -223,33 +217,6 @@ public class DashboardService : IDashboardService
                         .First().CreatedById == memberId);
     }
 
-    private async Task<List<CategoryStatsDto>> GetCategoryBreakdown(IQueryable<WorkoutResult> workoutResultsQuery)
-    {
-        var categoryStats = await workoutResultsQuery
-            .Include(wr => wr.Workout)
-            .ThenInclude(w => w.Category)
-            .Where(wr => wr.Workout.Category != null)
-            .GroupBy(wr => new { wr.Workout.Category!.Id, wr.Workout.Category.Name })
-            .Select(g => new CategoryStatsDto
-            {
-                CategoryId = g.Key.Id,
-                CategoryName = g.Key.Name,
-                WorkoutCount = g.Count(),
-                TotalMinutes = g.Sum(wr => wr.Workout.EstimatedDurationMinutes ?? 0),
-                Color = "" // Will be set after the query
-            })
-            .OrderByDescending(cs => cs.WorkoutCount)
-            .ToListAsync();
-
-        // Set colors after the query to avoid EF Core translation issues
-        var result = categoryStats ?? new List<CategoryStatsDto>();
-        foreach (var stat in result)
-        {
-            stat.Color = GetCategoryColor(stat.CategoryId);
-        }
-
-        return result;
-    }
 
     private async Task<List<AchievementDto>> GetRecentAchievements(int memberId)
     {
@@ -298,11 +265,6 @@ public class DashboardService : IDashboardService
         var workoutFrequencyTrend = lastWeekCount == 0 ? 0 : 
             ((double)(thisWeekCount - lastWeekCount) / lastWeekCount) * 100;
 
-        var avgDuration = await workoutResultsQuery
-            .Include(wr => wr.Workout)
-            .Where(wr => wr.Workout.EstimatedDurationMinutes.HasValue)
-            .AverageAsync(wr => (double?)wr.Workout.EstimatedDurationMinutes) ?? 0;
-
         var dayOfWeekStats = await workoutResultsQuery
             .GroupBy(wr => wr.CreatedDate.DayOfWeek)
             .Select(g => new { DayOfWeek = g.Key, Count = g.Count() })
@@ -312,24 +274,9 @@ public class DashboardService : IDashboardService
         return new TrendingMetricsDto
         {
             WorkoutFrequencyTrend = workoutFrequencyTrend,
-            AverageWorkoutDuration = avgDuration,
             AverageWorkoutDurationTrend = 0, // Could calculate trend if needed
             MostActiveDay = dayOfWeekStats?.DayOfWeek.ToString() ?? "Monday",
             ConsecutiveDaysActive = await GetCurrentStreak(workoutResultsQuery.FirstOrDefault()?.CreatedById ?? 0)
-        };
-    }
-
-    private string GetCategoryColor(int categoryId)
-    {
-        return categoryId switch
-        {
-            1 => "#3B82F6", // Blue for Weight Session
-            2 => "#EF4444", // Red for CrossFit WOD
-            3 => "#10B981", // Green for Running Intervals
-            4 => "#06B6D4", // Cyan for Swimming
-            5 => "#F59E0B", // Amber for Hyrox
-            6 => "#8B5CF6", // Purple for Stretching
-            _ => "#6B7280"  // Gray for unknown
         };
     }
 }

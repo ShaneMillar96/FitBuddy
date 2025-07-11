@@ -83,7 +83,6 @@ public class WorkoutFavoriteService : IWorkoutFavoriteService
             .Include(wf => wf.Workout)
             .ThenInclude(w => w.WorkoutType)
             .Include(wf => wf.Workout)
-            .ThenInclude(w => w.Category)
             .Where(wf => wf.MemberId == memberId)
             .OrderByDescending(wf => wf.CreatedDate)
             .ToListAsync();

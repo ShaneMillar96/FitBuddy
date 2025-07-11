@@ -11,7 +11,6 @@ import {
   FaShare,
   FaSpinner
 } from "react-icons/fa";
-import { CATEGORY_ICONS } from "@/interfaces/categories";
 import { Workout } from "@/interfaces/workout";
 import { useWorkoutFavorite } from "../../hooks/useFavorites";
 
@@ -106,7 +105,7 @@ const WorkoutPreviewModal = ({
               <div className="flex items-start space-x-4">
                 {workout.categoryId && (
                   <div className="w-16 h-16 rounded-2xl bg-white bg-opacity-20 flex items-center justify-center text-2xl">
-                    {CATEGORY_ICONS[workout.categoryId as keyof typeof CATEGORY_ICONS]}
+                    🔥
                   </div>
                 )}
                 <div className="flex-1 min-w-0">

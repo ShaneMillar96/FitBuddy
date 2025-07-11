@@ -29,8 +29,6 @@ namespace FitBuddy.Dal.Contexts
         public virtual DbSet<ExerciseVideo> ExerciseVideos { get; set; }
         
         // New enhanced entities
-        public virtual DbSet<WorkoutCategory> WorkoutCategories { get; set; }
-        public virtual DbSet<WorkoutSubType> WorkoutSubTypes { get; set; }
         public virtual DbSet<Exercise> Exercises { get; set; }
         public virtual DbSet<WorkoutExercise> WorkoutExercises { get; set; }
         public virtual DbSet<ExerciseResult> ExerciseResults { get; set; }
