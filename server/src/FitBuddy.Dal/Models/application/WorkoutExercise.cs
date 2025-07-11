@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 
 namespace FitBuddy.Dal.Models.application;
@@ -32,8 +33,24 @@ public partial class WorkoutExercise
     [Column("rest_seconds")]
     public int? RestSeconds { get; set; }
 
+    [Column("weight_description")]
+    [StringLength(100)]
+    public string? WeightDescription { get; set; }
+
     [Column("notes")]
     public string? Notes { get; set; }
+
+    [Column("workout_type_data", TypeName = "jsonb")]
+    public JsonDocument? WorkoutTypeData { get; set; }
+
+    [Column("minute_number")]
+    public int? MinuteNumber { get; set; }
+
+    [Column("round_number")]
+    public int? RoundNumber { get; set; }
+
+    [Column("sequence_position")]
+    public int? SequencePosition { get; set; }
 
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime? CreatedDate { get; set; }

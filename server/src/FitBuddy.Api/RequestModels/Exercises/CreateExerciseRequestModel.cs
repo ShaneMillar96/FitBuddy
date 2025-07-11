@@ -8,9 +8,6 @@ public class CreateExerciseRequestModel
     [StringLength(200, MinimumLength = 2)]
     public string Name { get; set; } = null!;
 
-    [Required]
-    public int CategoryId { get; set; }
-
     [StringLength(1000)]
     public string? Description { get; set; }
 
@@ -23,9 +20,6 @@ public class UpdateExerciseRequestModel
     [Required]
     [StringLength(200, MinimumLength = 2)]
     public string Name { get; set; } = null!;
-
-    [Required]
-    public int CategoryId { get; set; }
 
     [StringLength(1000)]
     public string? Description { get; set; }
@@ -54,6 +48,17 @@ public class CreateWorkoutExerciseRequestModel
     [Range(0, 600)]
     public int? RestSeconds { get; set; }
 
+    [StringLength(100)]
+    public string? WeightDescription { get; set; }
+
     [StringLength(500)]
     public string? Notes { get; set; }
+
+    public object? WorkoutTypeData { get; set; }
+
+    public int? MinuteNumber { get; set; }
+
+    public int? RoundNumber { get; set; }
+
+    public int? SequencePosition { get; set; }
 }

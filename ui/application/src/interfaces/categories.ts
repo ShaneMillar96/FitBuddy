@@ -17,6 +17,7 @@ export interface CreateWorkoutExercise {
   reps?: number;
   timeSeconds?: number;
   restSeconds?: number;
+  weightDescription?: string;
   notes?: string;
   name?: string; // Add for display purposes
 }

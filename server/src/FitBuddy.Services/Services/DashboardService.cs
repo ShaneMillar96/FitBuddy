@@ -101,7 +101,7 @@ public class DashboardService : IDashboardService
         var allResultsQuery = _context.Get<WorkoutResult>()
             .Include(wr => wr.Workout)
             .ThenInclude(w => w.ScoreType)
-            .Where(wr => wr.ResultSummary != null)
+            .Where(wr => wr.Result != null)
             .AsEnumerable();
 
         var result = allResultsQuery
@@ -113,9 +113,9 @@ public class DashboardService : IDashboardService
                 g.Key.ScoreTypeId,
                 MemberResult = g.FirstOrDefault(wr => wr.CreatedById == memberId),
                 RankedResults = g.OrderBy(wr => wr.Workout.ScoreTypeId == 1 
-                    ? wr.ResultSummary 
+                    ? wr.Result 
                     : "").ThenByDescending(wr => wr.Workout.ScoreTypeId != 1 
-                    ? wr.ResultSummary 
+                    ? wr.Result 
                     : "").ToList()
             })
             .Where(x => x.MemberResult != null)
@@ -123,7 +123,7 @@ public class DashboardService : IDashboardService
             {
                 WorkoutId = x.WorkoutId,
                 WorkoutName = x.Name,
-                Result = x.MemberResult!.ResultSummary!,
+                Result = x.MemberResult!.Result!,
                 Rank = x.RankedResults.IndexOf(x.MemberResult) + 1
             })
             .MinBy(x => x.Rank);
@@ -207,13 +207,13 @@ public class DashboardService : IDashboardService
         var allResults = await _context.Get<WorkoutResult>()
             .Include(wr => wr.Workout)
             .ThenInclude(w => w.ScoreType)
-            .Where(wr => wr.ResultSummary != null)
+            .Where(wr => wr.Result != null)
             .ToListAsync();
 
         return allResults
             .GroupBy(wr => wr.WorkoutId)
-            .Count(g => g.OrderBy(wr => wr.Workout.ScoreTypeId == 1 ? wr.ResultSummary : "")
-                        .ThenByDescending(wr => wr.Workout.ScoreTypeId != 1 ? wr.ResultSummary : "")
+            .Count(g => g.OrderBy(wr => wr.Workout.ScoreTypeId == 1 ? wr.Result : "")
+                        .ThenByDescending(wr => wr.Workout.ScoreTypeId != 1 ? wr.Result : "")
                         .First().CreatedById == memberId);
     }
 

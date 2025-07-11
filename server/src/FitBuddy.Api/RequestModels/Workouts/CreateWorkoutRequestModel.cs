@@ -21,7 +21,10 @@ public class CreateWorkoutRequestModel : IValidatable<CreateWorkoutRequestModelV
     public int TypeId { get; set; }
     
     // CrossFit-specific fields
-    public int? SubTypeId { get; set; }
+    public int? ScoreTypeId { get; set; }
+    
+    [Range(1, 5)]
+    public int? DifficultyLevel { get; set; }
     
     [Range(1, 600)]
     public int? EstimatedDurationMinutes { get; set; }

@@ -3,6 +3,7 @@ using FitBuddy.Api.Controllers.Base;
 using FitBuddy.Api.RequestModels.Workouts;
 using FitBuddy.Api.ViewModels.Pagination;
 using FitBuddy.Api.ViewModels.Workouts;
+using FitBuddy.Api.ViewModels.Exercises;
 using FitBuddy.Dal.Interfaces;
 using FitBuddy.Services.Dtos.Pagination;
 using FitBuddy.Services.Dtos.Workouts;
@@ -18,10 +19,11 @@ public class WorkoutsController : FitBuddyBaseController
 {
     private readonly IMapper _mapper;
     private readonly IWorkoutService _service;
+    private readonly IExerciseService _exerciseService;
     
-    public WorkoutsController(IMapper mapper, IWorkoutService service, IFitBudContext context) : base(context)
+    public WorkoutsController(IMapper mapper, IWorkoutService service, IExerciseService exerciseService, IFitBudContext context) : base(context)
     {
-        (_mapper, _service) = (mapper, service);
+        (_mapper, _service, _exerciseService) = (mapper, service, exerciseService);
     }
     
     [HttpGet]
@@ -76,6 +78,22 @@ public class WorkoutsController : FitBuddyBaseController
     {
         var workoutTypes = await _service.RetrieveWorkoutTypes();
         return OkOrNoContent(_mapper.Map<List<WorkoutTypeViewModel>>(workoutTypes));
+    }
+    
+    [HttpGet("score-types")]
+    public async Task<ActionResult> GetScoreTypes()
+    {
+        var scoreTypes = await _service.RetrieveScoreTypes();
+        return OkOrNoContent(_mapper.Map<List<ScoreTypeViewModel>>(scoreTypes));
+    }
+    
+    [HttpGet("exercises")]
+    public async Task<ActionResult> GetExercises([FromQuery] string? search)
+    {
+        var exercises = string.IsNullOrWhiteSpace(search) 
+            ? await _exerciseService.RetrieveExercises()
+            : await _exerciseService.SearchExercises(search);
+        return OkOrNoContent(_mapper.Map<List<ExerciseViewModel>>(exercises));
     }
 
     

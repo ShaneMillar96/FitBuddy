@@ -3,6 +3,7 @@ export const QUERY_KEYS = {
     WORKOUT_DETAILS: "workoutDetails",
     WORKOUT_COMMENTS: "workoutComments",
     WORKOUT_TYPES: "workoutTypes",
+    SCORE_TYPES: "scoreTypes",
     DASHBOARD: "dashboard",
     ANALYSIS: "analysis",
     EXERCISE_TYPES: "exerciseTypes",

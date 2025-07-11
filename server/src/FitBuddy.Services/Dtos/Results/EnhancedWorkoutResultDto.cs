@@ -7,7 +7,7 @@ public class EnhancedWorkoutResultDto
     public int Id { get; set; }
     public int WorkoutId { get; set; }
     public int CreatedById { get; set; }
-    public string? ResultSummary { get; set; }
+    public string? Result { get; set; }
     public DateTime CreatedDate { get; set; }
     
     // Timing and performance
@@ -51,7 +51,7 @@ public class EnhancedWorkoutResultDto
 public class CreateEnhancedWorkoutResultDto
 {
     public int WorkoutId { get; set; }
-    public string? ResultSummary { get; set; }
+    public string? Result { get; set; }
     
     // Timing and performance
     public int? CompletionTimeSeconds { get; set; }

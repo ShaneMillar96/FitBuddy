@@ -11,6 +11,7 @@ public interface IWorkoutService
     Task<bool> UpdateWorkout(int workoutId, UpdateWorkoutDto workout);
     Task<bool> DeleteWorkout(int workoutId);
     Task<List<WorkoutTypeDto>> RetrieveWorkoutTypes();
+    Task<List<ScoreTypeDto>> RetrieveScoreTypes();
     Task<PaginatedDto<WorkoutResultDto>> RetrieveWorkoutResults(PaginationDto pagination, int workoutId);
     Task<int> CreateWorkoutResult(CreateWorkoutResultDto result);
     Task<bool> ResultExists(int workoutId);

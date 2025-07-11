@@ -35,6 +35,12 @@ public partial class Workout : ICreatedByTracking
     [Column("score_type_id")]
     public int? ScoreTypeId { get; set; }
 
+    [Column("difficulty_level")]
+    public int? DifficultyLevel { get; set; }
+
+    [Column("estimated_duration_minutes")]
+    public int? EstimatedDurationMinutes { get; set; }
+
 
     [InverseProperty("Workout")]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();

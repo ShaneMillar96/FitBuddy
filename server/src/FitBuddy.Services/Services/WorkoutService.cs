@@ -91,6 +91,9 @@ public class WorkoutService : IWorkoutService
     public Task<List<WorkoutTypeDto>> RetrieveWorkoutTypes() =>
         _mapper.ProjectTo<WorkoutTypeDto>(_context.Get<WorkoutType>()).ToListAsync();
 
+    public Task<List<ScoreTypeDto>> RetrieveScoreTypes() =>
+        _mapper.ProjectTo<ScoreTypeDto>(_context.Get<ScoreType>()).ToListAsync();
+
     
     public async Task<PaginatedDto<WorkoutResultDto>> RetrieveWorkoutResults(PaginationDto pagination, int workoutId)
     {

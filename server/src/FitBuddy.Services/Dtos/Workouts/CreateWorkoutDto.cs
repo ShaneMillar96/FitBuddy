@@ -8,7 +8,8 @@ public class CreateWorkoutDto
     public int TypeId { get; set; }
     
     // CrossFit-specific fields
-    public int? SubTypeId { get; set; }
+    public int? ScoreTypeId { get; set; }
+    public int? DifficultyLevel { get; set; }
     public int? EstimatedDurationMinutes { get; set; }
     public List<CreateWorkoutExerciseDto> Exercises { get; set; } = new();
 }

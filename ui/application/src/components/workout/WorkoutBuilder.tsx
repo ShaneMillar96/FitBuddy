@@ -1,63 +1,75 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaPlus, FaTrash, FaGripVertical, FaSearch } from "react-icons/fa";
+import { FaPlus, FaTrash, FaGripVertical, FaSearch, FaSpinner } from "react-icons/fa";
 import { CreateWorkoutExercise } from "@/interfaces/categories";
+import { useExercises, useSearchExercises, Exercise } from "@/hooks/useExercises";
+import { 
+  WORKOUT_TYPES, 
+  WorkoutTypeId,
+  EMOMWorkoutData,
+  AMRAPWorkoutData,
+  ForTimeWorkoutData,
+  TabataWorkoutData,
+  LadderWorkoutData,
+  WorkoutTypeData
+} from "@/interfaces/workout-types";
+import EMOMBuilder from "./builders/EMOMBuilder";
+import AMRAPBuilder from "./builders/AMRAPBuilder";
+import ForTimeBuilder from "./builders/ForTimeBuilder";
+import TabataBuilder from "./builders/TabataBuilder";
+import LadderBuilder from "./builders/LadderBuilder";
 
 interface WorkoutBuilderProps {
-  categoryId?: number;
-  subTypeId?: number;
   exercises: CreateWorkoutExercise[];
   onExercisesChange: (exercises: CreateWorkoutExercise[]) => void;
+  workoutTypeId?: WorkoutTypeId;
+  onWorkoutTypeDataChange?: (data: WorkoutTypeData) => void;
   className?: string;
 }
 
-// Hardcoded CrossFit exercises list
-interface Exercise {
-  id: number;
-  name: string;
-  description?: string;
-}
-
-const CROSSFIT_EXERCISES: Exercise[] = [
-  { id: 1, name: "Air Squats", description: "Bodyweight squats with full range of motion" },
-  { id: 2, name: "Push-ups", description: "Standard push-ups from knees or toes" },
-  { id: 3, name: "Burpees", description: "Full body exercise: squat, plank, jump" },
-  { id: 4, name: "Pull-ups", description: "Chin over bar, dead hang start" },
-  { id: 5, name: "Kettlebell Swings", description: "Hip-driven kettlebell swing to eye level" },
-  { id: 6, name: "Box Jumps", description: "Jump onto box/platform, step down" },
-  { id: 7, name: "Deadlifts", description: "Barbell deadlift with proper form" },
-  { id: 8, name: "Thrusters", description: "Front squat to overhead press combination" },
-  { id: 9, name: "Wall Balls", description: "Squat and throw medicine ball to target" },
-  { id: 10, name: "Rowing", description: "Rowing machine for distance or time" },
-  { id: 11, name: "Double Unders", description: "Jump rope passing under feet twice per jump" },
-  { id: 12, name: "Toes-to-Bar", description: "Hanging from bar, bring toes to touch bar" },
-  { id: 13, name: "Ring Dips", description: "Dips on gymnastic rings" },
-  { id: 14, name: "Handstand Push-ups", description: "Push-ups in handstand position against wall" },
-  { id: 15, name: "Clean and Jerk", description: "Olympic lift: clean to shoulders, jerk overhead" },
-  { id: 16, name: "Snatch", description: "Olympic lift: ground to overhead in one motion" },
-  { id: 17, name: "Mountain Climbers", description: "Plank position, alternating knee drives" },
-  { id: 18, name: "Russian Kettlebell Swings", description: "Kettlebell swing to chest level" },
-  { id: 19, name: "Goblet Squats", description: "Squat holding weight at chest" },
-  { id: 20, name: "Bear Crawl", description: "Crawl on hands and feet, knees off ground" },
-];
-
 const WorkoutBuilder = ({
-  categoryId,
-  subTypeId,
   exercises,
   onExercisesChange,
+  workoutTypeId,
+  onWorkoutTypeDataChange,
   className = ""
 }: WorkoutBuilderProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showExercisePicker, setShowExercisePicker] = useState(false);
   
-  // Filter exercises based on search term
-  const availableExercises = searchTerm.length >= 2 
-    ? CROSSFIT_EXERCISES.filter(ex => 
-        ex.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        ex.description?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : CROSSFIT_EXERCISES;
+  // Initialize workout type specific data
+  const [workoutTypeData, setWorkoutTypeData] = useState<WorkoutTypeData>(() => {
+    switch (workoutTypeId) {
+      case WORKOUT_TYPES.EMOM:
+        return { totalMinutes: 12, exercises: [] } as EMOMWorkoutData;
+      case WORKOUT_TYPES.AMRAP:
+        return { timeCapMinutes: 20, exercises: [] } as AMRAPWorkoutData;
+      case WORKOUT_TYPES.FOR_TIME:
+        return { totalRounds: 1, exercises: [] } as ForTimeWorkoutData;
+      case WORKOUT_TYPES.TABATA:
+        return { totalRounds: 1, exercises: [] } as TabataWorkoutData;
+      case WORKOUT_TYPES.LADDER:
+        return { ladderType: 'ascending', exercises: [] } as LadderWorkoutData;
+      default:
+        return { exercises: [] } as any;
+    }
+  });
+  
+  // Use database exercises
+  const { data: allExercises, isLoading: exercisesLoading } = useExercises();
+  const { data: searchResults, isLoading: searchLoading } = useSearchExercises(
+    searchTerm,
+    searchTerm.length >= 2
+  );
+  
+  // Determine which exercises to show
+  const availableExercises = searchTerm.length >= 2 ? searchResults : allExercises;
+
+  // Handle workout type data changes
+  const handleWorkoutTypeDataChange = (data: WorkoutTypeData) => {
+    setWorkoutTypeData(data);
+    onWorkoutTypeDataChange?.(data);
+  };
 
   // Get default values for CrossFit exercises
   const getExerciseDefaults = (exercise: Exercise) => {
@@ -116,33 +128,61 @@ const WorkoutBuilder = ({
     return availableExercises?.find(ex => ex.id === exerciseId);
   };
 
-  // Determine which fields to show for CrossFit exercises
+  // Show all relevant fields for workout exercises
   const getRelevantFields = () => {
-    // Show different fields based on CrossFit sub-type
-    if (subTypeId) {
-      // For EMOM (7) and AMRAP (8), show rounds/reps and time
-      if (subTypeId === 7 || subTypeId === 8) {
-        return ['reps', 'time'];
-      }
-      // For Tabata (10), show reps and rest
-      if (subTypeId === 10) {
-        return ['reps', 'rest'];
-      }
-    }
-    // Default: show sets, reps, and rest
-    return ['sets', 'reps', 'rest'];
+    return ['sets', 'reps', 'time', 'rest', 'weight'];
   };
 
-  if (!categoryId) {
-    return (
-      <div className={`text-center py-8 text-gray-500 ${className}`}>
-        <p>Please select a workout category first to build your workout.</p>
-      </div>
-    );
-  }
+  // Render workout type specific builder or default builder
+  const renderWorkoutBuilder = () => {
+    if (!workoutTypeId) {
+      // Render default/legacy builder for backward compatibility
+      return renderDefaultBuilder();
+    }
 
-  return (
-    <div className={`space-y-6 ${className}`}>
+    switch (workoutTypeId) {
+      case WORKOUT_TYPES.EMOM:
+        return (
+          <EMOMBuilder
+            workoutData={workoutTypeData as EMOMWorkoutData}
+            onChange={handleWorkoutTypeDataChange}
+          />
+        );
+      case WORKOUT_TYPES.AMRAP:
+        return (
+          <AMRAPBuilder
+            workoutData={workoutTypeData as AMRAPWorkoutData}
+            onChange={handleWorkoutTypeDataChange}
+          />
+        );
+      case WORKOUT_TYPES.FOR_TIME:
+        return (
+          <ForTimeBuilder
+            workoutData={workoutTypeData as ForTimeWorkoutData}
+            onChange={handleWorkoutTypeDataChange}
+          />
+        );
+      case WORKOUT_TYPES.TABATA:
+        return (
+          <TabataBuilder
+            workoutData={workoutTypeData as TabataWorkoutData}
+            onChange={handleWorkoutTypeDataChange}
+          />
+        );
+      case WORKOUT_TYPES.LADDER:
+        return (
+          <LadderBuilder
+            workoutData={workoutTypeData as LadderWorkoutData}
+            onChange={handleWorkoutTypeDataChange}
+          />
+        );
+      default:
+        return renderDefaultBuilder();
+    }
+  };
+
+  const renderDefaultBuilder = () => (
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800">Workout Exercises</h3>
         <motion.button
@@ -257,6 +297,19 @@ const WorkoutBuilder = ({
                           />
                         </div>
                       )}
+
+                      {getRelevantFields().includes('weight') && (
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-1">Weight</label>
+                          <input
+                            type="text"
+                            value={exercise.weightDescription || ''}
+                            onChange={(e) => updateExercise(index, { weightDescription: e.target.value || undefined })}
+                            className="w-full px-2 py-1 border border-gray-300 rounded text-sm"
+                            placeholder="e.g., bodyweight, 50kg"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {/* Notes */}
@@ -284,7 +337,14 @@ const WorkoutBuilder = ({
         )}
       </div>
 
-      {/* Exercise Picker Modal */}
+    </div>
+  );
+
+  return (
+    <div className={`space-y-6 ${className}`}>
+      {renderWorkoutBuilder()}
+      
+      {/* Exercise Picker Modal - shared by all workout types */}
       <AnimatePresence>
         {showExercisePicker && (
           <motion.div
@@ -324,7 +384,15 @@ const WorkoutBuilder = ({
 
               {/* Exercise List */}
               <div className="flex-1 overflow-y-auto space-y-2">
-                {availableExercises?.map((exercise) => (
+                {(exercisesLoading || (searchTerm.length >= 2 && searchLoading)) && (
+                  <div className="space-y-2">
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className="h-16 bg-gray-200 rounded animate-pulse"></div>
+                    ))}
+                  </div>
+                )}
+
+                {!exercisesLoading && !searchLoading && availableExercises?.map((exercise) => (
                   <motion.button
                     key={exercise.id}
                     type="button"
@@ -347,7 +415,7 @@ const WorkoutBuilder = ({
                   </motion.button>
                 ))}
 
-                {availableExercises?.length === 0 && (
+                {!exercisesLoading && !searchLoading && availableExercises?.length === 0 && (
                   <div className="text-center py-8 text-gray-500">
                     <p>No exercises found. Try adjusting your search.</p>
                   </div>

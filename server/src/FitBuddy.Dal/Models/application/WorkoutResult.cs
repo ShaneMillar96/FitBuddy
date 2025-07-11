@@ -19,9 +19,8 @@ public partial class WorkoutResult : ICreatedByTracking
     [Column("created_by_id")]
     public int CreatedById { get; set; }
 
-    // Renamed from "result" to be more descriptive
-    [Column("result_summary")]
-    public string? ResultSummary { get; set; }
+    [Column("result")]
+    public string? Result { get; set; }
 
     [Column("created_date", TypeName = "timestamp without time zone")]
     public DateTime CreatedDate { get; set; }
@@ -29,7 +28,7 @@ public partial class WorkoutResult : ICreatedByTracking
     [Column("modified_date", TypeName = "timestamp without time zone")]
     public DateTime? ModifiedDate { get; set; }
 
-    // Existing Garmin fields
+    // Basic fields from original schema
     [Column("duration")]
     public int? Duration { get; set; }
 
@@ -39,19 +38,12 @@ public partial class WorkoutResult : ICreatedByTracking
     [Column("calories_burned")]
     public int? CaloriesBurned { get; set; }
 
-
-    // New comprehensive metrics
+    // CrossFit enhancement fields from simplified schema
     [Column("completion_time_seconds")]
     public int? CompletionTimeSeconds { get; set; }
 
     [Column("difficulty_rating")]
     public int? DifficultyRating { get; set; }
-
-    [Column("energy_level_before")]
-    public int? EnergyLevelBefore { get; set; }
-
-    [Column("energy_level_after")]
-    public int? EnergyLevelAfter { get; set; }
 
     [Column("workout_rating")]
     public int? WorkoutRating { get; set; }
@@ -59,45 +51,11 @@ public partial class WorkoutResult : ICreatedByTracking
     [Column("rpe_rating")]
     public int? RpeRating { get; set; }
 
-    [Column("mood_before")]
-    [StringLength(50)]
-    public string? MoodBefore { get; set; }
-
-    [Column("mood_after")]
-    [StringLength(50)]
-    public string? MoodAfter { get; set; }
-
     [Column("notes")]
     public string? Notes { get; set; }
 
-    [Column("category_metrics", TypeName = "jsonb")]
-    public JsonDocument? CategoryMetrics { get; set; }
-
     [Column("is_personal_record")]
     public bool IsPersonalRecord { get; set; }
-
-    [Column("previous_best_result")]
-    public string? PreviousBestResult { get; set; }
-
-    [Column("improvement_percentage")]
-    [Precision(5, 2)]
-    public decimal? ImprovementPercentage { get; set; }
-
-    [Column("external_workout_id")]
-    [StringLength(100)]
-    public string? ExternalWorkoutId { get; set; }
-
-    [Column("sync_source")]
-    [StringLength(50)]
-    public string? SyncSource { get; set; }
-
-    [Column("weather_conditions")]
-    [StringLength(100)]
-    public string? WeatherConditions { get; set; }
-
-    [Column("location_name")]
-    [StringLength(200)]
-    public string? LocationName { get; set; }
 
     [ForeignKey("CreatedById")]
     [InverseProperty("WorkoutResults")]
