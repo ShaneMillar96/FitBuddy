@@ -19,5 +19,4 @@ public class WorkoutResultDto
     
     public int? CaloriesBurned { get; set; }
     
-    public string? GarminActivityId { get; set; }
 }

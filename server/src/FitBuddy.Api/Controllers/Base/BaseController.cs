@@ -38,22 +38,6 @@ public class FitBuddyBaseController : ControllerBase
         return userId;
     }
 
-    protected async Task SaveGarminAccessTokenAsync(string accessToken)
-    {
-        var userId = GetCurrentUserId();
-        var member = await _context.Get<Member>().FirstOrDefaultAsync(m => m.Id == userId);
-        if (member == null) throw new InvalidOperationException("User not found.");
-
-        member.GarminAccessToken = accessToken;
-        await _context.SaveChangesAsync();
-    }
-
-    protected async Task<string?> GetGarminAccessTokenAsync()
-    {
-        var userId = GetCurrentUserId();
-        var member = await _context.Get<Member>().FirstOrDefaultAsync(m => m.Id == userId);
-        return member?.GarminAccessToken;
-    }
 
     protected ActionResult OkOrNoContent(object value)
     {

@@ -39,9 +39,6 @@ public partial class WorkoutResult : ICreatedByTracking
     [Column("calories_burned")]
     public int? CaloriesBurned { get; set; }
 
-    [Column("garmin_activity_id")]
-    [StringLength(50)]
-    public string? GarminActivityId { get; set; }
 
     // New comprehensive metrics
     [Column("completion_time_seconds")]

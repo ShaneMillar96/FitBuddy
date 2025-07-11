@@ -5,7 +5,6 @@ using FitBuddy.Dal.Enums;
 using FitBuddy.Dal.Interfaces;
 using FitBuddy.Dal.Models.application;
 using FitBuddy.Dal.Specifications.Workouts;
-using FitBuddy.Services.Client.ResponseModels;
 using FitBuddy.Services.Dtos.Pagination;
 using FitBuddy.Services.Dtos.Workouts;
 using FitBuddy.Services.Interfaces;

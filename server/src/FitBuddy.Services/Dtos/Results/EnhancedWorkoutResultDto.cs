@@ -41,7 +41,6 @@ public class EnhancedWorkoutResultDto
     public string? SyncSource { get; set; }
     public string? WeatherConditions { get; set; }
     public string? LocationName { get; set; }
-    public string? GarminActivityId { get; set; }
     
     // Related data
     public List<ExerciseResultDto> ExerciseResults { get; set; } = new();
@@ -80,7 +79,6 @@ public class CreateEnhancedWorkoutResultDto
     public string? SyncSource { get; set; }
     public string? WeatherConditions { get; set; }
     public string? LocationName { get; set; }
-    public string? GarminActivityId { get; set; }
     
     // Exercise results
     public List<CreateExerciseResultDto> ExerciseResults { get; set; } = new();
