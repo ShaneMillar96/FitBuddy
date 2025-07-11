@@ -167,6 +167,22 @@ The application now features a comprehensive workout categorization system:
 - **Swimming** (ID: 5): Pool and open water swimming workouts
 - **Weight Session** (ID: 6): Traditional bodybuilding and strength training workouts
 
+### Dynamic Workout Type System (Latest Implementation)
+The application now features a revolutionary dynamic workout creation system that provides workout-type specific interfaces:
+
+**Workout Types with Specialized Interfaces:**
+- **EMOM** (ID: 1): Every Minute on the Minute - Minute-by-minute exercise assignment with visual timeline
+- **AMRAP** (ID: 2): As Many Rounds As Possible - Round definition with time cap and exercise ordering
+- **For Time** (ID: 3): Complete as fast as possible - Sequential exercises with optional rounds
+- **Tabata** (ID: 4): High-intensity intervals - Work/rest period configuration with preset timings
+- **Ladder** (ID: 5): Rep progression patterns - Ascending/descending/pyramid rep schemes
+
+**Key Features:**
+- **Dynamic UI Rendering**: Each workout type renders a completely different interface
+- **Type-Specific Validation**: Custom validation rules for each workout style
+- **Visual Feedback**: Color-coded themes and real-time calculations
+- **Data Flexibility**: JSONB storage for workout-type specific configurations
+
 ### Enhanced Database Schema
 **New Tables:**
 - `workout_categories`: Primary workout classification
@@ -177,6 +193,7 @@ The application now features a comprehensive workout categorization system:
 **Enhanced Existing Tables:**
 - `workouts`: Added category_id, sub_type_id, difficulty_level, estimated_duration_minutes, equipment_needed (nullable array), workout_structure (JSONB)
 - `exercises`: Added muscle_groups (nullable array), equipment_needed (nullable array), difficulty_level, is_compound
+- `workout_exercises`: Added workout_type_data (JSONB), minute_number, round_number, sequence_position for workout-type specific data
 
 ### AutoMapper Configuration Lessons Learned
 When adding new models and DTOs, ensure all mapping layers are configured:
@@ -202,6 +219,30 @@ New services must be registered in `Program.cs`:
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IExerciseService, ExerciseService>();
 ```
+
+### Dynamic Workout Type Components (Latest)
+**Component Architecture:**
+- `WorkoutBuilder.tsx`: Main orchestrator that dynamically renders workout-type specific builders
+- `EMOMBuilder.tsx`: Blue-themed minute-by-minute interface with visual timeline
+- `AMRAPBuilder.tsx`: Orange-themed round definition with time cap and exercise ordering
+- `ForTimeBuilder.tsx`: Yellow-themed sequential exercises with optional rounds
+- `TabataBuilder.tsx`: Red-themed work/rest intervals with preset timing options
+- `LadderBuilder.tsx`: Purple-themed rep progression with pattern visualization
+- `ExercisePicker.tsx`: Shared exercise selection modal with search functionality
+
+**State Management:**
+- Workout type data initialization based on selected type
+- Real-time validation with type-specific rules
+- Data transformation for API submission
+- Backward compatibility with legacy workout creation
+
+**UI/UX Features:**
+- Color-coded themes for each workout type
+- Drag-and-drop exercise reordering
+- Real-time calculations (duration, volume, rounds)
+- Preset configuration buttons
+- Visual progression indicators
+- Responsive design with mobile optimization
 
 ### Frontend Integration Notes
 **Removed Duplicate UI Elements:**
@@ -306,20 +347,60 @@ The workout filtering system has been completely overhauled to use server-side f
 - **Preview Modal**: Replaced exercises preview with leaderboard placeholder
 - **CrossFit Branding**: Red/orange color scheme throughout application
 
+### Dynamic Workout Type System Troubleshooting
+**Common Issues and Solutions:**
+
+1. **Workout Type ID Mismatch**:
+   - Problem: Selected workout type shows default builder instead of type-specific interface
+   - Cause: WORKOUT_TYPES constants don't match database API IDs
+   - Solution: Ensure WORKOUT_TYPES in `workout-types.ts` match `/workouts/types` endpoint IDs (1-5, not 7-11)
+
+2. **Type-Specific Data Not Saving**:
+   - Problem: Workout type data isn't included in API submission
+   - Cause: Missing `onWorkoutTypeDataChange` prop or state management
+   - Solution: Verify WorkoutBuilder receives both `workoutTypeId` and `onWorkoutTypeDataChange` props
+
+3. **Component Not Rendering**:
+   - Problem: Builder component shows loading or blank state
+   - Cause: Missing imports or incorrect type checking
+   - Solution: Check all builder imports in WorkoutBuilder.tsx and verify type guards
+
+4. **Validation Errors**:
+   - Problem: Type-specific validation rules not working
+   - Cause: Validation utilities not imported or called
+   - Solution: Import `validateWorkout` in create-workout.tsx and call in form validation
+
 ### Code Quality Improvements
 - **Fixed syntax error** in CommentProfile.cs (removed double semicolon)
 - **Implemented file cleanup** in AnalysisService.cs for uploaded exercise videos
 - Added configurable cleanup option with proper error handling
 - All outstanding TODOs have been implemented or resolved
+- **Dynamic Workout Type System**: Complete implementation with type-safe validation and responsive UI
+
+### Dynamic Workout Creation Summary
+The dynamic workout type system now provides:
+- ✅ **EMOM**: Minute-by-minute exercise assignment with visual timeline
+- ✅ **AMRAP**: Round definition with time cap and exercise ordering
+- ✅ **For Time**: Sequential exercises with optional rounds and volume tracking
+- ✅ **Tabata**: Work/rest intervals with preset timing options
+- ✅ **Ladder**: Rep progression patterns with visual sequence preview
+- ✅ **Validation**: Type-specific validation rules with warnings and errors
+- ✅ **Responsive UI**: Color-coded themes and mobile optimization
 
 ## Documentation
 
 ### Comprehensive Documentation System
 - **claudedocs Directory**: Created comprehensive documentation system with organized structure
 - **Architecture Docs**: System overview, backend architecture, frontend architecture, database design
-- **Feature Docs**: Detailed documentation for workout management, authentication, and other core features
+- **Feature Docs**: Detailed documentation for workout management, authentication, dynamic workout types, and other core features
 - **API Docs**: Complete API reference and usage examples
 - **Development Docs**: Setup guides, workflows, and troubleshooting
+
+### Latest Documentation Updates
+- **Dynamic Workout Types**: Comprehensive documentation of the new workout-type specific interface system
+- **Component Architecture**: Detailed breakdown of builder components and state management
+- **Validation System**: Type-specific validation rules and error handling
+- **UI/UX Patterns**: Color-coding, responsive design, and user interaction patterns
 
 **Documentation Structure**:
 ```
