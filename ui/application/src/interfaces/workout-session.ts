@@ -1,5 +1,6 @@
 import { Workout } from "./workout";
 import { Exercise } from "./categories";
+import { WorkoutTypeData, WorkoutTypeId } from "./workout-types";
 
 export type SessionStatus = 'not_started' | 'active' | 'paused' | 'completed' | 'abandoned';
 export type TimerType = 'exercise' | 'rest' | 'total';
@@ -16,6 +17,10 @@ export interface WorkoutSession {
   totalElapsedTime: number; // in seconds
   exerciseProgress: ExerciseProgress[];
   sessionNotes?: string;
+  // Workout-type-specific data
+  workoutTypeId?: WorkoutTypeId;
+  workoutTypeData?: WorkoutTypeData;
+  workoutTypeProgress?: WorkoutTypeProgress;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -56,6 +61,41 @@ export interface SetProgress {
   rpe?: number; // Rate of Perceived Exertion (1-10)
 }
 
+// Workout-type-specific progress tracking
+export interface WorkoutTypeProgress {
+  // EMOM specific
+  currentRound?: number;
+  roundsCompleted?: number;
+  currentMinute?: number;
+  minutesCompleted?: number;
+  
+  // AMRAP specific
+  currentRoundInProgress?: number;
+  partialRoundProgress?: number;
+  timeRemaining?: number;
+  
+  // For Time specific
+  sequentialProgress?: number;
+  splitTimes?: number[];
+  
+  // Tabata specific
+  currentInterval?: number;
+  currentPhase?: 'work' | 'rest';
+  phaseTimeRemaining?: number;
+  intervalsCompleted?: number;
+  
+  // Ladder specific
+  currentStep?: number;
+  currentStepReps?: number;
+  stepsCompleted?: number;
+  ladderDirection?: 'ascending' | 'descending' | 'pyramid';
+  
+  // Common fields
+  totalVolume?: number;
+  estimatedCompletion?: number;
+  workoutSpecificData?: any; // For additional workout-type data
+}
+
 export interface SessionTimer {
   type: TimerType;
   mode: TimerMode;
@@ -82,6 +122,38 @@ export interface WorkoutResult {
   notes?: string;
   isPublic: boolean;
   achievements: string[]; // Achievement IDs or descriptions
+  // Workout-type-specific results
+  workoutTypeResult?: WorkoutTypeResult;
+}
+
+// Workout-type-specific result data
+export interface WorkoutTypeResult {
+  type: 'EMOM' | 'AMRAP' | 'FOR_TIME' | 'TABATA' | 'LADDER';
+  
+  // EMOM results
+  roundsCompleted?: number;
+  totalMinutes?: number;
+  completionTime?: number;
+  
+  // AMRAP results
+  partialRound?: number;
+  timeCapMinutes?: number;
+  
+  // For Time results
+  averageRoundTime?: number;
+  exerciseSplits?: number[];
+  
+  // Tabata results
+  intervalsCompleted?: number;
+  workoutTime?: number;
+  
+  // Ladder results
+  stepsCompleted?: number;
+  totalVolume?: number;
+  
+  // Common fields
+  completionPercentage?: number;
+  workoutSpecificData?: any;
 }
 
 export interface PersonalRecord {
@@ -125,7 +197,7 @@ export interface SessionContextState {
 
 // Actions for session management
 export type SessionAction = 
-  | { type: 'START_SESSION'; payload: { workout: Workout; exercises: Exercise[] } }
+  | { type: 'START_SESSION'; payload: { workout: Workout; exercises: Exercise[]; workoutTypeData?: WorkoutTypeData } }
   | { type: 'PAUSE_SESSION' }
   | { type: 'RESUME_SESSION' }
   | { type: 'END_SESSION'; payload: WorkoutResult }
@@ -136,5 +208,6 @@ export type SessionAction =
   | { type: 'START_SET'; payload: { exerciseIndex: number; setNumber: number } }
   | { type: 'COMPLETE_SET'; payload: { exerciseIndex: number; setNumber: number; setData: Partial<SetProgress> } }
   | { type: 'UPDATE_TIMER'; payload: Partial<SessionTimer> }
+  | { type: 'UPDATE_WORKOUT_TYPE_PROGRESS'; payload: Partial<WorkoutTypeProgress> }
   | { type: 'LOAD_SESSION'; payload: WorkoutSession }
   | { type: 'CLEAR_SESSION' };

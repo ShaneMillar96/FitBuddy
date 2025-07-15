@@ -64,17 +64,35 @@ const validateBaseWorkout = (workoutData: WorkoutTypeData): ValidationError[] =>
 const validateEMOMWorkout = (workoutData: EMOMWorkoutData): ValidationError[] => {
   const errors: ValidationError[] = [];
 
-  // Validate total minutes
-  if (!workoutData.totalMinutes || workoutData.totalMinutes < 1) {
+  // Validate round count
+  if (!workoutData.roundCount || workoutData.roundCount < 1) {
     errors.push({
-      field: 'totalMinutes',
-      message: 'Total minutes must be at least 1',
+      field: 'roundCount',
+      message: 'Round count must be at least 1',
       type: 'error'
     });
-  } else if (workoutData.totalMinutes > 60) {
+  } else if (workoutData.roundCount > 20) {
+    errors.push({
+      field: 'roundCount',
+      message: 'EMOM workouts with more than 20 rounds may be impractical',
+      type: 'warning'
+    });
+  }
+
+  // Validate total minutes (calculated)
+  if (workoutData.totalMinutes > 60) {
     errors.push({
       field: 'totalMinutes',
       message: 'EMOM workouts longer than 60 minutes may be impractical',
+      type: 'warning'
+    });
+  }
+
+  // Validate exercises per round
+  if (workoutData.exercisesPerRound > 6) {
+    errors.push({
+      field: 'exercisesPerRound',
+      message: 'More than 6 exercises per round may be difficult to complete in one minute',
       type: 'warning'
     });
   }
@@ -90,16 +108,16 @@ const validateEMOMWorkout = (workoutData: EMOMWorkoutData): ValidationError[] =>
       return;
     }
 
-    if (!exercise.minute || exercise.minute < 1) {
+    if (!exercise.roundPosition || exercise.roundPosition < 1) {
       errors.push({
-        field: `exercises.${index}.minute`,
-        message: `Exercise ${index + 1}: Valid minute number is required`,
+        field: `exercises.${index}.roundPosition`,
+        message: `Exercise ${index + 1}: Valid round position is required`,
         type: 'error'
       });
-    } else if (exercise.minute > workoutData.totalMinutes) {
+    } else if (exercise.roundPosition > workoutData.exercisesPerRound) {
       errors.push({
-        field: `exercises.${index}.minute`,
-        message: `Exercise ${index + 1}: Minute ${exercise.minute} exceeds total workout minutes`,
+        field: `exercises.${index}.roundPosition`,
+        message: `Exercise ${index + 1}: Round position ${exercise.roundPosition} exceeds exercises per round`,
         type: 'error'
       });
     }
@@ -110,14 +128,25 @@ const validateEMOMWorkout = (workoutData: EMOMWorkoutData): ValidationError[] =>
         message: `Exercise ${index + 1}: Reps must be at least 1`,
         type: 'error'
       });
-    } else if (exercise.reps > 100) {
+    } else if (exercise.reps > 50) {
       errors.push({
         field: `exercises.${index}.reps`,
-        message: `Exercise ${index + 1}: ${exercise.reps} reps may be difficult to complete in one minute`,
+        message: `Exercise ${index + 1}: ${exercise.reps} reps may be difficult to complete within the minute`,
         type: 'warning'
       });
     }
   });
+
+  // Check for duplicate round positions
+  const positions = workoutData.exercises.map(ex => ex.roundPosition);
+  const duplicates = positions.filter((pos, index) => positions.indexOf(pos) !== index);
+  if (duplicates.length > 0) {
+    errors.push({
+      field: 'exercises',
+      message: 'Duplicate round positions found. Each exercise should have a unique position in the round.',
+      type: 'error'
+    });
+  }
 
   return errors;
 };
@@ -446,9 +475,9 @@ export const getWorkoutTypeRequirements = (workoutTypeId: WorkoutTypeId): string
   switch (workoutTypeId) {
     case WORKOUT_TYPES.EMOM:
       return [
-        'Total workout duration in minutes',
-        'Exercise assignment to specific minutes',
-        'Rep count for each exercise per minute'
+        'Number of rounds to repeat the exercise pattern',
+        'Exercise pattern definition with rep counts',
+        'Total workout duration calculated from pattern × rounds'
       ];
     case WORKOUT_TYPES.AMRAP:
       return [
@@ -485,8 +514,8 @@ export const getValidationTips = (workoutTypeId: WorkoutTypeId): string[] => {
     case WORKOUT_TYPES.EMOM:
       return [
         'Keep rep counts manageable to allow for rest within each minute',
-        'Consider workout scaling for different fitness levels',
-        'Distribute exercises across minutes to avoid overloading specific minutes'
+        'Limit to 6 or fewer exercises per round for practical completion',
+        'Consider total workout volume when setting rounds and reps'
       ];
     case WORKOUT_TYPES.AMRAP:
       return [

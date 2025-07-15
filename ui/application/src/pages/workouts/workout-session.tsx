@@ -13,70 +13,179 @@ import {
 } from 'react-icons/fa';
 
 import { useWorkoutDetails } from '@/hooks/useWorkoutDetails';
+import { useWorkoutSession } from '@/contexts/WorkoutSessionContext';
+import { useStartSession, useCompleteSession, usePauseSession, useResumeSession } from '@/hooks/useWorkoutSession';
+import { WORKOUT_TYPES } from '@/interfaces/workout-types';
+import { 
+  EMOMSessionInterface, 
+  AMRAPSessionInterface, 
+  ForTimeSessionInterface, 
+  TabataSessionInterface, 
+  LadderSessionInterface 
+} from '@/components/workout/sessions';
 
-// Mock workout exercises data for CrossFit
-const mockCrossfitExercises = [
-  {
-    id: 1,
-    name: "100 Thrusters",
-    sets: 2,
-    reps: 15,
-    weight: "60kg",
-    rest: "30s",
-    instructions: [
-      "Rear foot elevated on bench",
-      "Lower into lunge position", 
-      "Push through front heel"
-    ]
-  },
-  {
-    id: 2,
-    name: "Pull-ups",
-    sets: 3,
-    reps: 10,
-    weight: "Bodyweight",
-    rest: "45s",
-    instructions: [
-      "Hang from pull-up bar",
-      "Pull body up until chin over bar",
-      "Lower with control"
-    ]
-  },
-  {
-    id: 3,
-    name: "Box Jumps",
-    sets: 3,
-    reps: 20,
-    weight: "24\" Box",
-    rest: "60s",
-    instructions: [
-      "Stand facing box",
-      "Jump onto box with both feet",
-      "Step down with control"
-    ]
+// Helper function to convert workout data to workout-type-specific data
+const getWorkoutTypeData = (workout: any) => {
+  if (!workout || !workout.workoutTypeId || !workout.workoutStructure) return null;
+  
+  try {
+    return JSON.parse(workout.workoutStructure);
+  } catch (error) {
+    console.error('Failed to parse workout structure:', error);
+    return null;
   }
-];
+};
+
+// Helper function to create fallback workout data for legacy workouts
+const createFallbackWorkoutData = (workout: any) => {
+  const exercises = workout.workoutExercises || [];
+  const workoutTypeId = workout.workoutTypeId || workout.workoutType?.id;
+  
+  console.log('Creating fallback workout data:', { workoutTypeId, exercises, workout });
+  
+  // If no exercises, create a placeholder
+  if (exercises.length === 0) {
+    exercises.push({
+      exerciseId: 1,
+      exercise: { name: 'No Exercise Data' },
+      orderInWorkout: 1,
+      reps: 10,
+      weightKg: null,
+      notes: 'This workout has no exercise data configured'
+    });
+  }
+  
+  switch (workoutTypeId) {
+    case WORKOUT_TYPES.EMOM:
+      return {
+        roundCount: 1,
+        exercisesPerRound: exercises.length,
+        totalMinutes: exercises.length,
+        exercises: exercises.map((ex: any, index: number) => ({
+          exerciseId: ex.exerciseId,
+          name: ex.exercise?.name || 'Exercise',
+          orderInWorkout: ex.orderInWorkout || index + 1,
+          roundPosition: index + 1,
+          reps: ex.reps || 10,
+          weightDescription: ex.weightKg ? `${ex.weightKg}kg` : 'Bodyweight',
+          notes: ex.notes || ''
+        }))
+      };
+      
+    case WORKOUT_TYPES.AMRAP:
+      return {
+        timeCapMinutes: 20,
+        exercises: exercises.map((ex: any, index: number) => ({
+          exerciseId: ex.exerciseId,
+          name: ex.exercise?.name || 'Exercise',
+          orderInWorkout: ex.orderInWorkout || index + 1,
+          roundPosition: index + 1,
+          reps: ex.reps || 10,
+          weightDescription: ex.weightKg ? `${ex.weightKg}kg` : 'Bodyweight',
+          notes: ex.notes || ''
+        }))
+      };
+      
+    case WORKOUT_TYPES.FOR_TIME:
+      return {
+        totalRounds: 1,
+        exercises: exercises.map((ex: any, index: number) => ({
+          exerciseId: ex.exerciseId,
+          name: ex.exercise?.name || 'Exercise',
+          orderInWorkout: ex.orderInWorkout || index + 1,
+          reps: ex.reps || 10,
+          rounds: ex.sets || 1,
+          weightDescription: ex.weightKg ? `${ex.weightKg}kg` : 'Bodyweight',
+          notes: ex.notes || ''
+        }))
+      };
+      
+    case WORKOUT_TYPES.TABATA:
+      return {
+        totalRounds: 8,
+        exercises: exercises.map((ex: any, index: number) => ({
+          exerciseId: ex.exerciseId,
+          name: ex.exercise?.name || 'Exercise',
+          orderInWorkout: ex.orderInWorkout || index + 1,
+          exercisePosition: index + 1,
+          workTimeSeconds: 20,
+          restTimeSeconds: 10,
+          rounds: 8,
+          weightDescription: ex.weightKg ? `${ex.weightKg}kg` : 'Bodyweight',
+          notes: ex.notes || ''
+        }))
+      };
+      
+    case WORKOUT_TYPES.LADDER:
+      return {
+        ladderType: 'ascending',
+        exercises: exercises.map((ex: any, index: number) => ({
+          exerciseId: ex.exerciseId,
+          name: ex.exercise?.name || 'Exercise',
+          orderInWorkout: ex.orderInWorkout || index + 1,
+          ladderPosition: index + 1,
+          ladderType: 'ascending',
+          startReps: 1,
+          endReps: ex.reps || 10,
+          increment: 1,
+          weightDescription: ex.weightKg ? `${ex.weightKg}kg` : 'Bodyweight',
+          notes: ex.notes || ''
+        }))
+      };
+      
+    default:
+      return null;
+  }
+};
 
 const WorkoutSession = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { data: workout, isLoading, error } = useWorkoutDetails(id!);
   
-  // Session state
-  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
-  const [isSessionActive, setIsSessionActive] = useState(true);
-  const [isPaused, setIsPaused] = useState(false);
-  const [sessionTime, setSessionTime] = useState(0);
-  const [showEndDialog, setShowEndDialog] = useState(false);
+  // Session hooks
+  const { state, startSession, pauseSession, resumeSession, endSession } = useWorkoutSession();
+  const startSessionMutation = useStartSession();
+  const completeSessionMutation = useCompleteSession();
+  const pauseSessionMutation = usePauseSession();
+  const resumeSessionMutation = useResumeSession();
   
-  // Stats
-  const [exercisesCompleted, setExercisesCompleted] = useState(3);
-  const [setsCompleted, setSetsCompleted] = useState(8);
-  const [totalVolume, setTotalVolume] = useState(6630);
+  // Local state
+  const [showEndDialog, setShowEndDialog] = useState(false);
+  const [sessionTime, setSessionTime] = useState(0);
+  
+  const currentSession = state.currentSession;
+  const isSessionActive = state.isSessionActive;
+  const isPaused = currentSession?.sessionStatus === 'paused';
+  const workoutTypeData = workout ? getWorkoutTypeData(workout) : null;
 
-  const currentExercise = mockCrossfitExercises[currentExerciseIndex];
-  const totalExercises = mockCrossfitExercises.length;
-  const progressPercentage = 100; // Shown as complete in the image
+  // Initialize session when workout loads
+  useEffect(() => {
+    if (workout && !currentSession && !startSessionMutation.isPending) {
+      const exercises = workout.workoutExercises || [];
+      
+      // Start session in context
+      startSession(workout, exercises, workoutTypeData);
+      
+      // Create backend session
+      const sessionRequest = {
+        id: `session-${Date.now()}`, // Temporary ID, backend will assign real ID
+        workoutId: workout.id,
+        exerciseProgress: exercises.map(exercise => ({
+          exerciseId: exercise.exerciseId,
+          orderInWorkout: exercise.orderInWorkout,
+          plannedSets: exercise.sets,
+          plannedReps: exercise.reps,
+          plannedWeightKg: exercise.weightKg,
+          plannedDistanceMeters: exercise.distanceMeters,
+          plannedDurationSeconds: exercise.durationSeconds,
+          plannedRestSeconds: exercise.restSeconds
+        }))
+      };
+      
+      startSessionMutation.mutate(sessionRequest);
+    }
+  }, [workout, currentSession, startSession, workoutTypeData, startSessionMutation]);
 
   // Timer effect
   useEffect(() => {
@@ -98,21 +207,24 @@ const WorkoutSession = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
-        <div className="animate-spin w-12 h-12 border-4 border-white border-t-transparent rounded-full"></div>
+        <div className="text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-white border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-white text-lg font-medium">Loading workout session...</p>
+        </div>
       </div>
     );
   }
 
   if (error || !workout) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-red-400 to-red-500 flex items-center justify-center">
         <div className="text-center">
-          <FaExclamationTriangle className="mx-auto text-4xl text-red-500 mb-4" />
-          <h2 className="text-2xl font-bold text-red-700 mb-2">Workout Not Found</h2>
-          <p className="text-red-600 mb-6">The workout you're looking for doesn't exist.</p>
+          <FaExclamationTriangle className="mx-auto text-4xl text-white mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Workout Not Found</h2>
+          <p className="text-white text-opacity-90 mb-6">The workout you're looking for doesn't exist.</p>
           <button
             onClick={() => navigate('/workouts')}
-            className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            className="px-6 py-3 bg-white text-red-500 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
           >
             Back to Workouts
           </button>
@@ -121,225 +233,245 @@ const WorkoutSession = () => {
     );
   }
 
-  const handleSkip = () => {
-    if (currentExerciseIndex < totalExercises - 1) {
-      setCurrentExerciseIndex(prev => prev + 1);
-    } else {
-      setShowEndDialog(true);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentExerciseIndex < totalExercises - 1) {
-      setCurrentExerciseIndex(prev => prev + 1);
-    } else {
-      setShowEndDialog(true);
-    }
-  };
-
   const handlePauseResume = () => {
-    setIsPaused(!isPaused);
+    if (currentSession) {
+      if (isPaused) {
+        resumeSessionMutation.mutate(currentSession.id);
+        resumeSession();
+      } else {
+        pauseSessionMutation.mutate(currentSession.id);
+        pauseSession();
+      }
+    }
+  };
+
+  const handleComplete = (result: any) => {
+    if (currentSession) {
+      const workoutResult = {
+        sessionId: currentSession.id,
+        workoutResult: {
+          result: JSON.stringify(result),
+          duration: sessionTime,
+          completionTimeSeconds: sessionTime,
+          workoutRating: 5,
+          notes: `${result.type || 'Workout'} completed via session interface`
+        }
+      };
+      
+      completeSessionMutation.mutate(workoutResult, {
+        onSuccess: () => {
+          // End the session in context
+          endSession({
+            sessionId: currentSession.id,
+            workoutId: currentSession.workoutId,
+            totalTime: sessionTime,
+            exercisesCompleted: result.exercisesCompleted || 0,
+            exercisesSkipped: 0,
+            totalSets: result.totalSets || 0,
+            personalRecords: [],
+            rating: 5,
+            mood: 'good',
+            energyLevel: 'high',
+            notes: `${result.type || 'Workout'} completed successfully`,
+            isPublic: false,
+            achievements: [],
+            workoutTypeResult: result
+          });
+          setShowEndDialog(true);
+        },
+        onError: (error) => {
+          console.error('Failed to complete session:', error);
+          // Still show completion dialog on error - user completed the workout
+          setShowEndDialog(true);
+        }
+      });
+    }
+  };
+
+  const handleSkip = () => {
+    // Skip logic handled by individual workout type components
   };
 
   const handleEndSession = () => {
-    setIsSessionActive(false);
+    if (currentSession) {
+      endSession({
+        sessionId: currentSession.id,
+        workoutId: currentSession.workoutId,
+        totalTime: sessionTime,
+        exercisesCompleted: 0,
+        exercisesSkipped: 0,
+        totalSets: 0,
+        personalRecords: [],
+        rating: 3,
+        mood: 'okay',
+        energyLevel: 'medium',
+        notes: 'Session ended early',
+        isPublic: false,
+        achievements: []
+      });
+    }
     navigate('/workouts');
   };
 
-  const handleFinishWorkout = () => {
-    setShowEndDialog(true);
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+        <div className="animate-spin w-12 h-12 border-4 border-white border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error || !workout) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-400 to-red-500 flex items-center justify-center">
+        <div className="text-center">
+          <FaExclamationTriangle className="mx-auto text-4xl text-white mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Workout Not Found</h2>
+          <p className="text-white text-opacity-90 mb-6">The workout you're looking for doesn't exist.</p>
+          <button
+            onClick={() => navigate('/workouts')}
+            className="px-6 py-3 bg-white text-red-500 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
+          >
+            Back to Workouts
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Show starting state
+  if (!currentSession) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
+        <div className="text-center">
+          <FaClock className="mx-auto text-4xl text-white mb-4" />
+          <h2 className="text-2xl font-bold text-white mb-2">Starting Session</h2>
+          <p className="text-white text-opacity-90">Preparing your workout session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Render workout-type-specific interface
+  const renderWorkoutTypeInterface = () => {
+    const workoutTypeId = workout.workoutTypeId || workout.workoutType?.id;
+    
+    console.log('Rendering workout type interface:', { 
+      workoutTypeId, 
+      workoutTypeData, 
+      workout,
+      hasStructure: !!workout.workoutStructure
+    });
+    
+    if (!workoutTypeId) {
+      // Fallback to generic interface
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
+          <div className="text-center">
+            <FaExclamationTriangle className="mx-auto text-4xl text-white mb-4" />
+            <h2 className="text-2xl font-bold text-white mb-2">Workout Type Not Supported</h2>
+            <p className="text-white text-opacity-90 mb-6">This workout type doesn't have a specific session interface yet.</p>
+            <button
+              onClick={() => navigate('/workouts')}
+              className="px-6 py-3 bg-white text-orange-500 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
+            >
+              Back to Workouts
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Handle legacy workouts that don't have workoutStructure
+    if (!workoutTypeData && workoutTypeId) {
+      const fallbackData = createFallbackWorkoutData(workout);
+      
+      const commonProps = {
+        workout,
+        onComplete: handleComplete,
+        onPause: handlePauseResume,
+        onResume: handlePauseResume,
+        onSkip: handleSkip,
+        isPaused,
+        sessionTime
+      };
+
+      switch (workoutTypeId) {
+        case WORKOUT_TYPES.EMOM:
+          return <EMOMSessionInterface {...commonProps} workoutData={fallbackData} />;
+        case WORKOUT_TYPES.AMRAP:
+          return <AMRAPSessionInterface {...commonProps} workoutData={fallbackData} />;
+        case WORKOUT_TYPES.FOR_TIME:
+          return <ForTimeSessionInterface {...commonProps} workoutData={fallbackData} />;
+        case WORKOUT_TYPES.TABATA:
+          return <TabataSessionInterface {...commonProps} workoutData={fallbackData} />;
+        case WORKOUT_TYPES.LADDER:
+          return <LadderSessionInterface {...commonProps} workoutData={fallbackData} />;
+        default:
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center">
+              <div className="text-center">
+                <FaExclamationTriangle className="mx-auto text-4xl text-white mb-4" />
+                <h2 className="text-2xl font-bold text-white mb-2">Unknown Workout Type</h2>
+                <p className="text-white text-opacity-90 mb-6">This workout type is not recognized.</p>
+                <button
+                  onClick={() => navigate('/workouts')}
+                  className="px-6 py-3 bg-white text-gray-500 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
+                >
+                  Back to Workouts
+                </button>
+              </div>
+            </div>
+          );
+      }
+    }
+
+    const commonProps = {
+      workout,
+      onComplete: handleComplete,
+      onPause: handlePauseResume,
+      onResume: handlePauseResume,
+      onSkip: handleSkip,
+      isPaused,
+      sessionTime
+    };
+
+    switch (workoutTypeId) {
+      case WORKOUT_TYPES.EMOM:
+        return <EMOMSessionInterface {...commonProps} workoutData={workoutTypeData} />;
+      case WORKOUT_TYPES.AMRAP:
+        return <AMRAPSessionInterface {...commonProps} workoutData={workoutTypeData} />;
+      case WORKOUT_TYPES.FOR_TIME:
+        return <ForTimeSessionInterface {...commonProps} workoutData={workoutTypeData} />;
+      case WORKOUT_TYPES.TABATA:
+        return <TabataSessionInterface {...commonProps} workoutData={workoutTypeData} />;
+      case WORKOUT_TYPES.LADDER:
+        return <LadderSessionInterface {...commonProps} workoutData={workoutTypeData} />;
+      default:
+        return (
+          <div className="min-h-screen bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center">
+            <div className="text-center">
+              <FaExclamationTriangle className="mx-auto text-4xl text-white mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">Unknown Workout Type</h2>
+              <p className="text-white text-opacity-90 mb-6">This workout type is not recognized.</p>
+              <button
+                onClick={() => navigate('/workouts')}
+                className="px-6 py-3 bg-white text-gray-500 rounded-lg hover:bg-gray-100 transition-colors font-semibold"
+              >
+                Back to Workouts
+              </button>
+            </div>
+          </div>
+        );
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Header with orange gradient matching the image */}
-      <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white py-8 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center text-2xl">
-                🔥
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold">{currentExercise?.name || "100 Thrusters"}</h1>
-                <p className="text-white text-opacity-90">Active Workout Session</p>
-              </div>
-            </div>
-            
-            {/* Timer - circular white container matching image */}
-            <div className="relative">
-              <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mx-auto mb-1"></div>
-                  <div className="text-black text-lg font-bold">{formatTime(sessionTime)}</div>
-                </div>
-              </div>
-              <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-center">
-                <div className="text-sm text-white opacity-90">
-                  {isPaused ? 'Paused' : 'Stopped'} • Total Timer
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Progress Bar */}
-          <div className="mt-6">
-            <div className="flex justify-between text-sm text-white text-opacity-90 mb-2">
-              <span>Exercise {currentExerciseIndex + 1} of {totalExercises}</span>
-              <span>{Math.round(progressPercentage)}% Complete</span>
-            </div>
-            <div className="w-full bg-white bg-opacity-20 rounded-full h-3">
-              <motion.div
-                className="bg-white rounded-full h-3"
-                initial={{ width: 0 }}
-                animate={{ width: `${progressPercentage}%` }}
-                transition={{ duration: 0.5 }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Exercise Card - spans 2 columns */}
-          <div className="lg:col-span-2">
-            <motion.div
-              key={currentExercise?.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-2xl p-8 shadow-lg"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-3xl font-bold text-gray-900">
-                  {currentExercise?.name || "Bulgarian Split Squat"}
-                </h2>
-                <span className="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                  CrossFit
-                </span>
-              </div>
-
-              {/* Exercise stats in 2x2 grid matching the image */}
-              <div className="grid grid-cols-2 gap-6 mb-8">
-                <div className="bg-gray-50 rounded-xl p-6 text-center">
-                  <div className="text-4xl font-bold text-gray-900 mb-2">
-                    {currentExercise?.sets || "2"}
-                  </div>
-                  <div className="text-gray-600 font-medium">Sets</div>
-                </div>
-                <div className="bg-gray-50 rounded-xl p-6 text-center">
-                  <div className="text-4xl font-bold text-gray-900 mb-2">
-                    {currentExercise?.reps || "15"}
-                  </div>
-                  <div className="text-gray-600 font-medium">Reps</div>
-                </div>
-                <div className="bg-gray-50 rounded-xl p-6 text-center">
-                  <div className="text-4xl font-bold text-gray-900 mb-2">
-                    {currentExercise?.weight || "60kg"}
-                  </div>
-                  <div className="text-gray-600 font-medium">Weight</div>
-                </div>
-                <div className="bg-gray-50 rounded-xl p-6 text-center">
-                  <div className="text-4xl font-bold text-gray-900 mb-2">
-                    {currentExercise?.rest || "30s"}
-                  </div>
-                  <div className="text-gray-600 font-medium">Rest</div>
-                </div>
-              </div>
-
-              {/* Instructions */}
-              <div className="bg-blue-50 rounded-xl p-6">
-                <h3 className="font-semibold text-blue-900 mb-3">Instructions</h3>
-                <ol className="text-blue-800 space-y-2">
-                  {(currentExercise?.instructions || [
-                    "Rear foot elevated on bench",
-                    "Lower into lunge position", 
-                    "Push through front heel"
-                  ]).map((instruction, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-blue-600 font-semibold mr-2">{index + 1}.</span>
-                      <span>{instruction}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Right Sidebar */}
-          <div className="space-y-6">
-            {/* Exercise Navigation */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <h3 className="text-xl font-semibold mb-4">Exercise Navigation</h3>
-              <div className="space-y-3">
-                <button
-                  onClick={handleSkip}
-                  className="w-full px-4 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors flex items-center justify-center space-x-2 font-medium"
-                >
-                  <FaStepForward />
-                  <span>Skip</span>
-                </button>
-                <button
-                  onClick={handleNext}
-                  className="w-full px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2 font-medium"
-                >
-                  <FaStepForward />
-                  <span>Next</span>
-                </button>
-                <button
-                  onClick={handleFinishWorkout}
-                  className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2 font-medium"
-                >
-                  <FaFlag />
-                  <span>Finish Workout</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Session Controls */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <h3 className="text-xl font-semibold mb-4">Session Controls</h3>
-              <div className="space-y-3">
-                <button
-                  onClick={handlePauseResume}
-                  className="w-full px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center space-x-2 font-medium"
-                >
-                  <FaPlay />
-                  <span>Resume</span>
-                </button>
-                
-                <button
-                  onClick={() => setShowEndDialog(true)}
-                  className="w-full px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center space-x-2 font-medium"
-                >
-                  <FaStop />
-                  <span>End Session</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Session Stats matching the image */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg">
-              <h3 className="text-xl font-semibold mb-4">Session Stats</h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600 font-medium">Exercises Completed</span>
-                  <span className="text-xl font-bold text-gray-900">{exercisesCompleted}/{totalExercises}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600 font-medium">Sets Completed</span>
-                  <span className="text-xl font-bold text-gray-900">{setsCompleted}/8</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600 font-medium">Total Volume</span>
-                  <span className="text-xl font-bold text-gray-900">{totalVolume}kg</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <>
+      {renderWorkoutTypeInterface()}
+      
       {/* End Session Dialog */}
       <AnimatePresence>
         {showEndDialog && (
@@ -361,21 +493,26 @@ const WorkoutSession = () => {
                 <FaCheckCircle className="mx-auto text-5xl text-green-500 mb-4" />
                 <h3 className="text-2xl font-bold text-gray-900 mb-3">Workout Complete!</h3>
                 <p className="text-gray-600 mb-8">
-                  Amazing work! You've completed your CrossFit session. 
+                  Amazing work! You've completed your workout session. 
                   Your progress has been saved.
                 </p>
                 <div className="flex space-x-4">
                   <button
-                    onClick={() => setShowEndDialog(false)}
+                    onClick={() => {
+                      setShowEndDialog(false);
+                      navigate('/workouts');
+                    }}
                     className="flex-1 py-3 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
                   >
-                    Continue
+                    View Workouts
                   </button>
                   <button
-                    onClick={handleEndSession}
+                    onClick={() => {
+                      handleEndSession();
+                    }}
                     className="flex-1 py-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition-colors"
                   >
-                    Finish
+                    Finish & View Results
                   </button>
                 </div>
               </div>
@@ -383,7 +520,7 @@ const WorkoutSession = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 };
 

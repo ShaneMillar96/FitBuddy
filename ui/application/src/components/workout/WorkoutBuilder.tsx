@@ -41,7 +41,12 @@ const WorkoutBuilder = ({
   const [workoutTypeData, setWorkoutTypeData] = useState<WorkoutTypeData>(() => {
     switch (workoutTypeId) {
       case WORKOUT_TYPES.EMOM:
-        return { totalMinutes: 12, exercises: [] } as EMOMWorkoutData;
+        return { 
+          roundCount: 4, 
+          exercisesPerRound: 0, 
+          totalMinutes: 0, 
+          exercises: [] 
+        } as EMOMWorkoutData;
       case WORKOUT_TYPES.AMRAP:
         return { timeCapMinutes: 20, exercises: [] } as AMRAPWorkoutData;
       case WORKOUT_TYPES.FOR_TIME:

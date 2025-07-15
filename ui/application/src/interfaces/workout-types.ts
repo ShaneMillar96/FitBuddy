@@ -10,16 +10,18 @@ export interface BaseWorkoutExercise {
 }
 
 // EMOM (Every Minute on the Minute)
-// Users define what happens in each minute
+// Users define a pattern of exercises per round, then specify how many rounds to repeat
 export interface EMOMExercise extends BaseWorkoutExercise {
-  minute: number;              // Which minute (1, 2, 3...)
-  reps: number;               // Reps to complete in that minute
-  restBetweenMinutes?: number; // Optional rest between minutes
+  roundPosition: number;      // Position within the round (1, 2, 3, 4, 5, 6)
+  reps: number;               // Reps to complete for this exercise
+  restBetweenExercises?: number; // Optional rest between exercises in seconds
 }
 
 export interface EMOMWorkoutData {
-  totalMinutes: number;       // Total workout duration
-  exercises: EMOMExercise[];  // All exercises across all minutes
+  roundCount: number;         // Number of rounds to repeat the pattern
+  exercisesPerRound: number;  // Number of exercises in each round (calculated)
+  totalMinutes: number;       // Total workout duration (calculated: exercisesPerRound × roundCount)
+  exercises: EMOMExercise[];  // Exercise pattern that repeats each round
 }
 
 // AMRAP (As Many Rounds As Possible)
@@ -94,7 +96,7 @@ export type WorkoutTypeId = typeof WORKOUT_TYPES[keyof typeof WORKOUT_TYPES];
 
 // Helper type guards
 export const isEMOMExercise = (exercise: WorkoutTypeExercise): exercise is EMOMExercise => {
-  return 'minute' in exercise;
+  return 'roundPosition' in exercise;
 };
 
 export const isAMRAPExercise = (exercise: WorkoutTypeExercise): exercise is AMRAPExercise => {
@@ -102,7 +104,7 @@ export const isAMRAPExercise = (exercise: WorkoutTypeExercise): exercise is AMRA
 };
 
 export const isForTimeExercise = (exercise: WorkoutTypeExercise): exercise is ForTimeExercise => {
-  return 'reps' in exercise && !('minute' in exercise) && !('roundPosition' in exercise);
+  return 'reps' in exercise && !('roundPosition' in exercise) && !('workTimeSeconds' in exercise) && !('ladderType' in exercise);
 };
 
 export const isTabataExercise = (exercise: WorkoutTypeExercise): exercise is TabataExercise => {
@@ -118,9 +120,9 @@ export const WORKOUT_TYPE_INFO = {
   [WORKOUT_TYPES.EMOM]: {
     name: 'EMOM',
     fullName: 'Every Minute on the Minute',
-    description: 'Complete specified exercises at the start of each minute',
+    description: 'Complete specified exercise pattern, repeating each round on the minute',
     icon: '⏰',
-    fields: ['minute', 'reps', 'weight', 'notes']
+    fields: ['roundPosition', 'reps', 'weight', 'notes']
   },
   [WORKOUT_TYPES.AMRAP]: {
     name: 'AMRAP',

@@ -7,10 +7,12 @@ import {
   ExerciseProgress, 
   SetProgress,
   SessionPersistence,
-  SessionTimer
+  SessionTimer,
+  WorkoutTypeProgress
 } from '@/interfaces/workout-session';
 import { Workout, WorkoutExercise } from '@/interfaces/workout';
 import { v4 as uuidv4 } from 'uuid';
+import { WORKOUT_TYPES, WorkoutTypeData, WorkoutTypeId } from '@/interfaces/workout-types';
 
 // Local storage keys
 const STORAGE_KEY = 'fitbuddy_workout_session';
@@ -111,6 +113,51 @@ const createExerciseProgress = (exercises: WorkoutExercise[]): ExerciseProgress[
   }));
 };
 
+const initializeWorkoutTypeProgress = (workoutTypeId?: WorkoutTypeId, workoutTypeData?: WorkoutTypeData): WorkoutTypeProgress => {
+  const progress: WorkoutTypeProgress = {};
+  
+  if (!workoutTypeId || !workoutTypeData) return progress;
+  
+  switch (workoutTypeId) {
+    case WORKOUT_TYPES.EMOM:
+      progress.currentRound = 1;
+      progress.roundsCompleted = 0;
+      progress.currentMinute = 1;
+      progress.minutesCompleted = 0;
+      break;
+      
+    case WORKOUT_TYPES.AMRAP:
+      progress.currentRoundInProgress = 1;
+      progress.partialRoundProgress = 0;
+      progress.timeRemaining = (workoutTypeData as any).timeCapMinutes * 60;
+      break;
+      
+    case WORKOUT_TYPES.FOR_TIME:
+      progress.sequentialProgress = 0;
+      progress.splitTimes = [];
+      break;
+      
+    case WORKOUT_TYPES.TABATA:
+      progress.currentInterval = 1;
+      progress.currentPhase = 'work';
+      progress.phaseTimeRemaining = (workoutTypeData as any).exercises?.[0]?.workTimeSeconds || 20;
+      progress.intervalsCompleted = 0;
+      break;
+      
+    case WORKOUT_TYPES.LADDER:
+      progress.currentStep = 0;
+      progress.currentStepReps = (workoutTypeData as any).exercises?.[0]?.startReps || 0;
+      progress.stepsCompleted = 0;
+      progress.ladderDirection = (workoutTypeData as any).ladderType || 'ascending';
+      break;
+  }
+  
+  progress.totalVolume = 0;
+  progress.estimatedCompletion = 0;
+  
+  return progress;
+};
+
 const saveToLocalStorage = (state: SessionContextState) => {
   try {
     if (state.currentSession) {
@@ -182,7 +229,7 @@ const loadFromLocalStorage = (): Partial<SessionContextState> => {
 const sessionReducer = (state: SessionContextState, action: SessionAction): SessionContextState => {
   switch (action.type) {
     case 'START_SESSION': {
-      const { workout, exercises } = action.payload;
+      const { workout, exercises, workoutTypeData } = action.payload;
       const session: WorkoutSession = {
         id: uuidv4(),
         workoutId: workout.id,
@@ -193,6 +240,9 @@ const sessionReducer = (state: SessionContextState, action: SessionAction): Sess
         sessionStatus: 'active',
         totalElapsedTime: 0,
         exerciseProgress: createExerciseProgress(exercises),
+        workoutTypeId: workout.workoutTypeId,
+        workoutTypeData,
+        workoutTypeProgress: initializeWorkoutTypeProgress(workout.workoutTypeId, workoutTypeData),
         createdAt: new Date(),
         updatedAt: new Date()
       };
@@ -486,6 +536,25 @@ const sessionReducer = (state: SessionContextState, action: SessionAction): Sess
       };
     }
     
+    case 'UPDATE_WORKOUT_TYPE_PROGRESS': {
+      if (!state.currentSession) return state;
+      
+      const updatedSession = {
+        ...state.currentSession,
+        workoutTypeProgress: {
+          ...state.currentSession.workoutTypeProgress,
+          ...action.payload
+        },
+        updatedAt: new Date()
+      };
+      
+      return {
+        ...state,
+        currentSession: updatedSession,
+        stats: calculateStats(updatedSession)
+      };
+    }
+    
     case 'LOAD_SESSION': {
       const session = action.payload;
       return {
@@ -515,7 +584,7 @@ const sessionReducer = (state: SessionContextState, action: SessionAction): Sess
 const WorkoutSessionContext = createContext<{
   state: SessionContextState;
   dispatch: React.Dispatch<SessionAction>;
-  startSession: (workout: Workout, exercises: WorkoutExercise[]) => void;
+  startSession: (workout: Workout, exercises: WorkoutExercise[], workoutTypeData?: WorkoutTypeData) => void;
   pauseSession: () => void;
   resumeSession: () => void;
   endSession: (result: any) => void;
@@ -525,6 +594,7 @@ const WorkoutSessionContext = createContext<{
   skipExercise: (exerciseIndex: number) => void;
   startSet: (exerciseIndex: number, setNumber: number) => void;
   completeSet: (exerciseIndex: number, setNumber: number, setData: Partial<SetProgress>) => void;
+  updateWorkoutTypeProgress: (progress: Partial<WorkoutTypeProgress>) => void;
   clearSession: () => void;
 } | null>(null);
 
@@ -561,8 +631,8 @@ export const WorkoutSessionProvider: React.FC<{ children: React.ReactNode }> = (
   }, [state.timer.isRunning, state.timer.startTime, state.timer.totalPausedTime]);
 
   // Action creators
-  const startSession = useCallback((workout: Workout, exercises: WorkoutExercise[]) => {
-    dispatch({ type: 'START_SESSION', payload: { workout, exercises } });
+  const startSession = useCallback((workout: Workout, exercises: WorkoutExercise[], workoutTypeData?: WorkoutTypeData) => {
+    dispatch({ type: 'START_SESSION', payload: { workout, exercises, workoutTypeData } });
   }, []);
 
   const pauseSession = useCallback(() => {
@@ -605,6 +675,10 @@ export const WorkoutSessionProvider: React.FC<{ children: React.ReactNode }> = (
     dispatch({ type: 'CLEAR_SESSION' });
   }, []);
 
+  const updateWorkoutTypeProgress = useCallback((progress: Partial<WorkoutTypeProgress>) => {
+    dispatch({ type: 'UPDATE_WORKOUT_TYPE_PROGRESS', payload: progress });
+  }, []);
+
   const value = {
     state,
     dispatch,
@@ -618,6 +692,7 @@ export const WorkoutSessionProvider: React.FC<{ children: React.ReactNode }> = (
     skipExercise,
     startSet,
     completeSet,
+    updateWorkoutTypeProgress,
     clearSession
   };
 
