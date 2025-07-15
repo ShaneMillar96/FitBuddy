@@ -35,7 +35,7 @@ public class WorkoutExerciseDto
     public int? RestSeconds { get; set; }
     public string? WeightDescription { get; set; }
     public string? Notes { get; set; }
-    public object? WorkoutTypeData { get; set; }
+    public string? WorkoutTypeData { get; set; }
     public int? MinuteNumber { get; set; }
     public int? RoundNumber { get; set; }
     public int? SequencePosition { get; set; }
@@ -52,7 +52,7 @@ public class CreateWorkoutExerciseDto
     public int? RestSeconds { get; set; }
     public string? WeightDescription { get; set; }
     public string? Notes { get; set; }
-    public object? WorkoutTypeData { get; set; }
+    public string? WorkoutTypeData { get; set; }
     public int? MinuteNumber { get; set; }
     public int? RoundNumber { get; set; }
     public int? SequencePosition { get; set; }

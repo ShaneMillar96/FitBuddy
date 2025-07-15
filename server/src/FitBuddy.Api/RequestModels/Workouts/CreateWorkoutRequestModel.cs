@@ -31,6 +31,8 @@ public class CreateWorkoutRequestModel : IValidatable<CreateWorkoutRequestModelV
     
     public List<CreateWorkoutExerciseRequestModel> Exercises { get; set; } = new();
     
+    public string? WorkoutTypeData { get; set; }
+    
     public CreateWorkoutRequestModelValidator RetrieveValidator() => new ();
 }
 

@@ -26,9 +26,11 @@ export interface CreateWorkout {
     name: string;
     typeId: number;
     // CrossFit-specific fields
-    subTypeId?: number;
+    scoreTypeId?: number;
+    difficultyLevel?: number;
     estimatedDurationMinutes?: number;
     exercises: CreateWorkoutExercise[];
+    workoutTypeData?: string;
 }
 
 export interface WorkoutType {

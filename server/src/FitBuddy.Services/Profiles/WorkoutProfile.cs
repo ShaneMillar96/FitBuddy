@@ -19,7 +19,8 @@ public class WorkoutProfile : Profile
             .ForMember(d => d.ScoreType, o => o.MapFrom(x => x.ScoreType))
             .ForMember(d => d.ResultsLogged, o => o.MapFrom(x => x.WorkoutResults.Count))
             .ForMember(d => d.CommentsCount, o => o.MapFrom(x => x.Comments.Count))
-            .ForMember(d => d.WorkoutType, o => o.MapFrom(x => x.WorkoutType));
+            .ForMember(d => d.WorkoutType, o => o.MapFrom(x => x.WorkoutType))
+            .ForMember(d => d.WorkoutExercises, o => o.MapFrom(x => x.WorkoutExercises));
         
         CreateMap<WorkoutType, WorkoutTypeDto>();
         

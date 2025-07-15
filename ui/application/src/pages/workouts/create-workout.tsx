@@ -157,7 +157,7 @@ const CreateWorkout = () => {
             difficultyLevel,
             estimatedDurationMinutes: estimatedDuration,
             exercises: exercisesData,
-            workoutTypeData: workoutTypeData,  // Include workout-type specific data
+            workoutTypeData: workoutTypeData ? JSON.stringify(workoutTypeData) : undefined,  // Serialize workout-type specific data
         };
 
         createWorkoutMutation.mutate(workoutData, {

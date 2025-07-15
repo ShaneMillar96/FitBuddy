@@ -41,7 +41,7 @@ public partial class WorkoutExercise
     public string? Notes { get; set; }
 
     [Column("workout_type_data", TypeName = "jsonb")]
-    public JsonDocument? WorkoutTypeData { get; set; }
+    public string? WorkoutTypeData { get; set; }
 
     [Column("minute_number")]
     public int? MinuteNumber { get; set; }

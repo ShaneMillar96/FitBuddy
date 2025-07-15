@@ -1,4 +1,5 @@
 using FitBuddy.Services.Dtos.Members;
+using FitBuddy.Services.Dtos.Exercises;
 
 namespace FitBuddy.Services.Dtos.Workouts;
 
@@ -22,4 +23,6 @@ public class WorkoutDto
     public DateTime CreatedDate { get; set; }
     
     public DateTime? ModifiedDate { get; set; }
+    
+    public List<WorkoutExerciseDto> WorkoutExercises { get; set; } = new();
 }

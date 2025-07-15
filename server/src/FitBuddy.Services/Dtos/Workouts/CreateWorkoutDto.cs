@@ -12,4 +12,5 @@ public class CreateWorkoutDto
     public int? DifficultyLevel { get; set; }
     public int? EstimatedDurationMinutes { get; set; }
     public List<CreateWorkoutExerciseDto> Exercises { get; set; } = new();
+    public string? WorkoutTypeData { get; set; }
 }

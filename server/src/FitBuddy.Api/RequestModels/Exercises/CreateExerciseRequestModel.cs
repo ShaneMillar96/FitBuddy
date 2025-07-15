@@ -54,7 +54,7 @@ public class CreateWorkoutExerciseRequestModel
     [StringLength(500)]
     public string? Notes { get; set; }
 
-    public object? WorkoutTypeData { get; set; }
+    public string? WorkoutTypeData { get; set; }
 
     public int? MinuteNumber { get; set; }
 

@@ -1,4 +1,5 @@
 using FitBuddy.Api.ViewModels.Members;
+using FitBuddy.Api.ViewModels.Exercises;
 
 namespace FitBuddy.Api.ViewModels.Workouts;
 
@@ -23,4 +24,6 @@ public class WorkoutViewModel
     public DateTime CreatedDate { get; set; }
     
     public DateTime? ModifiedDate { get; set; }
+    
+    public List<WorkoutExerciseViewModel> WorkoutExercises { get; set; } = new();
 }
